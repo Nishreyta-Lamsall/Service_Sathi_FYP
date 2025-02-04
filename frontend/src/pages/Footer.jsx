@@ -1,0 +1,83 @@
+import React from "react";
+import facebook from "../assets/facebook.png";
+import instagram from "../assets/instagram.png";
+import twitter from "../assets/twitter.png";
+import linkedin from "../assets/linkedin.png";
+
+const Footer = () => {
+  return (
+    <div className="bg-[#0A1F44] text-white py-8 px-4">
+      {/* Container for all the contents */}
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-8 sm:space-y-0">
+        {/* Left Section */}
+        <div className="text-center sm:text-left">
+          <p className="text-3xl font-bold">Service Sathi</p>
+        </div>
+
+        {/* Middle Section */}
+        <div className="text-center sm:text-left">
+          <ul className="space-y-2">
+            <li>
+              <a href="/" className="hover:underline">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="/about" className="hover:underline">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:underline">
+                Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Right Section */}
+        <div className="text-center sm:text-left">
+          <ul className="space-y-2">
+            <li>+977 9876445678</li>
+            <li>Balaju, Kathmandu</li>
+            <li>Nepal</li>
+          </ul>
+        </div>
+
+        {/* Social Media Icons Section */}
+        <div className="flex justify-center sm:justify-start space-x-6 mt-4 sm:mt-0">
+          <img
+            src={instagram}
+            alt="Instagram"
+            className="w-6 h-6 cursor-pointer hover:opacity-80"
+          />
+          <img
+            src={facebook}
+            alt="Facebook"
+            className="w-6 h-6 cursor-pointer hover:opacity-80"
+          />
+          <img
+            src={twitter}
+            alt="Twitter"
+            className="w-6 h-6 cursor-pointer hover:opacity-80"
+          />
+          <img
+            src={linkedin}
+            alt="LinkedIn"
+            className="w-6 h-6 cursor-pointer hover:opacity-80"
+          />
+        </div>
+      </div>
+
+      {/* Footer Bottom */}
+      <div className="mt-8 text-center">
+        <hr className="border-t-1 border-white" />
+        <p className="mt-4 text-sm font-light">
+          © 2024 Service Sathi. All rights reserved.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Footer;
