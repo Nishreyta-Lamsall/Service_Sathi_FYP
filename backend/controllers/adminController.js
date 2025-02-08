@@ -68,4 +68,17 @@ const loginAdmin = async (req,res)=>{
 
 }
 
-export { addService, loginAdmin};
+//API to get all services list for admin panel
+const allServices = async (req,res)=>{
+  try{
+
+    const services = await serviceModel.find({})
+    res.json({success:true, services})
+
+  } catch(error){
+    console.log(error)
+    res.json({success:false, message:error.message})
+  }
+}
+
+export { addService, loginAdmin, allServices};

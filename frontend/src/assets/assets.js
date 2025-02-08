@@ -29,6 +29,7 @@ import Plumbing5 from "./CloggedDrainCleaning.png";
 import verified_icon from "./verified_icon.png";
 import info_icon from "./info_icon.png";
 import profile_pic from "./profile_pic.png";
+import upload_icon from "./upload_icon.png";
 
 export const assets = {
   Cleaning1,
@@ -61,7 +62,8 @@ export const assets = {
   Plumbing5,
   verified_icon,
   info_icon,
-  profile_pic
+  profile_pic,
+  upload_icon
 };
 
 export const CategoryData = [
@@ -88,7 +90,7 @@ export const Services = [
     name: "Deep House Cleaning",
     image: Cleaning1,
     category: "House Cleaning Services",
-    price: "NPR 6000",
+    price: "6000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -97,7 +99,7 @@ export const Services = [
     name: "Post-Construction Cleaning",
     image: Cleaning2,
     category: "House Cleaning Services",
-    price: "NPR 10,000",
+    price: "10,000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -106,7 +108,7 @@ export const Services = [
     name: "Carpet and Upholstery Cleaning",
     image: Cleaning3,
     category: "House Cleaning Services",
-    price: "NPR 1000",
+    price: "1000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -115,7 +117,7 @@ export const Services = [
     name: "Office Cleaning",
     image: Cleaning4,
     category: "House Cleaning Services",
-    price: "NPR 3000",
+    price: "3000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -124,7 +126,7 @@ export const Services = [
     name: "Window Cleaning",
     image: Cleaning5,
     category: "House Cleaning Services",
-    price: "NPR 1100",
+    price: "1100",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -133,7 +135,7 @@ export const Services = [
     name: "Air Duct Cleaning",
     image: Cleaning6,
     category: "House Cleaning Services",
-    price: "NPR 4600",
+    price: "4600",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -142,7 +144,7 @@ export const Services = [
     name: "Pressure Washing",
     image: Cleaning7,
     category: "House Cleaning Services",
-    price: "NPR 2500",
+    price: "2500",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -151,7 +153,7 @@ export const Services = [
     name: "End-of-Tenancy Cleaning",
     image: Cleaning8,
     category: "House Cleaning Services",
-    price: "NPR 3500",
+    price: "3500",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -160,7 +162,7 @@ export const Services = [
     name: "Light Installation",
     image: Electrical1,
     category: "Electrical Services",
-    price: "NPR 499",
+    price: "499",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -169,7 +171,7 @@ export const Services = [
     name: "Power Outlet Installation",
     image: Electrical2,
     category: "Electrical Services",
-    price: "NPR 599",
+    price: "599",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -178,7 +180,7 @@ export const Services = [
     name: "Ceiling Fan Installation",
     image: Electrical3,
     category: "Electrical Services",
-    price: "NPR 1100",
+    price: "1100",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -187,7 +189,7 @@ export const Services = [
     name: "Electrical Safety Inspections",
     image: Electrical4,
     category: "Electrical Services",
-    price: "NPR 1200",
+    price: "1200",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -196,7 +198,7 @@ export const Services = [
     name: "Inverter Installation",
     image: Electrical5,
     category: "Electrical Services",
-    price: "NPR 1000",
+    price: "1000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -205,7 +207,7 @@ export const Services = [
     name: "Custom Furniture Design and Construction",
     image: Carpentry1,
     category: "Carpentry Services",
-    price: "NPR 10,000",
+    price: "10,000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -214,7 +216,7 @@ export const Services = [
     name: "Wooden Flooring Installation",
     image: Carpentry2,
     category: "Carpentry Services",
-    price: "NPR 1000/sq.ft.",
+    price: "1000/sq.ft.",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -223,7 +225,7 @@ export const Services = [
     name: "Cabinet Making",
     image: Carpentry3,
     category: "Carpentry Services",
-    price: "NPR 20,000",
+    price: "20,000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -232,7 +234,7 @@ export const Services = [
     name: "Wooden Staircase Installation",
     image: Carpentry4,
     category: "Carpentry Services",
-    price: "NPR 1,00,000",
+    price: "1,00,000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -241,7 +243,7 @@ export const Services = [
     name: "Furniture Repair and Restoration",
     image: Carpentry5,
     category: "Carpentry Services",
-    price: "NPR 10,000",
+    price: "10,000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -250,7 +252,7 @@ export const Services = [
     name: "Lawn Care and Maintenance",
     image: Gardening1,
     category: "Gardening Services",
-    price: "NPR 2000",
+    price: "2000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -259,7 +261,7 @@ export const Services = [
     name: "Tree Pruning and Removal",
     image: Gardening2,
     category: "Gardening Services",
-    price: "NPR 699",
+    price: "699",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -268,7 +270,7 @@ export const Services = [
     name: "Garden Pest Control",
     image: Gardening3,
     category: "Gardening Services",
-    price: "NPR 1100",
+    price: "1100",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -277,7 +279,7 @@ export const Services = [
     name: "Irrigation System Installation",
     image: Gardening4,
     category: "Gardening Services",
-    price: "NPR 2099",
+    price: "2099",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -286,7 +288,7 @@ export const Services = [
     name: "Tree and Shrub Planting",
     image: Gardening5,
     category: "Gardening Services",
-    price: "NPR 1200",
+    price: "1200",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -295,7 +297,7 @@ export const Services = [
     name: "Pipe Installation and Repair",
     image: Plumbing1,
     category: "Plumbing Services",
-    price: "NPR 1000",
+    price: "1000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -304,7 +306,7 @@ export const Services = [
     name: "Leak Repairs",
     image: Plumbing2,
     category: "Plumbing Services",
-    price: "NPR 699",
+    price: "699",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -313,7 +315,7 @@ export const Services = [
     name: "Water Tank Cleaning and Maintenance",
     image: Plumbing3,
     category: "Plumbing Services",
-    price: "NPR 3000",
+    price: "3000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -322,7 +324,7 @@ export const Services = [
     name: "Pipe Insulation",
     image: Plumbing4,
     category: "Plumbing Services",
-    price: "NPR 399",
+    price: "399",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },
@@ -331,7 +333,7 @@ export const Services = [
     name: "Clogged Drain Cleaning",
     image: Plumbing5,
     category: "Plumbing Services",
-    price: "NPR 2000",
+    price: "2000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   }

@@ -3,13 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import profilePic from "../assets/profile_picc.png";
 import dropdownIcon from "../assets/dropdown_icon.png";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 const NavBar = () => {
   const [language, setLanguage] = useState("English"); // Default language is English
   const [isOpen, setIsOpen] = useState(false); // State to manage dropdown visibility
   const [menuOpen, setMenuOpen] = useState(false); // State for mobile menu toggle
-  const [token, setToken] = useState(true); // Placeholder token state
   const navigate = useNavigate();
+
+  const {token, setToken, userData} = useContext(AppContext)
+
+  const logout = () => {
+    setToken(false)
+    localStorage.removeItem('token')
+  }
 
   // Handle language selection
   const handleLanguageChange = (lang) => {
@@ -97,10 +105,10 @@ const NavBar = () => {
           </div>
 
           {/* Login Button */}
-          {token ? (
+          {token && userData ? (
             <div className="flex items-center gap-3 group relative">
               <img
-                src={profilePic}
+                src={userData.image}
                 alt="Profile"
                 className="w-8 h-8 rounded-full"
               />
@@ -120,7 +128,7 @@ const NavBar = () => {
                     My Bookings
                   </p>
                   <p
-                    onClick={() => setToken(false)}
+                    onClick={logout}
                     className="hover:text-black cursor-pointer"
                   >
                     Logout

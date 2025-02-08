@@ -110,7 +110,10 @@ const MyBookings = () => {
             </div>
             <p className="font-medium mt-4">
               Service fee:{" "}
-              <span className="text-gray-600">{serviceInfo.price}</span>
+              <span className="text-gray-600">
+                {currencySymbol}
+                {serviceInfo.price}
+              </span>
             </p>
           </div>
         </div>
