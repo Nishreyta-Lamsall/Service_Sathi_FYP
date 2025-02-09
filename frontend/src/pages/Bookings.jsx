@@ -1,20 +1,23 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { assets } from "../assets/assets";
 import RelatedServices from "../components/RelatedServices";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const MyBookings = () => {
   const { serviceId } = useParams();
-  const { Services, currencySymbol } = useContext(AppContext);
+  const { Services, currencySymbol, backendUrl, token, getServicesData } =
+    useContext(AppContext);
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+  const navigate = useNavigate();
 
   const [serviceInfo, setServiceInfo] = useState(null);
-
   const [serviceSlots, setServiceSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
@@ -24,61 +27,114 @@ const MyBookings = () => {
     setServiceInfo(serviceInfo);
   };
 
-  const getAvailableSlots = async()=>{
-    setServiceSlots([])
+  const getAvailableSlots = async () => {
+    setServiceSlots([]);
 
     //getting current date
-    let today = new Date()
+    let today = new Date();
 
-    for(let i=0; i<7; i++){
+    for (let i = 0; i < 7; i++) {
       // getting date with index
-      let currentDate = new Date(today)
-      currentDate.setDate(today.getDate()+i)
+      let currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
 
       //setting end time of the date with index
-      let endTime = new Date()
-      endTime.setDate(today.getDate()+i)
-      endTime.setHours(21,0,0,0)
+      let endTime = new Date();
+      endTime.setDate(today.getDate() + i);
+      endTime.setHours(17, 0, 0, 0);
 
       //setting hours
-      if(today.getDate()=== currentDate.getDate()){
-        currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10)
-        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0)
-      } else{
-        currentDate.setHours(10)
-        currentDate.setMinutes(10)
+      if (today.getDate() === currentDate.getDate()) {
+        currentDate.setHours(
+          currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
+        );
+        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
+      } else {
+        currentDate.setHours(10);
+        currentDate.setMinutes(10);
       }
 
-      let timeSlots = []
+      let timeSlots = [];
 
-      while(currentDate < endTime){
-        let formattedTime = currentDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+      while (currentDate < endTime) {
+        let formattedTime = currentDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
-        //add slot to array
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime
-        })
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
 
-        //increase current time by 30 minutes
-        currentDate.setMinutes(currentDate.getMinutes() + 30)
+        const slotDate = day + "/" + month + "/" + year;
+        const slotTime = formattedTime;
+
+        const isSlotAvailable =
+          serviceInfo.slots_booked[slotDate] &&
+          serviceInfo.slots_booked[slotDate].includes(slotTime)
+            ? false
+            : true;
+
+        if (isSlotAvailable) {
+          //add slot to array
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          });
+        }
+
+        //increase current time by 2 hours
+        currentDate.setHours(currentDate.getHours() + 2);
       }
 
-      setServiceSlots(prev => ([...prev, timeSlots]))
+      setServiceSlots((prev) => [...prev, timeSlots]);
     }
-  }
+  };
+
+  const bookService = async () => {
+    if (!token) {
+      toast.warning("Login to book a service");
+      return navigate("/login");
+    }
+
+    try {
+      const date = serviceSlots[slotIndex][0].datetime;
+
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+
+      const slotDate = day + "/" + month + "/" + year;
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/book-service",
+        { serviceId, slotDate, slotTime },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getServicesData();
+        navigate("/my-bookings");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     fetchserviceInfo();
   }, [Services, serviceId]);
 
-  useEffect(()=>{
-    getAvailableSlots()
-  }, [serviceInfo])
+  useEffect(() => {
+    getAvailableSlots();
+  }, [serviceInfo]);
 
-  useEffect(()=>{
-    console.log(serviceSlots)
-  }, [serviceSlots])
+  useEffect(() => {
+    console.log(serviceSlots);
+  }, [serviceSlots]);
 
   return (
     serviceInfo && (
@@ -154,7 +210,10 @@ const MyBookings = () => {
                 </p>
               ))}
           </div>
-          <button className="bg-blue-900 text-white text-base font-light py-3 px-16 rounded-full my-6 mt-8">
+          <button
+            onClick={bookService}
+            className="bg-blue-900 text-white text-base font-light py-3 px-16 rounded-full my-6 mt-8"
+          >
             Book a service
           </button>
         </div>

@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import {v2 as cloudinary} from 'cloudinary';
+import serviceModel from "../models/serviceModel.js";
+import bookingModel from "../models/bookingModel.js";
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -123,4 +125,115 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile };
+//Api for booking
+const bookService = async(req,res)=>{
+   try {
+    const {userId, serviceId, slotDate, slotTime} = req.body
+
+    const serviceData = await serviceModel.findById(serviceId)
+
+    if(!serviceData.available){
+      return res.json({success:false, message:"Service not available"})
+    }
+    let slots_booked = serviceData.slots_booked
+
+    //checking for slot availability
+    if(slots_booked[slotDate]){
+      if(slots_booked[slotDate].includes(slotTime)){
+         return res.json({ success: false, message: "Service Provider not available" });
+      }else{
+        slots_booked[slotDate].push(slotTime)
+      }
+    } else {
+      slots_booked[slotDate] = []
+      slots_booked[slotDate].push(slotTime)
+    }
+
+    const userData = await userModel.findById(userId).select('-password')
+    delete serviceData.slots_booked
+
+    const bookingData = {
+      userId,
+      serviceId,
+      userData,
+      serviceData,
+      amount: serviceData.price,
+      slotTime,
+      slotDate,
+      date: Date.now()
+    }
+
+    const newBooking = new bookingModel(bookingData)
+    await newBooking.save()
+
+    //save new Slots Data in serviceData
+    await serviceModel.findByIdAndUpdate(serviceId, {slots_booked})
+
+    res.json({success:true,message:"Service Booked"})
+
+   } catch (error) {
+      console.log(error);
+      res.json({ success: false, message: error.message });
+   }
+}
+
+//Api to get user appointments for my-bookings page
+const listService = async(req,res)=>{
+  try {
+    const {userId} = req.body
+    const bookings = await bookingModel.find({userId})
+
+    res.json({success:true, bookings})
+    
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+}
+
+const cancelBooking = async (req, res) => {
+  try {
+    const { userId, bookingId } = req.body;
+    const bookingData = await bookingModel.findById(bookingId);
+
+    // Verify user
+    if (!bookingData || bookingData.userId.toString() !== userId) {
+      return res.json({ success: false, message: "Cannot delete booking!" });
+    }
+
+    await bookingModel.findByIdAndUpdate(bookingId, { cancelled: true });
+
+    // Fetch service details
+    const servicesData = await serviceModel.findById(bookingData.serviceId);
+
+    if (!servicesData) {
+      return res.json({ success: false, message: "Service not found!" });
+    }
+
+    // Destructure slot details after fetching servicesData
+    const { slotDate, slotTime } = bookingData;
+
+    let slots_booked = servicesData.slots_booked;
+
+    // Remove the slot from booked slots
+    if (slots_booked[slotDate]) {
+      slots_booked[slotDate] = slots_booked[slotDate].filter(
+        (e) => e !== slotTime
+      );
+      if (slots_booked[slotDate].length === 0) {
+        delete slots_booked[slotDate]; // Remove empty dates
+      }
+    }
+
+    await serviceModel.findByIdAndUpdate(bookingData.serviceId, {
+      slots_booked,
+    });
+
+    res.json({ success: true, message: "Booking Cancelled" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { registerUser, loginUser, getProfile, updateProfile, bookService, listService, cancelBooking};

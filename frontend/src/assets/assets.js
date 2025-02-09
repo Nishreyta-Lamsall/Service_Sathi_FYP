@@ -216,7 +216,7 @@ export const Services = [
     name: "Wooden Flooring Installation",
     image: Carpentry2,
     category: "Carpentry Services",
-    price: "1000/sq.ft.",
+    price: "10000",
     about:
       "Lorean Ipsum Lorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean IpsumLorean Ipsum Lorean Ipsum",
   },

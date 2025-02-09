@@ -10,7 +10,8 @@ const serviceSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     slots_booked: { type: Object, default: {} },
   },
-  { minimize: false }
+  { minimize: false },
+  { timeStapms: true }
 );
 
 const serviceModel =mongoose.models.service || mongoose.model('service', serviceSchema)

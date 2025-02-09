@@ -1,6 +1,8 @@
 import serviceModel from "../models/serviceModel.js";
 import {v2 as cloudinary} from "cloudinary"
 import jwt from "jsonwebtoken";
+import bookingModel from "../models/bookingModel.js";
+import userModel from "../models/userModel.js";
 
 //API for adding services
 const addService = async (req, res) => {
@@ -81,4 +83,79 @@ const allServices = async (req,res)=>{
   }
 }
 
-export { addService, loginAdmin, allServices};
+//API to get bookings list
+const bookingsAdmin = async (req,res) => {
+  try {
+    const bookings = await bookingModel.find({})
+    res.json({success:true,bookings})
+    
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+}
+
+//API to cancel booking
+const bookingCancel = async (req, res) => {
+  try {
+    const {bookingId} = req.body;
+    const bookingData = await bookingModel.findById(bookingId);
+
+    await bookingModel.findByIdAndUpdate(bookingId, { cancelled: true });
+
+    // Fetch service details
+    const servicesData = await serviceModel.findById(bookingData.serviceId);
+
+    if (!servicesData) {
+      return res.json({ success: false, message: "Service not found!" });
+    }
+
+    // Destructure slot details after fetching servicesData
+    const { slotDate, slotTime } = bookingData;
+
+    let slots_booked = servicesData.slots_booked;
+
+    // Remove the slot from booked slots
+    if (slots_booked[slotDate]) {
+      slots_booked[slotDate] = slots_booked[slotDate].filter(
+        (e) => e !== slotTime
+      );
+      if (slots_booked[slotDate].length === 0) {
+        delete slots_booked[slotDate]; // Remove empty dates
+      }
+    }
+
+    await serviceModel.findByIdAndUpdate(bookingData.serviceId, {
+      slots_booked,
+    });
+
+    res.json({ success: true, message: "Booking Cancelled" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+//api to get dashboard data for admin panel
+const adminDashboard = async (req,res) => {
+  try {
+    const services = await serviceModel.find({})
+    const users = await userModel.find({})
+    const bookings = await bookingModel.find({})
+
+    const dashData = {
+      services: services.length,
+      bookings: bookings.length,
+      users: users.length,
+      latestBookings: bookings.reverse().slice(0,5)
+    }
+
+    res.json({success:true, dashData})
+    
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message }); 
+  }
+}
+
+export { addService, loginAdmin, allServices, bookingsAdmin, bookingCancel, adminDashboard};
