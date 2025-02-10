@@ -30,12 +30,13 @@ const HomePage = () => {
               of living with professionals who care <br /> as much about your
               home as you do.
             </p>
-            <a href="#category">
-              <button className="ml-16 mt-5 bg-[#2D64C5] text-white px-3 py-1 rounded-full hover:scale-105 transition-all duration-300">
-                Discover How We Do It
-                <i className="fa-solid fa-arrow-right ml-2"></i>
-              </button>
-            </a>
+            <button
+              onClick={() => navigate("/about")}
+              className="ml-16 mt-5 bg-[#2D64C5] text-white px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
+            >
+              Discover How We Do It
+              <i className="fa-solid fa-arrow-right ml-2"></i>
+            </button>
           </div>
 
           {/* Second child div */}

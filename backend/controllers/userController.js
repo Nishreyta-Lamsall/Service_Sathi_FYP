@@ -201,35 +201,33 @@ const cancelBooking = async (req, res) => {
       return res.json({ success: false, message: "Cannot delete booking!" });
     }
 
-    await bookingModel.findByIdAndUpdate(bookingId, { cancelled: true });
+    await bookingModel.findByIdAndUpdate(bookingId, {
+      cancelled: true,
+      userCancelled: true, // ✅ Mark as cancelled by user
+    });
 
     // Fetch service details
     const servicesData = await serviceModel.findById(bookingData.serviceId);
-
     if (!servicesData) {
       return res.json({ success: false, message: "Service not found!" });
     }
 
-    // Destructure slot details after fetching servicesData
+    // Remove booked slot
     const { slotDate, slotTime } = bookingData;
-
     let slots_booked = servicesData.slots_booked;
 
-    // Remove the slot from booked slots
     if (slots_booked[slotDate]) {
       slots_booked[slotDate] = slots_booked[slotDate].filter(
         (e) => e !== slotTime
       );
-      if (slots_booked[slotDate].length === 0) {
-        delete slots_booked[slotDate]; // Remove empty dates
-      }
+      if (slots_booked[slotDate].length === 0) delete slots_booked[slotDate];
     }
 
     await serviceModel.findByIdAndUpdate(bookingData.serviceId, {
       slots_booked,
     });
 
-    res.json({ success: true, message: "Booking Cancelled" });
+    res.json({ success: true, message: "Booking Cancelled by User" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });

@@ -115,10 +115,10 @@ const onSubmitHandler = async (event) => {
 };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center h-[97vh]">
       <form
         onSubmit={onSubmitHandler}
-        className="w-full max-w-[700px] max-h-[90vh] overflow-y-auto p-6 rounded-lg shadow-lg space-y-6"
+        className="w-full max-w-[700px] h-[85vh] overflow-y-auto p-6 rounded-lg shadow-lg space-y-6"
       >
         <h2 className="text-2xl font-semibold text-gray-700 text-center">
           Add Service Provider

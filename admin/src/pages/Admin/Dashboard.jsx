@@ -78,7 +78,7 @@ const Dashboard = () => {
             />
             <div>
               <p className="text-4xl font-medium text-red-600">
-                {dashData.users}
+                {dashData.serviceProviders}
               </p>
               <hr className="w-14 my-2 border-t-2 border-gray-300" />
               <p className="text-sm font-semibold text-black">Providers</p>

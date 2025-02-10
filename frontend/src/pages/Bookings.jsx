@@ -14,6 +14,7 @@ const MyBookings = () => {
   const { Services, currencySymbol, backendUrl, token, getServicesData } =
     useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const [serviceProvider, setServiceProvider] = useState(null);
 
   const navigate = useNavigate();
 
@@ -26,6 +27,25 @@ const MyBookings = () => {
     const serviceInfo = Services.find((service) => service._id === serviceId);
     setServiceInfo(serviceInfo);
   };
+
+
+    const fetchServiceProvider = async () => {
+      try {
+        const { data } = await axios.get(
+          `${backendUrl}/api/service/service-provider/${serviceId}`
+        );
+        if (data) {
+          setServiceProvider(data.name); // Store the provider's name
+        }
+      } catch (error) {
+        console.error("Error fetching provider:", error);
+        setServiceProvider("Not Available");
+      }
+    };
+
+    useEffect(() => {
+      fetchServiceProvider();
+    }, [serviceId]);
 
   const getAvailableSlots = async () => {
     setServiceSlots([]);
@@ -154,6 +174,9 @@ const MyBookings = () => {
             </p>
             <div>
               <p className="text-sm mt-1">{serviceInfo.category}</p>
+              <p className="text-sm font-medium text-indigo-600 mt-2">
+                Provider: {serviceProvider || "Loading..."}
+              </p>
             </div>
             <div>
               <p className="flex items-center gap-1 font-medium text-gray-900 mt-3">

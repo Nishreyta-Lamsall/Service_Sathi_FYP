@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import bookingModel from "../models/bookingModel.js";
 import userModel from "../models/userModel.js";
 import serviceProviderModel from "../models/serviceProviderModel.js";
+import mongoose from "mongoose";
 
 //API for adding services
 const addService = async (req, res) => {
@@ -52,6 +53,100 @@ const addService = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+const updateService = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+    const { name, category, about, price, available } = req.body;
+    const imageFile = req.file;
+
+    console.log("Received serviceId:", serviceId);
+    console.log("Update request body:", req.body);
+
+    // Validate serviceId format
+    if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid service ID format" });
+    }
+
+    // Fetch service from DB
+    const service = await serviceModel.findById(serviceId);
+
+    if (!service) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Service not found" });
+    }
+
+    // Handle image upload if a new image is provided
+    let imageUrl = service.image;
+    if (imageFile) {
+      // Delete old image from Cloudinary if it exists
+      if (service.image) {
+        const publicId = service.image.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      // Upload new image
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      imageUrl = imageUpload.secure_url;
+    }
+
+    // Update service fields
+    service.name = name || service.name;
+    service.category = category || service.category;
+    service.about = about || service.about;
+    service.price = price !== undefined ? price : service.price;
+    service.available = available !== undefined ? available : service.available;
+    service.image = imageUrl;
+
+    console.log("Updated service before saving:", service);
+
+    await service.save();
+
+    console.log("Service successfully updated:", service);
+
+    res.json({
+      success: true,
+      message: "Service updated successfully",
+      updatedService: service,
+    });
+  } catch (error) {
+    console.error("Error updating service:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deleteService = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+
+    // Check if service exists
+    const service = await serviceModel.findById(serviceId);
+    if (!service) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Service not found" });
+    }
+
+    // Delete image from Cloudinary if exists
+    if (service.image) {
+      const publicId = service.image.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    // Delete service from database
+    await serviceModel.deleteOne({ _id: serviceId });
+
+    res.json({ success: true, message: "Service deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 const addServiceProvider = async (req, res) => {
   try {
@@ -325,46 +420,48 @@ const bookingsAdmin = async (req, res) => {
   }
 };
 
-//API to cancel booking
 const bookingCancel = async (req, res) => {
   try {
     const { bookingId } = req.body;
     const bookingData = await bookingModel.findById(bookingId);
 
-    await bookingModel.findByIdAndUpdate(bookingId, { cancelled: true });
+    if (!bookingData) {
+      return res.json({ success: false, message: "Booking not found!" });
+    }
+
+    await bookingModel.findByIdAndUpdate(bookingId, {
+      cancelled: true,
+      cancelledByAdmin: true, // ✅ Mark as cancelled by admin
+    });
 
     // Fetch service details
     const servicesData = await serviceModel.findById(bookingData.serviceId);
-
     if (!servicesData) {
       return res.json({ success: false, message: "Service not found!" });
     }
 
-    // Destructure slot details after fetching servicesData
+    // Remove booked slot
     const { slotDate, slotTime } = bookingData;
-
     let slots_booked = servicesData.slots_booked;
 
-    // Remove the slot from booked slots
     if (slots_booked[slotDate]) {
       slots_booked[slotDate] = slots_booked[slotDate].filter(
         (e) => e !== slotTime
       );
-      if (slots_booked[slotDate].length === 0) {
-        delete slots_booked[slotDate]; // Remove empty dates
-      }
+      if (slots_booked[slotDate].length === 0) delete slots_booked[slotDate];
     }
 
     await serviceModel.findByIdAndUpdate(bookingData.serviceId, {
       slots_booked,
     });
 
-    res.json({ success: true, message: "Booking Cancelled" });
+    res.json({ success: true, message: "Booking Cancelled by Admin" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
+
 
 //api to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
@@ -372,11 +469,13 @@ const adminDashboard = async (req, res) => {
     const services = await serviceModel.find({});
     const users = await userModel.find({});
     const bookings = await bookingModel.find({});
+    const serviceProviders = await serviceProviderModel.find({});
 
     const dashData = {
       services: services.length,
       bookings: bookings.length,
       users: users.length,
+      serviceProviders: serviceProviders.length,
       latestBookings: bookings.reverse().slice(0, 5),
     };
 
@@ -397,5 +496,7 @@ export {
   addServiceProvider,
   updateServiceProvider,
   deleteServiceProvider,
-  allServiceProviders
+  allServiceProviders,
+  updateService,
+  deleteService
 };

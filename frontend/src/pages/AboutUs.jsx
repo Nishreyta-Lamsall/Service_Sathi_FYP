@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AboutUs = () => {
   const [openFaq, setOpenFaq] = useState(null); // State to track open FAQ
@@ -6,6 +7,8 @@ const AboutUs = () => {
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index); // Toggle between open and close
   };
+
+  const navigate = useNavigate()
 
   return (
     <div className="ml-12 mr-12">
@@ -61,10 +64,10 @@ const AboutUs = () => {
         <div className="w-full sm:w-1/2 border border-gray-400 p-5 rounded-lg sm:ml-10">
           <div className="flex flex-col gap-20">
             {/* Top Row */}
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-60">
               {[
-                { label: "Services Provided", value: "100+" },
-                { label: "Service Providers", value: "25+" },
+                { label: "Services Provided", value: "20+" },
+                { label: "Service Providers", value: "10+" },
               ].map((stat, index) => (
                 <div
                   key={index}
@@ -83,10 +86,10 @@ const AboutUs = () => {
             </div>
 
             {/* Bottom Row */}
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-60">
               {[
-                { label: "Active Users", value: "100+" },
-                { label: "Happy Customers", value: "100+" },
+                { label: "Active Users", value: "25+" },
+                { label: "Happy Customers", value: "25+" },
               ].map((stat, index) => (
                 <div
                   key={index}
@@ -165,7 +168,11 @@ const AboutUs = () => {
           <span className="font-bold">Service Sathi</span> for their household
           needs. Let’s make your life easier, one service at a time.
         </p>
-        <button className="mt-6 bg-[#2D64C5] text-white px-6 py-3 rounded-full shadow hover:bg-blue-600 ">
+        <button
+          type="button"
+          onClick={() => navigate("/login")}
+          className="mt-6 bg-[#2D64C5] text-white px-6 py-3 rounded-full shadow hover:bg-blue-600"
+        >
           Get Started Today →
         </button>
       </div>

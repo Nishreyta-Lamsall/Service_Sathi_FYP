@@ -10,6 +10,8 @@ import {
   updateServiceProvider,
   deleteServiceProvider,
   allServiceProviders,
+  updateService,
+  deleteService,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -36,6 +38,18 @@ adminRouter.delete(
   authAdmin,
   upload.single("image"),
   deleteServiceProvider
+);
+adminRouter.put(
+  "/update-service/:serviceId",
+  authAdmin,
+  upload.single("image"),
+  updateService
+);
+adminRouter.delete(
+  "/delete-service/:serviceId",
+  authAdmin,
+  upload.single("image"),
+  deleteService
 );
 adminRouter.post("/login", loginAdmin);
 adminRouter.post("/all-services", authAdmin, allServices);

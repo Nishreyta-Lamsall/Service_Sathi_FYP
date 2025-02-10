@@ -12,7 +12,6 @@ const serviceSchema = new mongoose.Schema(
     serviceProvider: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ServiceProvider",
-      required: true, // To ensure every service must have a provider
     },
   },
   { minimize: false },

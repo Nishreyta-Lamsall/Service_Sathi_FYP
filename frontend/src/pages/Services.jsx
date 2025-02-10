@@ -29,8 +29,19 @@ const Services = () => {
     <div className="ml-10 mt-10">
       <p className="text-gray-600">Discover the right service for you.</p>
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
-        <button className={`p-1 px-3 border rounded text-sm transition-all sm:hidden ${showFilter ? 'bg-blue-900 text-white': ''}`} onClick={()=>setShowFilter(prev => !prev)}>Filters</button>
-        <div className={`w-[17vw] flex-col gap-4 text-sm text-gray-600 ${showFilter ? 'flex' : 'hidden sm:flex'}`}>
+        <button
+          className={`p-1 px-3 border rounded text-sm transition-all sm:hidden ${
+            showFilter ? "bg-blue-900 text-white" : ""
+          }`}
+          onClick={() => setShowFilter((prev) => !prev)}
+        >
+          Filters
+        </button>
+        <div
+          className={`w-[17vw] flex-col gap-4 text-sm text-gray-600 ${
+            showFilter ? "flex" : "hidden sm:flex"
+          }`}
+        >
           <p
             onClick={() =>
               category === "House Cleaning Services"
@@ -113,10 +124,19 @@ const Services = () => {
                 alt=""
               />
               <div className="p-4">
-                <div className="flex items-center gap-2 text-sm text-center text-green-500">
-                  <p className="w-2 h-2 bg-green-500 rounded-full"></p>
-                  <p>Available</p>
+                <div
+                  className={`flex items-center gap-2 text-sm text-center ${
+                    item.available ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  <p
+                    className={`w-2 h-2 rounded-full ${
+                      item.available ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  ></p>
+                  <p>{item.available ? "Available" : "Not Available"}</p>
                 </div>
+
                 <p className="text-gray-900 text-base font-medium">
                   {" "}
                   {item.name}
