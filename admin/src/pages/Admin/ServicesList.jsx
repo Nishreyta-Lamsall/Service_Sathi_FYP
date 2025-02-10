@@ -1,15 +1,16 @@
-import React, { useContext } from 'react'
-import { AdminContext } from '../../context/AdminContext'
-import { useEffect } from 'react'
+import React, { useContext } from "react";
+import { AdminContext } from "../../context/AdminContext";
+import { useEffect } from "react";
 
 const ServicesList = () => {
-  const {services, aToken, getAllServices, changeAvailability} = useContext(AdminContext)
+  const { services, aToken, getAllServices, changeAvailability } =
+    useContext(AdminContext);
 
-  useEffect(()=>{
-    if(aToken){
-      getAllServices()
+  useEffect(() => {
+    if (aToken) {
+      getAllServices();
     }
-  },[aToken])
+  }, [aToken]);
 
   return (
     <div className="m-5 ml-16 max-h-[90vh] overflow-y-auto scrollbar-none">
@@ -35,7 +36,11 @@ const ServicesList = () => {
 
                 {/* Availability */}
                 <div className="flex items-center gap-2 mt-auto">
-                  <input onChange={()=> changeAvailability(item._id)} type="checkbox" checked={item.available} />
+                  <input
+                    onChange={() => changeAvailability(item._id)}
+                    type="checkbox"
+                    checked={item.available}
+                  />
                   <p className="text-sm">Available</p>
                 </div>
               </div>
@@ -45,6 +50,6 @@ const ServicesList = () => {
       </div>
     </div>
   );
-}
+};
 
-export default ServicesList
+export default ServicesList;

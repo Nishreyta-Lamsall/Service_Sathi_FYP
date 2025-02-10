@@ -1,4 +1,6 @@
 import serviceModel from "../models/serviceModel.js";
+import serviceProviderModel from "../models/serviceProviderModel.js";
+import mongoose from "mongoose";
 
 const changeAvailability = async (req,res) => {
     try {
@@ -23,4 +25,27 @@ const serviceList = async (req,res) => {
       res.json({ success: false, message: error.message });
 }
 }
-export {changeAvailability, serviceList}
+
+const getServiceProviderByService = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+    console.log("Service ID received:", serviceId);
+
+    const objectId = new mongoose.Types.ObjectId(serviceId);
+
+    const provider = await serviceProviderModel.findOne({
+      "services.serviceId": objectId,
+    });
+
+    if (!provider) {
+      return res.status(404).json({ message: "Service Provider not found" });
+    }
+
+    res.json(provider);
+  } catch (error) {
+    console.error("Error fetching service provider:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export {changeAvailability, serviceList, getServiceProviderByService}

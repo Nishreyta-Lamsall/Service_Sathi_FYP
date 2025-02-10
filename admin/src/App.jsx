@@ -23,7 +23,7 @@ const App = () => {
       <NavBar />
 
       {/* Sidebar + Main Content Layout */}
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
         {/* Sidebar (Fixed Width & No Shrinking) */}
         <div className="w-56 flex-shrink-0">
           <Sidebar />

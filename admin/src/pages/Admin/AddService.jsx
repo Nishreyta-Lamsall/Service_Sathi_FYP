@@ -67,7 +67,7 @@ const AddService = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="w-[700px] mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6 mt-10"
+      className="w-[700px] mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
     >
       <h2 className="text-2xl font-semibold text-gray-700 text-center">
         Add Service

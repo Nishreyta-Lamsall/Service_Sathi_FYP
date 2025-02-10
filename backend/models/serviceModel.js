@@ -9,11 +9,17 @@ const serviceSchema = new mongoose.Schema(
     available: { type: Boolean, default: true },
     price: { type: Number, required: true },
     slots_booked: { type: Object, default: {} },
+    serviceProvider: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ServiceProvider",
+      required: true, // To ensure every service must have a provider
+    },
   },
   { minimize: false },
-  { timeStapms: true }
+  { timestamps: true }
 );
 
-const serviceModel =mongoose.models.service || mongoose.model('service', serviceSchema)
+const serviceModel =
+  mongoose.models.service || mongoose.model("service", serviceSchema);
 
-export default serviceModel
+export default serviceModel;

@@ -1,8 +1,10 @@
 import express from 'express'
-import { serviceList } from '../controllers/ServiceController.js'
+import { getServiceProviderByService, serviceList } from '../controllers/ServiceController.js'
 
 const serviceRouter = express.Router()
 
 serviceRouter.get('/list', serviceList)
+
+serviceRouter.get("/service-provider/:serviceId", getServiceProviderByService);
 
 export default serviceRouter
