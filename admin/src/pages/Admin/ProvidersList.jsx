@@ -1,13 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import { AdminContext } from "../../context/AdminContext";
+import { useNavigate } from "react-router-dom";
 
 const ProvidersList = () => {
-  const { serviceProviders, aToken, getAllServiceProviders, changeProviderAvailability } =
-    useContext(AdminContext);
+  const {
+    serviceProviders,
+    aToken,
+    getAllServiceProviders,
+    changeProviderAvailability,
+    backendUrl,
+  } = useContext(AdminContext);
+
+  const navigate = useNavigate();
 
   // State to track visibility of services & details
   const [expandedServices, setExpandedServices] = useState({});
   const [expandedDetails, setExpandedDetails] = useState({});
+  const [deleting, setDeleting] = useState(null); // Track which provider is being deleted
 
   useEffect(() => {
     if (aToken) {
@@ -23,6 +34,35 @@ const ProvidersList = () => {
   // Toggle function for details
   const toggleDetails = (index) => {
     setExpandedDetails((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  // Handle Service Deletion
+  const handleDelete = async (Id) => {
+    if (
+      !window.confirm("Are you sure you want to delete this service provider?")
+    ) {
+      return;
+    }
+
+    setDeleting(Id); // Set deleting state
+
+    try {
+      const { data } = await axios.delete(
+        `${backendUrl}/api/admin/delete-serviceprovider/${Id}`,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success("Service provider deleted successfully!");
+        getAllServiceProviders(); // Refresh services list
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete service provider. Please try again.");
+    } finally {
+      setDeleting(null); // Reset deleting state
+    }
   };
 
   return (
@@ -54,7 +94,7 @@ const ProvidersList = () => {
                   {item.category}
                 </p>
                 <p className="text-gray-500 text-sm">
-                  <span className="text-black">Phone number:</span>
+                  <span className="text-black">Phone number:</span>{" "}
                   {item.phone_number}
                 </p>
 
@@ -110,13 +150,38 @@ const ProvidersList = () => {
 
                 {/* Availability */}
                 <div className="flex items-center mt-2">
-                  <input onChange={()=> changeProviderAvailability(item._id)}
+                  <input
+                    onChange={() => changeProviderAvailability(item._id)}
                     type="checkbox"
                     checked={item.available}
                     className="mr-2"
                   />
                   <p className="text-sm text-gray-800">Available</p>
                 </div>
+              </div>
+
+              {/* Buttons (Edit & Delete) */}
+              <div className="flex gap-3 mt-3">
+                {/* Edit Button */}
+                <button
+                  onClick={() => navigate(`/edit-provider/${item._id}`)}
+                  className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded transition"
+                >
+                  Edit
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDelete(item._id)}
+                  className={`px-3 py-1 text-xs font-medium text-white ${
+                    deleting === item._id
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : " bg-red-500 hover:bg-red-600 rounded transition"
+                  }`}
+                  disabled={deleting === item._id}
+                >
+                  {deleting === item._id ? "Deleting..." : "Delete"}
+                </button>
               </div>
             </div>
           ))

@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ServicesList = () => {
   const { services, aToken, getAllServices, changeAvailability, backendUrl } =
     useContext(AdminContext);
 
   const [serviceProviders, setServiceProviders] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (aToken) {
@@ -33,52 +36,89 @@ const ServicesList = () => {
     setServiceProviders(providers);
   };
 
+  // Handle Service Deletion
+  const handleDelete = async (serviceId) => {
+    if (!window.confirm("Are you sure you want to delete this service?")) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.delete(
+        `${backendUrl}/api/admin/delete-service/${serviceId}`,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success("Service deleted successfully!");
+        getAllServices(); // Refresh services list
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to delete service. Please try again.");
+    }
+  };
+
   return (
     <div className="m-5 ml-16 max-h-[90vh] overflow-y-auto scrollbar-none">
       <h1 className="text-lg font-medium">All Services</h1>
 
       <div className="w-full flex flex-wrap gap-4 pt-5 gap-y-6">
-        {services.map((item, index) => {
-          return (
-            <div
-              className="border border-indigo-200 rounded-xl w-56 min-h-[20rem] overflow-hidden cursor-pointer flex flex-col shadow-md hover:shadow-lg transition"
-              key={index}
-            >
-              {/* Image */}
-              <img
-                src={item.image}
-                alt=""
-                className="w-full h-40 object-cover"
-              />
+        {services.map((item, index) => (
+          <div
+            key={index}
+            className="border border-indigo-200 rounded-xl w-56 min-h-[22rem] overflow-hidden shadow-md hover:shadow-lg transition flex flex-col"
+          >
+            {/* Service Image */}
+            <img
+              src={item.image}
+              alt="Service"
+              className="w-full h-40 object-cover"
+            />
 
-              {/* Card Content */}
-              <div className="p-3 flex flex-col flex-grow">
-                {/* Service Name with fixed height & ellipsis */}
-                <p className="font-semibold text-gray-800 line-clamp-2 h-[3rem]">
-                  {item.name}
-                </p>
+            {/* Card Content */}
+            <div className="p-3 flex flex-col flex-grow">
+              <p className="font-semibold text-gray-800 line-clamp-2 h-[3rem]">
+                {item.name}
+              </p>
+              <p className="text-sm text-gray-600">{item.category}</p>
 
-                <p className="text-sm text-gray-600">{item.category}</p>
+              {/* Service Provider */}
+              <p className="text-sm font-medium text-indigo-600 mt-2">
+                Provider: {serviceProviders[item._id] || "Loading..."}
+              </p>
 
-                {/* Service Provider Name */}
-                <p className="text-sm font-medium text-indigo-600 mt-2">
-                  Provider: {serviceProviders[item._id] || "Loading..."}
-                </p>
+              {/* Availability Toggle */}
+              <div className="flex items-center gap-2 mt-3">
+                <input
+                  type="checkbox"
+                  checked={item.available}
+                  onChange={() => changeAvailability(item._id)}
+                  className="w-4 h-4 accent-blue-600"
+                />
+                <p className="text-sm">Available</p>
+              </div>
 
-                {/* Availability - Sticks to Bottom */}
-                <div className="flex items-center gap-2 mt-3">
-                  <input
-                    onChange={() => changeAvailability(item._id)}
-                    type="checkbox"
-                    checked={item.available}
-                    className="w-4 h-4 accent-blue-600"
-                  />
-                  <p className="text-sm">Available</p>
-                </div>
+              <div className="flex mt-3 gap-3">
+                {/* Edit Button */}
+                <button
+                  onClick={() => navigate(`/edit-service/${item._id}`)}
+                  className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded transition"
+                >
+                  Edit
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDelete(item._id)}
+                  className="px-3 py-1 text-xs font-medium text-white bg-red-500 hover:bg-red-600 rounded transition"
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

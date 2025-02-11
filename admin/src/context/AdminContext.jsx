@@ -70,6 +70,44 @@ const AdminContextProvider = (props) => {
     }
   };
 
+  const getServiceById = async (serviceId) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/api/admin/get-service/${serviceId}`,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        return data.service; // Return the service data
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      toast.error(error.message);
+      return null;
+    }
+  };
+
+  const getServiceProviderById = async (providerId) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/api/admin/get-serviceprovider/${providerId}`,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        return data.serviceProvider; // Return the service provider data
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      toast.error(error.message);
+      return null;
+    }
+  };
+
   const changeProviderAvailability = async (serviceProviderId) => {
     try {
       const { data } = await axios.post(
@@ -154,7 +192,9 @@ const AdminContextProvider = (props) => {
     dashData,
     getDashData,
     serviceProviders,
-    getAllServiceProviders
+    getAllServiceProviders,
+    getServiceById,
+    getServiceProviderById
   };
   return (
     <AdminContext.Provider value={value}>

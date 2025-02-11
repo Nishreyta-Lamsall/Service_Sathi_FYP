@@ -4,12 +4,12 @@ const bookingSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
     serviceId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
+      ref: "service",
       required: true,
     },
     slotDate: { type: String, required: true },

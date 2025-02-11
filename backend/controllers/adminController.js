@@ -368,6 +368,31 @@ const deleteServiceProvider = async (req, res) => {
   }
 };
 
+const getServiceProviderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const serviceProvider = await serviceProviderModel.findById(id);
+
+    if (!serviceProvider) {
+      return res.status(404).json({
+        success: false,
+        message: "Service provider not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      serviceProvider,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 //API for admin login
 const loginAdmin = async (req, res) => {
   try {
@@ -462,6 +487,25 @@ const bookingCancel = async (req, res) => {
   }
 };
 
+const getServiceById = async (req, res) => {
+  try {
+    const { serviceId } = req.params;
+
+    // Find service by ID
+    const service = await serviceModel.findById(serviceId);
+
+    if (!service) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Service not found" });
+    }
+
+    res.json({ success: true, service });
+  } catch (error) {
+    console.error("Error fetching service:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 //api to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
@@ -498,5 +542,7 @@ export {
   deleteServiceProvider,
   allServiceProviders,
   updateService,
-  deleteService
+  deleteService,
+  getServiceById,
+  getServiceProviderById
 };

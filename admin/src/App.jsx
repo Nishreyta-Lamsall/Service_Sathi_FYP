@@ -1,18 +1,18 @@
 import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-
 import { AdminContext } from "./context/AdminContext";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
-
 import Dashboard from "./pages/Admin/Dashboard";
 import AllBookings from "./pages/Admin/AllBookings";
 import AddService from "./pages/Admin/AddService";
 import ServicesList from "./pages/Admin/ServicesList";
 import AddProvider from "./pages/Admin/AddProvider";
 import ProvidersList from "./pages/Admin/ProvidersList";
+import EditService from "./pages/Admin/EditService";
+import EditProvider from "./pages/Admin/EditProvider";
 
 const App = () => {
   const { aToken } = useContext(AdminContext);
@@ -39,6 +39,8 @@ const App = () => {
             <Route path="/service-list" element={<ServicesList />} />
             <Route path="/add-provider" element={<AddProvider />} />
             <Route path="/provider-list" element={<ProvidersList />} />
+            <Route path="/edit-service/:serviceId" element={<EditService />} />
+            <Route path="/edit-provider/:id" element={<EditProvider />} />
           </Routes>
         </div>
       </div>

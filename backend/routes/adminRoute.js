@@ -12,6 +12,8 @@ import {
   allServiceProviders,
   updateService,
   deleteService,
+  getServiceById,
+  getServiceProviderById,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -39,6 +41,8 @@ adminRouter.delete(
   upload.single("image"),
   deleteServiceProvider
 );
+adminRouter.get("/get-serviceprovider/:id", authAdmin, getServiceProviderById);
+adminRouter.get("/get-service/:serviceId", authAdmin, getServiceById);
 adminRouter.put(
   "/update-service/:serviceId",
   authAdmin,
