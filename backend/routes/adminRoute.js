@@ -14,6 +14,7 @@ import {
   deleteService,
   getServiceById,
   getServiceProviderById,
+  updateStatus,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -63,5 +64,6 @@ adminRouter.post("/change-provider-availability", authAdmin, changeProviderAvail
 adminRouter.get("/bookings", authAdmin, bookingsAdmin);
 adminRouter.post("/cancel-booking", authAdmin, bookingCancel);
 adminRouter.get("/dashboard", authAdmin, adminDashboard);
+adminRouter.put("/update-status", authAdmin,updateStatus);
 
 export default adminRouter;

@@ -93,32 +93,46 @@ const getProfile = async (req, res) => {
   }
 };
 
-//API to update user profile
 const updateProfile = async (req, res) => {
   try {
     const { userId, name, phone, address, dob, gender } = req.body;
     const imageFile = req.file;
 
     if ((!name, !phone, !address, !dob, !gender)) {
-      return res.json({ success: false, meaage: "Data missing" });
-    }
-    await userModel.findByIdAndUpdate(userId, {
-      name,
-      phone,
-      address: JSON.parse(address),
-      dob,
-      gender,
-    });
-
-    if(imageFile){
-      // Upload image to cloudinary
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path,{resource_type:'image'})
-      const imageURL = imageUpload.secure_url
-
-      await userModel.findByIdAndUpdate(userId, {image:imageURL})
+      return res.json({ success: false, message: "Data missing" });
     }
 
-    res.json({success:true, message:"Profile Updated"})
+    // Update user profile
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      {
+        name,
+        phone,
+        address: JSON.parse(address),
+        dob,
+        gender,
+      },
+      { new: true }
+    ); // The `new` option returns the updated document.
+
+    if (imageFile) {
+      // Upload image to Cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      const imageURL = imageUpload.secure_url;
+
+      // Update the image in the user model
+      await userModel.findByIdAndUpdate(userId, { image: imageURL });
+    }
+
+    // Update the userData in all related bookings
+    await bookingModel.updateMany(
+      { userId }, // Match bookings with the same userId
+      { $set: { userData: updatedUser } } // Update userData with the updated user details
+    );
+
+    res.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });

@@ -128,6 +128,12 @@ const NavBar = () => {
                     My Bookings
                   </p>
                   <p
+                    onClick={() => navigate("order-history")}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    Order History
+                  </p>
+                  <p
                     onClick={logout}
                     className="hover:text-black cursor-pointer"
                   >

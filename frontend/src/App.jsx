@@ -11,12 +11,13 @@ import NavBar from './components/NavBar';
 import Footer from './pages/Footer';
 import Services from './pages/Services';
 import { ToastContainer, toast } from "react-toastify";
+import OrderHistory from './pages/OrderHistory';
 
 const App = () => {
   return (
     <div>
-      <ToastContainer/>
-      <NavBar/>
+      <ToastContainer />
+      <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<Services />} />
@@ -26,9 +27,10 @@ const App = () => {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/bookings/:serviceId" element={<Bookings />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

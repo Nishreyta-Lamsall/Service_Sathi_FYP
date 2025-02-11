@@ -487,6 +487,52 @@ const bookingCancel = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const { bookingId, orderStatus } = req.body;
+
+    // Allowed statuses
+    const allowedStatuses = ["Booked", "On the Way", "Completed"];
+
+    // Validate input
+    if (!bookingId || !orderStatus) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing bookingId or orderStatus" });
+    }
+
+    if (!allowedStatuses.includes(orderStatus)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid order status" });
+    }
+
+    // Find the booking
+    const booking = await bookingModel.findById(bookingId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    // Update orderStatus
+    booking.orderStatus = orderStatus;
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+
 const getServiceById = async (req, res) => {
   try {
     const { serviceId } = req.params;
@@ -544,5 +590,6 @@ export {
   updateService,
   deleteService,
   getServiceById,
-  getServiceProviderById
+  getServiceProviderById,
+  updateStatus
 };

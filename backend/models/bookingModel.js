@@ -13,6 +13,7 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
     slotDate: { type: String, required: true },
+    orderStatus: {type:String, default:"Booked"},
     slotTime: { type: String, required: true },
     userData: { type: Object, required: true },
     serviceData: { type: Object, required: true },
