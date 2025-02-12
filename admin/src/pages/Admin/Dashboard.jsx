@@ -57,15 +57,37 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* User Card */}
+          {/* Subscribed Users Card */}
           <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
-            <img src={assets.user_icon} alt="User" className="w-12 h-12" />
+            <img
+              src={assets.user_icon}
+              alt="Subscribed User"
+              className="w-12 h-12"
+            />
             <div>
               <p className="text-4xl font-medium text-red-600">
-                {dashData.users}
+                {dashData.subscribedUsers}
               </p>
               <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">Users</p>
+              <p className="text-sm font-semibold text-black">
+                Subscribed Users
+              </p>
+            </div>
+          </div>
+
+          {/* Regular Users Card */}
+          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
+            <img
+              src={assets.user_icon}
+              alt="Regular User"
+              className="w-12 h-12"
+            />
+            <div>
+              <p className="text-4xl font-medium text-red-600">
+                {dashData.regularUsers}
+              </p>
+              <hr className="w-14 my-2 border-t-2 border-gray-300" />
+              <p className="text-sm font-semibold text-black">Regular Users</p>
             </div>
           </div>
 

@@ -15,11 +15,13 @@ import {
   getServiceById,
   getServiceProviderById,
   updateStatus,
+  getSubscriptions,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
 import { changeAvailability } from "../controllers/ServiceController.js";
 import { changeProviderAvailability } from "../controllers/serviceProviderController.js";
+import { createSubscription, getUserSubscription } from "../controllers/subscriptionController.js";
 
 const adminRouter = express.Router();
 
@@ -65,5 +67,8 @@ adminRouter.get("/bookings", authAdmin, bookingsAdmin);
 adminRouter.post("/cancel-booking", authAdmin, bookingCancel);
 adminRouter.get("/dashboard", authAdmin, adminDashboard);
 adminRouter.put("/update-status", authAdmin,updateStatus);
+adminRouter.post("/create-subscription",authAdmin, createSubscription);
+adminRouter.get("/get-subscription/:userId",authAdmin, getUserSubscription); 
+adminRouter.get("/get-subscriptions",getSubscriptions); 
 
 export default adminRouter;

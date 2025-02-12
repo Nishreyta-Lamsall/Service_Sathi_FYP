@@ -12,6 +12,7 @@ import Footer from './pages/Footer';
 import Services from './pages/Services';
 import { ToastContainer, toast } from "react-toastify";
 import OrderHistory from './pages/OrderHistory';
+import Subscriptions from './pages/Subscriptions';
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/bookings/:serviceId" element={<Bookings />} />
+        <Route path="/subscriptions" element={<Subscriptions />} />
       </Routes>
       <Footer />
     </div>

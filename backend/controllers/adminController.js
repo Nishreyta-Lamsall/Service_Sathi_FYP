@@ -5,6 +5,7 @@ import bookingModel from "../models/bookingModel.js";
 import userModel from "../models/userModel.js";
 import serviceProviderModel from "../models/serviceProviderModel.js";
 import mongoose from "mongoose";
+import subscriptionModel from "../models/subscriptionModel.js";
 
 //API for adding services
 const addService = async (req, res) => {
@@ -553,7 +554,6 @@ const getServiceById = async (req, res) => {
   }
 };
 
-//api to get dashboard data for admin panel
 const adminDashboard = async (req, res) => {
   try {
     const services = await serviceModel.find({});
@@ -561,10 +561,16 @@ const adminDashboard = async (req, res) => {
     const bookings = await bookingModel.find({});
     const serviceProviders = await serviceProviderModel.find({});
 
+    // Separate users into subscribed and regular
+    const subscribedUsers = users.filter((user) => user.isSubscribed);
+    const regularUsers = users.filter((user) => !user.isSubscribed);
+
     const dashData = {
       services: services.length,
       bookings: bookings.length,
-      users: users.length,
+      users: users.length, // Total users
+      subscribedUsers: subscribedUsers.length, // Number of subscribed users
+      regularUsers: regularUsers.length, // Number of regular users
       serviceProviders: serviceProviders.length,
       latestBookings: bookings.reverse().slice(0, 5),
     };
@@ -575,6 +581,23 @@ const adminDashboard = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// Get all subscriptions
+const getSubscriptions = async (req, res) => {
+  try {
+    const subscriptions = await subscriptionModel.find({});
+
+    if (!subscriptions || subscriptions.length === 0) {
+      return res.status(404).json({ message: "No subscriptions available" });
+    }
+
+    res.status(200).json(subscriptions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 
 export {
   addService,
@@ -591,5 +614,6 @@ export {
   deleteService,
   getServiceById,
   getServiceProviderById,
-  updateStatus
+  updateStatus,
+  getSubscriptions
 };

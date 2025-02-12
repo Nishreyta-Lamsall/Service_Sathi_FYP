@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import {v2 as cloudinary} from 'cloudinary';
 import serviceModel from "../models/serviceModel.js";
 import bookingModel from "../models/bookingModel.js";
+import subscriptionModel from "../models/subscriptionModel.js";
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -245,6 +246,71 @@ const cancelBooking = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
+  }
+};
+
+// Function to subscribe user to a plan
+export const subscribeUser = async (req, res) => {
+  const { subscriptionId, plan } = req.body;
+  const userId = req.params.userId;
+
+  try {
+    // Step 1: Find the user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Step 2: Check if the user is already subscribed
+    if (user.isSubscribed) {
+      return res.status(400).json({ message: "User is already subscribed" }); // Send a 400 status with a message
+    }
+
+    // Step 3: Find the subscription plan
+    const subscription = await subscriptionModel.findById(subscriptionId);
+    if (!subscription) {
+      throw new Error("Subscription plan not found");
+    }
+
+    // Step 4: Calculate the subscription start and end date
+    const startDate = new Date();
+    const endDate = new Date();
+    if (plan === "6-month") {
+      endDate.setMonth(startDate.getMonth() + 6); // 6-month subscription
+    } else if (plan === "12-month") {
+      endDate.setMonth(startDate.getMonth() + 12); // 12-month subscription
+    } else {
+      throw new Error("Invalid plan type");
+    }
+
+    // Step 5: Add the user to the subscription's users array
+    subscription.users.push({
+      userId: user._id,
+      startDate,
+      endDate,
+      status: "active", // Set status to active
+    });
+
+    // Step 6: Save the updated subscription
+    await subscription.save();
+
+    // Step 7: Update the user's subscription details
+    user.isSubscribed = true; // Mark user as subscribed
+    user.subscription = subscription._id; // Assign subscription ID to user
+    user.subscriptionPlan = plan; // Store the plan type (6-month or 12-month)
+    await user.save();
+
+    // Step 8: Return success response
+    return res.status(200).json({
+      message: "User successfully subscribed",
+      user,
+      subscription,
+    });
+  } catch (error) {
+    console.error("Error subscribing user:", error);
+    return res
+      .status(500)
+      .json({ message: error.message || "Error subscribing user" }); // Ensure proper message in case of other errors
   }
 };
 

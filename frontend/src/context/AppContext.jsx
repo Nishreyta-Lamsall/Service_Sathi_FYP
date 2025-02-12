@@ -7,80 +7,111 @@ import { useEffect } from "react";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
+  const currencySymbol = "NPR.";
 
-    const currencySymbol = "NPR."
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+  const [Services, setServices] = useState([]);
 
-    const [Services, setServices] = useState([])
+  const [token, setToken] = useState(
+    localStorage.getItem("token") ? localStorage.getItem("token") : false
+  );
 
-    const [token, setToken] = useState(localStorage.getItem('token')? localStorage.getItem('token'): false)
-
-    const [userData, setUserData] = useState({
-      name: "",
-      email: "",
-      phone: "",
-      address: { line1: "", line2: "" },
-      gender: "",
-      dob: "",
-      image: "",
-    });
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: { line1: "", line2: "" },
+    gender: "",
+    dob: "",
+    image: "",
+  });
 
   const getServicesData = async () => {
-    try{
-      const {data} = await axios.get(backendUrl + '/api/service/list')
-      if(data.success){
-        setServices(data.Services)
-      }else{
-         toast.error(data.message)
-      }
-
-    } catch (error){
-      console.log(error)
-      toast.error(error.message)
-    }
-  }
-
-  const loadUserProfileData = async () => {
     try {
-      const {data} = await axios.get(backendUrl + '/api/user/get-profile', {headers:{token}})
-
-      if(data.success){
-        setUserData(data.userData)
-      } else{
-        toast.error(data.message)
+      const { data } = await axios.get(backendUrl + "/api/service/list");
+      if (data.success) {
+        setServices(data.Services);
+      } else {
+        toast.error(data.message);
       }
-      
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
-  }
+  };
 
-   const value = {
-     Services,
-     getServicesData,
-     currencySymbol,
-     token,
-     setToken,
-     backendUrl,
-     userData,
-     setUserData, 
-     loadUserProfileData
-   };
+  const loadUserProfileData = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/user/get-profile", {
+        headers: { token },
+      });
 
+      if (data.success) {
+        setUserData(data.userData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
 
-  useEffect(()=>{
-    getServicesData()
-  })
+  // Function to subscribe user to a plan
+  const subscribeUser = async (userId, subscriptionId, plan) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/subscribe/${userId}`,
+        {
+          subscriptionId,
+          plan,
+        },
+        {
+          headers: { token },
+        }
+      );
+      if (data.message) {
+        // Update user data with the new subscription info
+        setUserData({
+          ...userData,
+          isSubscribed: true,
+          subscription: data.subscription,
+          subscriptionPlan: plan,
+        });
+        toast.success(data.message); // Show success message
+        return data; // Return the data for further use if needed
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message); // Show error message from backend
+    }
+  };
+
+  const value = {
+    Services,
+    getServicesData,
+    currencySymbol,
+    token,
+    setToken,
+    backendUrl,
+    userData,
+    setUserData,
+    loadUserProfileData,
+    subscribeUser,
+  };
 
   useEffect(() => {
-      if(token){
-        loadUserProfileData()
-      } else{
-        setUserData(false)
-      }
-  }, [token])
+    getServicesData();
+  });
+
+  useEffect(() => {
+    if (token) {
+      loadUserProfileData();
+    } else {
+      setUserData(false);
+    }
+  }, [token]);
 
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
