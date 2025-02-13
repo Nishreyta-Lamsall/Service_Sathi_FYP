@@ -139,8 +139,8 @@ const HomePage = () => {
         </button>
       </div>
 
-      <div className="ml-16 mb-10">
-        <p className="font-bold text-2xl"> Customer Reviews </p>
+      <div className="ml-16 mb-4">
+        <p className="font-bold text-2xl"> Testimonials </p>
       </div>
       <div>
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-16">

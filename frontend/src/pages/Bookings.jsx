@@ -9,12 +9,13 @@ import RelatedServices from "../components/RelatedServices";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const MyBookings = () => {
+const Bookings = () => {
   const { serviceId } = useParams();
-  const { Services, currencySymbol, backendUrl, token, getServicesData } =
+  const { Services, currencySymbol, backendUrl, token, getServicesData, userData } =
     useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const [serviceProvider, setServiceProvider] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   const navigate = useNavigate();
 
@@ -28,26 +29,51 @@ const MyBookings = () => {
     setServiceInfo(serviceInfo);
   };
 
+  const fetchServiceProvider = async () => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/api/service/service-provider/${serviceId}`
+      );
 
-    const fetchServiceProvider = async () => {
-      try {
-        const { data } = await axios.get(
-          `${backendUrl}/api/service/service-provider/${serviceId}`
-        );
-        if (data) {
-          setServiceProvider(data.name); // Store the provider's name
-        }
-      } catch (error) {
-        console.error("Error fetching provider:", error);
-        setServiceProvider("Not Available");
+      console.log("Full API Response:", data); // Log entire response
+
+      if (data) {
+        setServiceProvider({ id: data._id, name: data.name });
       }
-    };
+    } catch (error) {
+      console.error("Error fetching provider:", error);
+      setServiceProvider({ id: "N/A", name: "Not Available" });
+    }
+  };
 
-    useEffect(() => {
-      fetchServiceProvider();
-    }, [serviceId]);
+  const fetchReviews = async () => {
+    try {
+      if (!serviceProvider?.id) {
+        console.log("No service provider ID, skipping reviews fetch");
+        return; // Ensure we have the ID
+      }
+
+      const { data } = await axios.get(
+        `${backendUrl}/api/user/getreviews/${serviceProvider.id}`
+      );
+
+      console.log("Reviews:", data);
+      setReviews(data); // Store the reviews in state
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchServiceProvider();
+  }, [serviceId]);
 
   const getAvailableSlots = async () => {
+    if (!serviceInfo) {
+      console.log("Service info is not loaded yet.");
+      return;
+    }
     setServiceSlots([]);
 
     //getting current date
@@ -144,6 +170,31 @@ const MyBookings = () => {
     }
   };
 
+const deleteReview = async (reviewId) => {
+  try {
+    const { data } = await axios.delete(
+      `${backendUrl}/api/user/delete-review/${reviewId}`,
+      {
+        headers: { token },
+        data: { userId: userData._id }, 
+      }
+    );
+
+    if (data.success) {
+      toast.success("Review deleted successfully");
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review._id !== reviewId)
+      );
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.error("Delete Review Error:", error);
+    toast.error("Error deleting review");
+  }
+};
+
+
   useEffect(() => {
     fetchserviceInfo();
   }, [Services, serviceId]);
@@ -155,6 +206,12 @@ const MyBookings = () => {
   useEffect(() => {
     console.log(serviceSlots);
   }, [serviceSlots]);
+
+  useEffect(() => {
+    if (serviceProvider?.id) {
+      fetchReviews();
+    }
+  }, [serviceProvider]);
 
   return (
     serviceInfo && (
@@ -174,9 +231,13 @@ const MyBookings = () => {
             </p>
             <div>
               <p className="text-sm mt-1">{serviceInfo.category}</p>
-              <p className="text-sm font-medium text-indigo-600 mt-2">
-                Provider: {serviceProvider || "Loading..."}
-              </p>
+              {serviceProvider ? (
+                <p className="text-sm font-medium text-indigo-600 mt-2">
+                  Provider: {serviceProvider.name}
+                </p>
+              ) : (
+                <p>Loading provider...</p> // Or a loading spinner
+              )}
             </div>
             <div>
               <p className="flex items-center gap-1 font-medium text-gray-900 mt-3">
@@ -240,6 +301,49 @@ const MyBookings = () => {
             Book a service
           </button>
         </div>
+        <div className="reviews-section mt-8 ml-[6.5rem]">
+          <h3 className="text-xl font-semibold text-gray-900">
+            Reviews for {serviceProvider?.name || "Loading..."}
+          </h3>
+          {/* Display Service Provider Name */}
+          {reviews.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+              {reviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
+                >
+                  <div className="flex justify-between items-center">
+                    <p className="font-medium text-gray-800">
+                      {review.user?.name || "Anonymous"}
+                    </p>
+                    <div className="flex items-center">
+                      <span className="text-yellow-500">
+                        {"★".repeat(review.rating)}
+                      </span>
+                      <span className="text-gray-500 ml-2">
+                        ({review.rating}/5)
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">{review.comment}</p>
+
+                  {/* Check if user is logged in and if they are the reviewer */}
+                  {userData && userData._id === review.user?._id && (
+                    <button
+                      onClick={() => deleteReview(review._id)}
+                      className="text-red-500 mt-2"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 mt-4">No reviews yet.</p>
+          )}
+        </div>
 
         {/* Related Services */}
         <RelatedServices
@@ -251,4 +355,4 @@ const MyBookings = () => {
   );
 };
 
-export default MyBookings;
+export default Bookings;
