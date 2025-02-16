@@ -11,8 +11,14 @@ import axios from "axios";
 
 const Bookings = () => {
   const { serviceId } = useParams();
-  const { Services, currencySymbol, backendUrl, token, getServicesData, userData } =
-    useContext(AppContext);
+  const {
+    Services,
+    currencySymbol,
+    backendUrl,
+    token,
+    getServicesData,
+    userData,
+  } = useContext(AppContext);
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   const [serviceProvider, setServiceProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -63,7 +69,6 @@ const Bookings = () => {
       console.error("Error fetching reviews:", error);
     }
   };
-  
 
   useEffect(() => {
     fetchServiceProvider();
@@ -76,61 +81,53 @@ const Bookings = () => {
     }
     setServiceSlots([]);
 
-    //getting current date
     let today = new Date();
 
+    const startHour = 9;
+    const startMinute = 0;
+    const interval = 3;
+
     for (let i = 0; i < 7; i++) {
-      // getting date with index
       let currentDate = new Date(today);
       currentDate.setDate(today.getDate() + i);
 
-      //setting end time of the date with index
-      let endTime = new Date();
-      endTime.setDate(today.getDate() + i);
-      endTime.setHours(17, 0, 0, 0);
-
-      //setting hours
-      if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(
-          currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
-        );
-        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
-      } else {
-        currentDate.setHours(10);
-        currentDate.setMinutes(10);
-      }
+      let endTime = new Date(currentDate);
+      endTime.setHours(16, 0, 0, 0);
 
       let timeSlots = [];
 
-      while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], {
+      if (i === 0 && today.getHours() >= 16) {
+        continue;
+      }
+
+      for (let hour = startHour; hour <= 16; hour += interval) {
+        let slotDate = new Date(currentDate);
+        slotDate.setHours(hour, startMinute, 0, 0);
+
+        let formattedTime = slotDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
 
-        let day = currentDate.getDate();
-        let month = currentDate.getMonth() + 1;
-        let year = currentDate.getFullYear();
+        let day = slotDate.getDate();
+        let month = slotDate.getMonth() + 1;
+        let year = slotDate.getFullYear();
 
-        const slotDate = day + "/" + month + "/" + year;
+        const slotDateStr = `${day}/${month}/${year}`;
         const slotTime = formattedTime;
 
         const isSlotAvailable =
-          serviceInfo.slots_booked[slotDate] &&
-          serviceInfo.slots_booked[slotDate].includes(slotTime)
+          serviceInfo.slots_booked[slotDateStr] &&
+          serviceInfo.slots_booked[slotDateStr].includes(slotTime)
             ? false
             : true;
 
         if (isSlotAvailable) {
-          //add slot to array
           timeSlots.push({
-            datetime: new Date(currentDate),
+            datetime: slotDate,
             time: formattedTime,
           });
         }
-
-        //increase current time by 2 hours
-        currentDate.setHours(currentDate.getHours() + 2);
       }
 
       setServiceSlots((prev) => [...prev, timeSlots]);
@@ -170,30 +167,29 @@ const Bookings = () => {
     }
   };
 
-const deleteReview = async (reviewId) => {
-  try {
-    const { data } = await axios.delete(
-      `${backendUrl}/api/user/delete-review/${reviewId}`,
-      {
-        headers: { token },
-        data: { userId: userData._id }, 
-      }
-    );
-
-    if (data.success) {
-      toast.success("Review deleted successfully");
-      setReviews((prevReviews) =>
-        prevReviews.filter((review) => review._id !== reviewId)
+  const deleteReview = async (reviewId) => {
+    try {
+      const { data } = await axios.delete(
+        `${backendUrl}/api/user/delete-review/${reviewId}`,
+        {
+          headers: { token },
+          data: { userId: userData._id },
+        }
       );
-    } else {
-      toast.error(data.message);
-    }
-  } catch (error) {
-    console.error("Delete Review Error:", error);
-    toast.error("Error deleting review");
-  }
-};
 
+      if (data.success) {
+        toast.success("Review deleted successfully");
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review._id !== reviewId)
+        );
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Delete Review Error:", error);
+      toast.error("Error deleting review");
+    }
+  };
 
   useEffect(() => {
     fetchserviceInfo();

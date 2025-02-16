@@ -202,7 +202,7 @@ const EditProvider = () => {
             }`}
             disabled={loading}
           >
-            {loading ? "Updating..." : "Update Service"}
+            {loading ? "Updating..." : "Update Service Provider"}
           </button>
         </div>
       </form>

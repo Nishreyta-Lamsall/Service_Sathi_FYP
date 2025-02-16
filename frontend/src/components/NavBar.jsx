@@ -15,9 +15,14 @@ const NavBar = () => {
   const {token, setToken, userData} = useContext(AppContext)
 
   const logout = () => {
-    setToken(false)
-    localStorage.removeItem('token')
-  }
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+
+    if (confirmLogout) {
+      setToken(false);
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
 
   // Handle language selection
   const handleLanguageChange = (lang) => {

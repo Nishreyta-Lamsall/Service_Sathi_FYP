@@ -2,69 +2,118 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import {v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 import serviceModel from "../models/serviceModel.js";
 import bookingModel from "../models/bookingModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
-// API to register user
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
 
-    // Check if all required fields are present
-    if (!name || !password || !confirmPassword || !email) {
+    if (!name || !email || !password || !confirmPassword) {
       return res.json({ success: false, message: "Missing Details" });
     }
 
-    // Validate email format
     if (!validator.isEmail(email)) {
       return res.json({ success: false, message: "Enter a valid email" });
     }
 
-    // Validate password
     if (password.length < 8) {
       return res.json({ success: false, message: "Enter a strong password" });
     }
 
-    // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       return res.json({ success: false, message: "Passwords do not match" });
     }
 
-    // Hash the user password
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.json({ success: false, message: "User already exists!" });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user data object
-    const userData = {
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    const newUser = new userModel({
       name,
       email,
       password: hashedPassword,
+      verificationToken,
+    });
+
+    await newUser.save();
+
+    res.json({
+      success: true,
+      message: "User registered. Verify the link sent to your email to login.",
+    });
+
+    const verificationLink = `http://localhost:3000/api/user/verify/${verificationToken}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Verify Your Email",
+      html: `<p>Click the link below to verify your email:</p><a href="${verificationLink}">Verify Email by clicking on this link.</a>`,
     };
 
-    // Save new user to the database
-    const newUser = new userModel(userData);
-    const user = await newUser.save();
-
-    // Generate authentication token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-
-    res.json({ success: true, token });
+    transporter.sendMail(mailOptions).catch((err) => {
+      console.error("Email sending failed:", err);
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-//api for user login
+const verifyUser = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await userModel.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.json({ success: false, message: "Invalid or expired token" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    res.json({ success: true, message: "Email verified successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.json({ success: false, message: "User doesnt exist" });
+      return res.json({ success: false, message: "User doesn't exist" });
+    }
+
+    if (!user.isVerified) {
+      return res.json({
+        success: false,
+        message: "Please verify your email before logging in.",
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -76,8 +125,172 @@ const loginUser = async (req, res) => {
       res.json({ success: false, message: "Invalid Credentials!" });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.json({ success: false, message: error.message });
+  }
+};
+
+const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is already verified" });
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = verificationToken;
+    await user.save();
+
+    const verificationLink = `http://localhost:3000/api/user/verify/${verificationToken}`;
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Resend Verification Email",
+      html: `<p>Click the link below to verify your email:</p><a href="${verificationLink}">Verify Email by clicking on this link.</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email has been sent.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpires = Date.now() + 3600000; // 1 hour expiration
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpires;
+    await user.save();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const resetLink = `http://localhost:3000/api/user/reset-password/${resetToken}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link expires in 1 hour.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Send back the reset token in the response
+    return res.json({
+      success: true,
+      message: "Password reset email sent",
+      resetToken,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Backend: Verify the reset token
+const verifyResetToken = async (req, res) => {
+  const { resetToken } = req.params;
+
+  try {
+    const user = await userModel.findOne({
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+
+    // If the token is valid, return a success response
+    return res.json({
+      success: true,
+      message: "Token is valid, you can now reset your password",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { resetToken } = req.params;
+  const { newPassword } = req.body; 
+
+  try {
+    const user = await userModel.findOne({
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password and clear the reset token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined; // Clear the reset token
+    user.resetPasswordExpires = undefined; // Clear the expiration time
+
+    await user.save(); // Save the updated user
+
+    // Respond with a success message after resetting the password
+    res.json({
+      success: true,
+      message: "Password reset successful",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -129,8 +342,8 @@ const updateProfile = async (req, res) => {
 
     // Update the userData in all related bookings
     await bookingModel.updateMany(
-      { userId }, // Match bookings with the same userId
-      { $set: { userData: updatedUser } } // Update userData with the updated user details
+      { userId }, 
+      { $set: { userData: updatedUser } } 
     );
 
     res.json({ success: true, message: "Profile updated successfully" });
@@ -141,31 +354,34 @@ const updateProfile = async (req, res) => {
 };
 
 //Api for booking
-const bookService = async(req,res)=>{
-   try {
-    const {userId, serviceId, slotDate, slotTime} = req.body
+const bookService = async (req, res) => {
+  try {
+    const { userId, serviceId, slotDate, slotTime } = req.body;
 
-    const serviceData = await serviceModel.findById(serviceId)
+    const serviceData = await serviceModel.findById(serviceId);
 
-    if(!serviceData.available){
-      return res.json({success:false, message:"Service not available"})
+    if (!serviceData.available) {
+      return res.json({ success: false, message: "Service not available" });
     }
-    let slots_booked = serviceData.slots_booked
+    let slots_booked = serviceData.slots_booked;
 
     //checking for slot availability
-    if(slots_booked[slotDate]){
-      if(slots_booked[slotDate].includes(slotTime)){
-         return res.json({ success: false, message: "Service Provider not available" });
-      }else{
-        slots_booked[slotDate].push(slotTime)
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({
+          success: false,
+          message: "Service Provider not available",
+        });
+      } else {
+        slots_booked[slotDate].push(slotTime);
       }
     } else {
-      slots_booked[slotDate] = []
-      slots_booked[slotDate].push(slotTime)
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
     }
 
-    const userData = await userModel.findById(userId).select('-password')
-    delete serviceData.slots_booked
+    const userData = await userModel.findById(userId).select("-password");
+    delete serviceData.slots_booked;
 
     const bookingData = {
       userId,
@@ -175,36 +391,34 @@ const bookService = async(req,res)=>{
       amount: serviceData.price,
       slotTime,
       slotDate,
-      date: Date.now()
-    }
+      date: Date.now(),
+    };
 
-    const newBooking = new bookingModel(bookingData)
-    await newBooking.save()
+    const newBooking = new bookingModel(bookingData);
+    await newBooking.save();
 
     //save new Slots Data in serviceData
-    await serviceModel.findByIdAndUpdate(serviceId, {slots_booked})
+    await serviceModel.findByIdAndUpdate(serviceId, { slots_booked });
 
-    res.json({success:true,message:"Service Booked"})
-
-   } catch (error) {
-      console.log(error);
-      res.json({ success: false, message: error.message });
-   }
-}
-
-//Api to get user appointments for my-bookings page
-const listService = async(req,res)=>{
-  try {
-    const {userId} = req.body
-    const bookings = await bookingModel.find({userId})
-
-    res.json({success:true, bookings})
-    
+    res.json({ success: true, message: "Service Booked" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
-}
+};
+
+//Api to get user appointments for my-bookings page
+const listService = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const bookings = await bookingModel.find({ userId });
+
+    res.json({ success: true, bookings });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
 const cancelBooking = async (req, res) => {
   try {
@@ -249,58 +463,49 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-// Function to subscribe user to a plan
 export const subscribeUser = async (req, res) => {
   const { subscriptionId, plan } = req.body;
   const userId = req.params.userId;
 
   try {
-    // Step 1: Find the user
     const user = await userModel.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    // Step 2: Check if the user is already subscribed
     if (user.isSubscribed) {
-      return res.status(400).json({ message: "User is already subscribed" }); // Send a 400 status with a message
+      return res.status(400).json({ message: "User is already subscribed" }); 
     }
 
-    // Step 3: Find the subscription plan
     const subscription = await subscriptionModel.findById(subscriptionId);
     if (!subscription) {
       throw new Error("Subscription plan not found");
     }
 
-    // Step 4: Calculate the subscription start and end date
     const startDate = new Date();
     const endDate = new Date();
     if (plan === "6-month") {
-      endDate.setMonth(startDate.getMonth() + 6); // 6-month subscription
+      endDate.setMonth(startDate.getMonth() + 6); 
     } else if (plan === "12-month") {
-      endDate.setMonth(startDate.getMonth() + 12); // 12-month subscription
+      endDate.setMonth(startDate.getMonth() + 12); 
     } else {
       throw new Error("Invalid plan type");
     }
 
-    // Step 5: Add the user to the subscription's users array
     subscription.users.push({
       userId: user._id,
       startDate,
       endDate,
-      status: "active", // Set status to active
+      status: "active",
     });
 
-    // Step 6: Save the updated subscription
     await subscription.save();
 
-    // Step 7: Update the user's subscription details
-    user.isSubscribed = true; // Mark user as subscribed
+    user.isSubscribed = true; 
     user.subscription = subscription._id; // Assign subscription ID to user
-    user.subscriptionPlan = plan; // Store the plan type (6-month or 12-month)
+    user.subscriptionPlan = plan; 
     await user.save();
 
-    // Step 8: Return success response
     return res.status(200).json({
       message: "User successfully subscribed",
       user,
@@ -310,8 +515,21 @@ export const subscribeUser = async (req, res) => {
     console.error("Error subscribing user:", error);
     return res
       .status(500)
-      .json({ message: error.message || "Error subscribing user" }); // Ensure proper message in case of other errors
+      .json({ message: error.message || "Error subscribing user" }); 
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile, bookService, listService, cancelBooking};
+export {
+  registerUser,
+  loginUser,
+  getProfile,
+  updateProfile,
+  bookService,
+  listService,
+  cancelBooking,
+  verifyUser,
+  resendVerification,
+  forgotPassword,
+  verifyResetToken,
+  resetPassword
+};

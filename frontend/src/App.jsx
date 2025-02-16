@@ -13,6 +13,8 @@ import Services from './pages/Services';
 import { ToastContainer, toast } from "react-toastify";
 import OrderHistory from './pages/OrderHistory';
 import Subscriptions from './pages/Subscriptions';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const App = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
         <Route path="/services" element={<Services />} />
         <Route path="/services/:category" element={<Services />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/my-profile" element={<MyProfile />} />

@@ -8,13 +8,14 @@ import { useEffect } from "react";
 
 const AuthForm = () => {
   const { backendUrl, token, setToken } = useContext(AppContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -28,6 +29,17 @@ const AuthForm = () => {
           confirmPassword,
         });
         if (data.success) {
+          // Show success message
+          toast.success(
+            "User registered. Check your email for verification link"
+          );
+
+          // Clear form fields
+          setName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+
           localStorage.setItem("token", data.token);
           setToken(data.token);
         } else {
@@ -50,6 +62,28 @@ const AuthForm = () => {
     }
   };
 
+  const resendVerificationEmail = async () => {
+    try {
+      setLoading(true);
+      toast.info("Sending verification email...");
+
+      const response = await axios.post(
+        backendUrl + "/api/user/resend-verification",
+        { email }
+      );
+
+      toast.success("Verification email has been sent.");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to resend email.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forgot-password");
+  };
+
   const switchToSignUp = () => {
     setState("Sign Up");
   };
@@ -58,12 +92,11 @@ const AuthForm = () => {
     setState("Login");
   };
 
-  useEffect(()=>{
-    if(token){
-       navigate('/')
+  useEffect(() => {
+    if (token) {
+      navigate("/");
     }
-
-  }, [token])
+  }, [token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -157,12 +190,14 @@ const AuthForm = () => {
               </div>
             )}
             <div className="flex items-center justify-between">
-              <a
-                href="#"
-                className="text-sm text-indigo-600 hover:text-indigo-500"
-              >
-                Forgot your password?
-              </a>
+              {state === "Login" && (
+                <button
+                  onClick={handleForgotPassword}
+                  className="text-sm text-indigo-600 hover:text-indigo-500"
+                >
+                  Forgot your password?
+                </button>
+              )}
             </div>
             <div>
               <button
@@ -173,13 +208,29 @@ const AuthForm = () => {
               </button>
             </div>
           </form>
+
+          {state === "Login" && (
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-600">
+                Didn't receive a verification email?{" "}
+                <button
+                  onClick={resendVerificationEmail}
+                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
+                  disabled={loading}
+                >
+                  Resend Email
+                </button>
+              </p>
+            </div>
+          )}
+
           <div className="text-center mt-4">
             {state === "Sign Up" ? (
               <p className="text-sm text-gray-600">
                 Already have an account?{" "}
                 <button
                   onClick={switchToLogin}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
                 >
                   Login
                 </button>
@@ -189,7 +240,7 @@ const AuthForm = () => {
                 Don't have an account?{" "}
                 <button
                   onClick={switchToSignUp}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
                 >
                   Sign Up
                 </button>
