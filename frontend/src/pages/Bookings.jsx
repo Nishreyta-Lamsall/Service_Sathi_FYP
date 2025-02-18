@@ -104,6 +104,11 @@ const Bookings = () => {
         let slotDate = new Date(currentDate);
         slotDate.setHours(hour, startMinute, 0, 0);
 
+        // Skip past slots for today
+        if (i === 0 && slotDate < today) {
+          continue;
+        }
+
         let formattedTime = slotDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
