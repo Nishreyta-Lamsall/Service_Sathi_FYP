@@ -8,6 +8,8 @@ import bookingModel from "../models/bookingModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import twilio from 'twilio'
+import serviceProviderModel from "../models/serviceProviderModel.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -353,7 +355,9 @@ const updateProfile = async (req, res) => {
   }
 };
 
-//Api for booking
+const { TWILIO_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } = process.env;
+const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
+
 const bookService = async (req, res) => {
   try {
     const { userId, serviceId, slotDate, slotTime } = req.body;
@@ -363,9 +367,10 @@ const bookService = async (req, res) => {
     if (!serviceData.available) {
       return res.json({ success: false, message: "Service not available" });
     }
+
     let slots_booked = serviceData.slots_booked;
 
-    //checking for slot availability
+    // Checking for slot availability
     if (slots_booked[slotDate]) {
       if (slots_booked[slotDate].includes(slotTime)) {
         return res.json({
@@ -397,10 +402,38 @@ const bookService = async (req, res) => {
     const newBooking = new bookingModel(bookingData);
     await newBooking.save();
 
-    //save new Slots Data in serviceData
+    // Save new Slots Data in serviceData
     await serviceModel.findByIdAndUpdate(serviceId, { slots_booked });
 
-    res.json({ success: true, message: "Service Booked" });
+    // Fetch service provider details
+    const serviceProvider = await serviceProviderModel.findOne({
+      "services.serviceId": serviceId,
+    });
+
+    if (!serviceProvider) {
+      return res.json({
+        success: false,
+        message: "Service Provider not found",
+      });
+    }
+
+    // Send a message to the service provider
+    const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. Please be available.`;
+
+    const phoneNumber = serviceProvider.phone_number.startsWith("+977")
+      ? serviceProvider.phone_number 
+      : `+977${serviceProvider.phone_number}`;  
+
+    await client.messages.create({
+      body: message,
+      from: TWILIO_PHONE_NUMBER, 
+      to: phoneNumber, // Service provider's phone number
+    });
+
+    res.json({
+      success: true,
+      message: "Service Booked and service provider notified",
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -425,23 +458,20 @@ const cancelBooking = async (req, res) => {
     const { userId, bookingId } = req.body;
     const bookingData = await bookingModel.findById(bookingId);
 
-    // Verify user
     if (!bookingData || bookingData.userId.toString() !== userId) {
       return res.json({ success: false, message: "Cannot delete booking!" });
     }
 
     await bookingModel.findByIdAndUpdate(bookingId, {
       cancelled: true,
-      userCancelled: true, // ✅ Mark as cancelled by user
+      userCancelled: true,
     });
 
-    // Fetch service details
     const servicesData = await serviceModel.findById(bookingData.serviceId);
     if (!servicesData) {
       return res.json({ success: false, message: "Service not found!" });
     }
 
-    // Remove booked slot
     const { slotDate, slotTime } = bookingData;
     let slots_booked = servicesData.slots_booked;
 
@@ -456,7 +486,33 @@ const cancelBooking = async (req, res) => {
       slots_booked,
     });
 
-    res.json({ success: true, message: "Booking Cancelled by User" });
+    const serviceProvider = await serviceProviderModel.findOne({
+      "services.serviceId": bookingData.serviceId,
+    });
+
+    if (!serviceProvider) {
+      return res.json({
+        success: false,
+        message: "Service provider not found!",
+      });
+    }
+
+    const message = `Hello ${serviceProvider.name}, your booking for the service (${servicesData.name}) has been cancelled for the time slot ${slotTime} on ${slotDate}.`;
+
+    const phoneNumber = serviceProvider.phone_number.startsWith("+977")
+      ? serviceProvider.phone_number
+      : `+977${serviceProvider.phone_number}`;
+
+    await client.messages.create({
+      body: message,
+      from: TWILIO_PHONE_NUMBER,
+      to: phoneNumber,
+    });
+
+    res.json({
+      success: true,
+      message: "Booking Cancelled by User and Service Provider Notified",
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
