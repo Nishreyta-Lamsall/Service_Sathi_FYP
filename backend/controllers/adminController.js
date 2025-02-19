@@ -6,6 +6,7 @@ import userModel from "../models/userModel.js";
 import serviceProviderModel from "../models/serviceProviderModel.js";
 import mongoose from "mongoose";
 import subscriptionModel from "../models/subscriptionModel.js";
+import twilio from "twilio";
 
 //API for adding services
 const addService = async (req, res) => {
@@ -446,6 +447,9 @@ const bookingsAdmin = async (req, res) => {
   }
 };
 
+const { TWILIO_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } = process.env;
+const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
+
 const bookingCancel = async (req, res) => {
   try {
     const { bookingId } = req.body;
@@ -457,16 +461,14 @@ const bookingCancel = async (req, res) => {
 
     await bookingModel.findByIdAndUpdate(bookingId, {
       cancelled: true,
-      cancelledByAdmin: true, // ✅ Mark as cancelled by admin
+      cancelledByAdmin: true,
     });
 
-    // Fetch service details
     const servicesData = await serviceModel.findById(bookingData.serviceId);
     if (!servicesData) {
       return res.json({ success: false, message: "Service not found!" });
     }
 
-    // Remove booked slot
     const { slotDate, slotTime } = bookingData;
     let slots_booked = servicesData.slots_booked;
 
@@ -481,7 +483,55 @@ const bookingCancel = async (req, res) => {
       slots_booked,
     });
 
-    res.json({ success: true, message: "Booking Cancelled by Admin" });
+    const serviceProvider = await serviceProviderModel.findOne({
+      "services.serviceId": bookingData.serviceId,
+    });
+
+    if (!serviceProvider) {
+      return res.json({
+        success: false,
+        message: "Service provider not found!",
+      });
+    }
+
+    const messageForProvider = `Hello ${serviceProvider.name}, your booking for the service (${servicesData.name}) has been cancelled by the admin for the time slot ${slotTime} on ${slotDate}.`;
+
+    const phoneNumberForProvider = serviceProvider.phone_number.startsWith(
+      "+977"
+    )
+      ? serviceProvider.phone_number
+      : `+977${serviceProvider.phone_number}`;
+
+    await client.messages.create({
+      body: messageForProvider,
+      from: TWILIO_PHONE_NUMBER,
+      to: phoneNumberForProvider,
+    });
+
+    const userData = await userModel.findById(bookingData.userId);
+    if (!userData) {
+      return res.json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    const messageForUser = `Hello ${userData.name}, your booking for the service (${servicesData.name}) has been cancelled by the admin for the time slot ${slotTime} on ${slotDate}.`;
+
+    const phoneNumberForUser = userData.phone.startsWith("+977")
+      ? userData.phone
+      : `+977${userData.phone}`;
+
+    await client.messages.create({
+      body: messageForUser,
+      from: TWILIO_PHONE_NUMBER,
+      to: phoneNumberForUser,
+    });
+
+    res.json({
+      success: true,
+      message: "Booking Cancelled by Admin, Service Provider and User Notified",
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -492,10 +542,8 @@ const updateStatus = async (req, res) => {
   try {
     const { bookingId, orderStatus } = req.body;
 
-    // Allowed statuses
     const allowedStatuses = ["Booked", "On the Way", "Completed"];
 
-    // Validate input
     if (!bookingId || !orderStatus) {
       return res
         .status(400)
@@ -508,7 +556,6 @@ const updateStatus = async (req, res) => {
         .json({ success: false, message: "Invalid order status" });
     }
 
-    // Find the booking
     const booking = await bookingModel.findById(bookingId);
     if (!booking) {
       return res
@@ -516,13 +563,33 @@ const updateStatus = async (req, res) => {
         .json({ success: false, message: "Booking not found" });
     }
 
-    // Update orderStatus
     booking.orderStatus = orderStatus;
     await booking.save();
 
+    // Fetch the user data to send SMS
+    const userData = await userModel.findById(booking.userId);
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const messageForUser = `Hello ${userData.name}, your service is ${orderStatus}.`;
+
+    const phoneNumberForUser = userData.phone.startsWith("+977")
+      ? userData.phone
+      : `+977${userData.phone}`;
+
+    // Send SMS using Twilio
+    await client.messages.create({
+      body: messageForUser,
+      from: TWILIO_PHONE_NUMBER,
+      to: phoneNumberForUser,
+    });
+
     return res.status(200).json({
       success: true,
-      message: "Order status updated successfully",
+      message: "Order status updated successfully and user notified",
       booking,
     });
   } catch (error) {
