@@ -22,7 +22,6 @@ const bookingSchema = new mongoose.Schema(
     cancelled: { type: Boolean, default: false },
     payment: { type: Boolean, default: false },
     isCompleted: { type: Boolean, default: false },
-    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" }, // Link to payment model
   },
   { timestamps: true }
 );

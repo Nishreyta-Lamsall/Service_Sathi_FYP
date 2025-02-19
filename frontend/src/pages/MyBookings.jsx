@@ -137,24 +137,6 @@ const MyBookings = () => {
     }
   };
 
-  const handlePayment = async (bookingId, totalPrice) => {
-    try {
-      const { data } = await axios.post(
-        `${backendUrl}/api/payment/initialize-esewa`,
-        { bookingId, totalPrice },
-        { headers: { token } }
-      );
-      if (data.success) {
-        console.log("Payment initialized successfully");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error("Error initializing payment.");
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     if (token) {
       getUserBookings();
@@ -274,7 +256,6 @@ const MyBookings = () => {
 
                     <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
                       <button
-                        onClick={() => handlePayment(item._id, item.amount)}
                         className="text-sm font-medium text-blue-600 border border-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300"
                       >
                         Pay Online
