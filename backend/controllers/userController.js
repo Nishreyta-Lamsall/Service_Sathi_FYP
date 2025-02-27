@@ -386,6 +386,29 @@ const bookService = async (req, res) => {
     }
 
     const userData = await userModel.findById(userId).select("-password");
+
+    // Check if the user has provided a phone number and address
+    if (!userData.phone || userData.phone === "0000000000") {
+      return res.json({
+        success: false,
+        message: "Please provide a valid phone number in your profile before booking.",
+      });
+    }
+
+    // Check if address line1 or line2 are empty
+    if (
+      !userData.address ||
+      !userData.address.line1.trim() ||
+      !userData.address.line2.trim()
+    ) {
+      return res.json({
+        success: false,
+        message: "Please provide complete address in your profile before booking.",
+      });
+    }
+
+    const userPhone = userData.phone; // User's phone number
+
     delete serviceData.slots_booked;
 
     const bookingData = {
@@ -418,15 +441,15 @@ const bookService = async (req, res) => {
     }
 
     // Send a message to the service provider
-    const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. Please be available.`;
+    const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. The user's phone number is ${userPhone}. Please be available.`;
 
     const phoneNumber = serviceProvider.phone_number.startsWith("+977")
-      ? serviceProvider.phone_number 
-      : `+977${serviceProvider.phone_number}`;  
+      ? serviceProvider.phone_number
+      : `+977${serviceProvider.phone_number}`;
 
     await client.messages.create({
       body: message,
-      from: TWILIO_PHONE_NUMBER, 
+      from: TWILIO_PHONE_NUMBER,
       to: phoneNumber, // Service provider's phone number
     });
 
@@ -558,7 +581,7 @@ export const subscribeUser = async (req, res) => {
     await subscription.save();
 
     user.isSubscribed = true; 
-    user.subscription = subscription._id; // Assign subscription ID to user
+    user.subscription = subscription._id;
     user.subscriptionPlan = plan; 
     await user.save();
 

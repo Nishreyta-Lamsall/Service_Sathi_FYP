@@ -16,6 +16,8 @@ import {
   getServiceProviderById,
   updateStatus,
   getSubscriptions,
+  getcontact,
+  postContact,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -70,5 +72,7 @@ adminRouter.put("/update-status", authAdmin,updateStatus);
 adminRouter.post("/create-subscription",authAdmin, createSubscription);
 adminRouter.get("/get-subscription/:userId",authAdmin, getUserSubscription); 
 adminRouter.get("/get-subscriptions",getSubscriptions); 
+adminRouter.get("/contact", getcontact);
+adminRouter.post("/contact", postContact);
 
 export default adminRouter;

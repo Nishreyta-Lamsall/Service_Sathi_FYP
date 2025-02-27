@@ -16,6 +16,7 @@ import dashboard_icon from "./dashboard_icon.png";
 import booking_icon from "./booking_icon.png";
 import user_icon from "./user_icon.png";
 import provider_icon from "./provider_icon.png";
+import contact_icon from "./contact_icon.png"
 
 export const assets = {
   add_icon,
@@ -35,5 +36,6 @@ export const assets = {
   dashboard_icon,
   booking_icon,
   user_icon,
-  provider_icon
+  provider_icon,
+  contact_icon
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import home from "../assets/home.png";
+import home2 from "../assets/home2.png";
 import { testimonial } from "../assets/js/testimonials";
 import Testimonial from "../components/Testimonial";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,35 +14,33 @@ const HomePage = () => {
   return (
     <div className="main">
       {/* Upper Content */}
-      <div className="flex items-center justify-center mt-2 h-[40vh] w-[97vw]">
-        <div className="border font-primary border-gray-500 h-full w-full flex ml-8">
-          {/* First child div */}
-          <div className="w-[68%] bg-[#0A1F44] text-white">
-            <p className="text-3xl font-extrabold ml-16 mt-10">
+      <div className="flex items-center justify-center mt-2 h-[80vh] w-[97vw]">
+        <div className="border font-primary border-gray-500 h-full w-full flex ml-8 relative overflow-hidden">
+          {/* Text Section */}
+          <div className="w-[65%] bg-[#0A1F44] text-white flex flex-col justify-center relative clip-path-slant p-16">
+            <p className="text-4xl font-extrabold">
               “Your Trusted Partner for Every Home Need”
             </p>
-            <p className="text-base font-serif ml-16 mt-6">
+            <p className="text-lg font-serif mt-6 leading-relaxed">
               Transform your home into a haven with Service Sathi — your trusted
-              partner for reliable, top-notch <br /> household services. From
+              partner for reliable, top-notch household services. From
               meticulous cleaning to expert repairs, we deliver convenience,
-              quality, and <br />
-              peace of mind tailored to your unique needs. Experience the ease
-              of living with professionals who care <br /> as much about your
-              home as you do.
+              quality, and peace of mind tailored to your unique needs.
+              Experience the ease of living with professionals who care as much
+              about your home as you do.
             </p>
             <button
               onClick={() => navigate("/about")}
-              className="ml-16 mt-5 bg-[#2D64C5] text-white px-3 py-1 rounded-full hover:scale-105 transition-all duration-300"
+              className="mt-6 bg-[#2D64C5] text-white px-5 py-2 rounded-full hover:scale-105 transition-all duration-300 flex items-center"
             >
-              Discover How We Do It
-              <i className="fa-solid fa-arrow-right ml-2"></i>
+              Discover More <i className="fa-solid fa-arrow-right ml-2"></i>
             </button>
           </div>
 
-          {/* Second child div */}
-          <div className="w-[35%] border overflow-hidden">
+          {/* Image Section */}
+          <div className="w-[35%] overflow-hidden relative bg-[#0A1F44]">
             <img
-              src={home}
+              src={home2}
               alt="Picture"
               className="object-cover w-full h-full"
             />
@@ -54,7 +52,7 @@ const HomePage = () => {
         <div>
           <p className="ml-16 font-semibold text-2xl">Services Offered</p>
         </div>
-        <div className="ml-16 mt-10 flex flex-wrap gap-x-32 gap-y-12">
+        <div className="ml-16 mt-10 flex flex-wrap gap-x-16 gap-y-12">
           {CategoryData.map((item, index) => (
             <Link
               onClick={() => scrollTo(0, 0)}
@@ -75,7 +73,7 @@ const HomePage = () => {
           <p className="ml-8 font-semibold text-2xl mb-8">Latest Picks</p>
         </div>
         <div className="w-full ml-[4rem] grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 pt-5 gap-y-8 px-3 sm:px-0 ">
-          {Services.slice(0, 10).map((item, index) => (
+          {Services.slice(0, 4).map((item, index) => (
             <div
               onClick={() => {
                 navigate(`/bookings/${item._id}`);

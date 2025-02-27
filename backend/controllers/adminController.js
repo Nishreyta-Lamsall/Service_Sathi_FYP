@@ -7,6 +7,7 @@ import serviceProviderModel from "../models/serviceProviderModel.js";
 import mongoose from "mongoose";
 import subscriptionModel from "../models/subscriptionModel.js";
 import twilio from "twilio";
+import Contact from "../models/contactModel.js";
 
 //API for adding services
 const addService = async (req, res) => {
@@ -665,6 +666,41 @@ const getSubscriptions = async (req, res) => {
   }
 };
 
+const getcontact = async (req, res) => {
+  try {
+    const messages = await Contact.find().sort({ createdAt: -1 }); // Fetch messages in descending order
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching contact messages" });
+  }
+};
+
+const postContact = async (req, res) => {
+  const {firstName, email, phone, message } = req.body;
+
+  if (!firstName || !email || !phone || !message) {
+    return res
+      .status(400)
+      .json({ message: "Email, Phone, and Message are required" });
+  }
+
+  try {
+    const newMessage = new Contact({
+      firstName,
+      lastName: req.body.lastName || "", 
+      email,
+      phone,
+      message,
+    });
+    await newMessage.save();
+
+    res.status(201).json({ message: "Message sent successfully!" });
+  } catch (error) {
+    console.error("Error saving contact message:", error);
+    res.status(500).json({ message: "Error occurred. Please try again." });
+  }
+};
+
 
 export {
   addService,
@@ -682,5 +718,7 @@ export {
   getServiceById,
   getServiceProviderById,
   updateStatus,
-  getSubscriptions
+  getSubscriptions,
+  getcontact,
+  postContact
 };
