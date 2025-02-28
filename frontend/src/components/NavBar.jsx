@@ -5,6 +5,7 @@ import profilePic from "../assets/profile_picc.png";
 import dropdownIcon from "../assets/dropdown_icon.png";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
   const [language, setLanguage] = useState("English"); // Default language is English
@@ -41,17 +42,14 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-10 bg-white shadow-md">
+    <nav className="sticky top-0 z-20 bg-white shadow-md">
       <div className="flex justify-between items-center h-20 px-6 md:px-11">
         {/* Left Side */}
         <div className="flex items-center gap-7">
           <Link to="/">
-            <h1 className="text-3xl font-extrabold text-[#2D64C5]">
-              ServiceSathi
-            </h1>
+            <h1 className="text-3xl font-bold text-black">ServiceSathi</h1>
           </Link>
         </div>
-
         {/* Hamburger Menu for Small Screens */}
         <div className="md:hidden">
           <button onClick={toggleMenu}>
@@ -59,21 +57,54 @@ const NavBar = () => {
           </button>
         </div>
 
-        {/* Desktop Menu */}
-        <ul
-          className={`md:flex gap-10 hidden transition-all duration-300 ease-in-out`}
-        >
-          <li className="cursor-pointer">
-            <Link to="/">Home</Link>
+        <ul className="md:flex gap-10 hidden transition-all duration-300 ease-in-out font-normal">
+          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "underline text-[#333333]"
+                  : "hover:underline transition-all duration-300 ease-in-out"
+              }
+            >
+              Home
+            </NavLink>
           </li>
-          <li className="cursor-pointer">
-            <Link to="/about">About Us</Link>
+          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "underline text-[#333333]"
+                  : "hover:underline transition-all duration-300 ease-in-out"
+              }
+            >
+              About Us
+            </NavLink>
           </li>
-          <li className="cursor-pointer">
-            <Link to="/services">All Services</Link>
+          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
+            <NavLink
+              to="/services"
+              className={({ isActive }) =>
+                isActive
+                  ? "underline text-[#333333]"
+                  : "hover:underline transition-all duration-300 ease-in-out"
+              }
+            >
+              All Services
+            </NavLink>
           </li>
-          <li className="cursor-pointer">
-            <Link to="/contact">Contact Us</Link>
+          <li className="cursor-pointer hover:text-[#333333] transition-all duration-700 ease-in-out">
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                isActive
+                  ? "underline text-[#333333]"
+                  : "hover:underline transition-all duration-300 ease-in-out"
+              }
+            >
+              Contact Us
+            </NavLink>
           </li>
         </ul>
 
@@ -82,7 +113,7 @@ const NavBar = () => {
           {/* Language Button */}
           <div className="relative">
             <button
-              className="bg-white text-black border-2 border-black py-1.5 pl-3 pr-1 rounded-full focus:outline-none"
+              className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 ease-in-out py-2 pl-3 pr-1 rounded-full focus:outline-none"
               onClick={toggleDropdown}
             >
               {language} <span className="ml-2">&#9662;</span>

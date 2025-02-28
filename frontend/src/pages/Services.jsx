@@ -46,7 +46,7 @@ const Services = () => {
         />
         <button
           onClick={applyFilter}
-          className="bg-[#2D64C5] text-white px-4 py-2 rounded-xl hover:scale-105 transition-all duration-300"
+          className=" bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-4 py-2 pr-4 rounded-xl z-10 hover:scale-105 transition-all duration-300"
         >
           Search
         </button>
@@ -82,7 +82,7 @@ const Services = () => {
                   : navigate(`/services/${service}`)
               }
               className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded transition-all cursor-pointer ${
-                category === service ? "bg-[#2D64C5] text-white" : ""
+                category === service ? "bg-gray-500 text-white" : ""
               }`}
             >
               {service}
@@ -94,7 +94,7 @@ const Services = () => {
           {filterService.map((item, index) => (
             <div
               onClick={() => navigate(`/bookings/${item._id}`)}
-              className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
+              className="border border-blue-200 overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
               key={index}
             >
               <img
@@ -105,12 +105,12 @@ const Services = () => {
               <div className="p-4">
                 <div
                   className={`flex items-center gap-2 text-sm text-center ${
-                    item.available ? "text-green-500" : "text-red-500"
+                    item.available ? "text-blue-500" : "text-red-500"
                   }`}
                 >
                   <p
                     className={`w-2 h-2 rounded-full ${
-                      item.available ? "bg-green-500" : "bg-red-500"
+                      item.available ? "bg-blue-500" : "bg-red-500"
                     }`}
                   ></p>
                   <p>{item.available ? "Available" : "Not Available"}</p>

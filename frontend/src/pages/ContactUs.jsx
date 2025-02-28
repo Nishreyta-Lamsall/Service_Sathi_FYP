@@ -53,10 +53,10 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="bg-white min-h-screen flex items-center justify-center py-16 px-6">
-      <div className="bg-gradient-to-r from-blue-50 to-gray-100 shadow-xl rounded-lg p-8 w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="bg-[#eeeef0] shadow-xl rounded-lg p-8 w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Contact Information */}
         <div className="flex flex-col items-center md:items-start justify-center text-center md:text-left lg:-mt-16 lg:ml-12">
-          <div className="flex items-center justify-center w-36 h-36 bg-blue-200 rounded-full">
+          <div className="flex items-center justify-center w-36 h-36 bg-gray-300 rounded-full">
             <i className="fas fa-envelope text-7xl"></i>
           </div>
           <h3 className="text-3xl font-bold mt-6">Contact the Help Team</h3>
@@ -81,9 +81,7 @@ const handleSubmit = async (e) => {
           onSubmit={handleSubmit}
           className="bg-gray-50 p-8 rounded-lg shadow-md space-y-6"
         >
-          <h2 className="text-3xl font-bold text-blue-600 text-center">
-            Contact Us
-          </h2>
+          <h2 className="text-3xl font-semibold text-center">Contact Us</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
@@ -92,7 +90,7 @@ const handleSubmit = async (e) => {
               value={formData.firstName}
               onChange={handleChange}
               placeholder="First Name*"
-              className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
               required
             />
             <input
@@ -101,7 +99,7 @@ const handleSubmit = async (e) => {
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Last Name*"
-              className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
               required
             />
           </div>
@@ -111,7 +109,7 @@ const handleSubmit = async (e) => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email*"
-            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
           />
           <input
@@ -120,7 +118,7 @@ const handleSubmit = async (e) => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Phone number*"
-            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
           />
           <textarea
@@ -129,19 +127,21 @@ const handleSubmit = async (e) => {
             onChange={handleChange}
             placeholder="Your message..."
             rows="5"
-            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
           ></textarea>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200"
-          >
-            Submit
-          </button>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="mt-5 bg-black hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
+            >
+              Submit
+            </button>
+          </div>
 
           {successMessage && (
-            <p className="text-center text-green-600 font-semibold mt-4">
+            <p className="text-center text-blue-600 font-semibold mt-4">
               {successMessage}
             </p>
           )}

@@ -5,7 +5,7 @@ const Testimonial = ({ id, name, rating, image, comment }) => {
     <div className="flex items-start p-3 w-80 rounded-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
       {/* Avatar */}
       <img
-        className="rounded-full w-16 h-16 object-cover"
+        className="rounded-full w-12 h-12 object-cover"
         src={image}
         alt={name}
       />
@@ -13,7 +13,7 @@ const Testimonial = ({ id, name, rating, image, comment }) => {
       {/* Content */}
       <div className="ml-4">
         {/* Name */}
-        <p className="font-bold text-lg text-gray-800">{name}</p>
+        <p className="font-medium text-lg text-gray-800">{name}</p>
 
         {/* Star Rating */}
         <div className="flex items-center mt-1 text-yellow-500">{rating}</div>

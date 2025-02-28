@@ -1,76 +1,184 @@
-import React from "react";
-import home2 from "../assets/home2.png";
+import React, { useEffect, useState } from "react";
+import categoryicon from "../assets/categoryicon.png";
+import electricalicon from "../assets/electricalicon.png";
+import carpentryicon from "../assets/carpentryicon.png";
+import bannerimg from "../assets/bannerimg.jpg";
+import gardeningicon from "../assets/gardeningicon.png";
+import plumbingicon from "../assets/plumbingicon.png";
 import { testimonial } from "../assets/js/testimonials";
 import Testimonial from "../components/Testimonial";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
 import { CategoryData } from "../assets/assets";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { CheckCircle as CheckCircleIcon } from "lucide-react";
 
 const HomePage = () => {
-  const navigate = useNavigate();
   const { Services } = useContext(AppContext);
+  const icons = [
+    categoryicon,
+    electricalicon,
+    carpentryicon,
+    gardeningicon,
+    plumbingicon,
+  ];
+
+  const { backendUrl, token, userData, subscribeUser } = useContext(AppContext);
+
+  const [subscriptions, setSubscriptions] = useState([]);
+
+  const navigate = useNavigate();
+
+  // Get all subscriptions
+  const getSubscriptions = async () => {
+    try {
+      const { data } = await axios.get(
+        backendUrl + "/api/admin/get-subscriptions"
+      );
+      if (data) {
+        setSubscriptions(data); // Save the subscriptions to state
+      }
+    } catch (error) {
+      console.error("Error fetching subscriptions:", error);
+      toast.error("Failed to load subscriptions.");
+    }
+  };
+
+  // Fetch subscriptions on component mount
+  useEffect(() => {
+    {
+      getSubscriptions();
+    }
+  });
+
+  const handleChoosePlan = async (subscription) => {
+    if (!token) {
+      toast.error("You must be logged in to subscribe to a plan.");
+      navigate("/login");
+      return;
+    }
+    const userId = userData._id;
+    const subscriptionId = subscription._id;
+    const plan = subscription.plan;
+
+    await subscribeUser(userId, subscriptionId, plan);
+  };
 
   return (
     <div className="main">
-      {/* Upper Content */}
-      <div className="flex items-center justify-center mt-2 h-[80vh] w-[97vw]">
-        <div className="border font-primary border-gray-500 h-full w-full flex ml-8 relative overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen -mt-20">
+        <div className="w-full h-full flex relative overflow-hidden">
           {/* Text Section */}
-          <div className="w-[65%] bg-[#0A1F44] text-white flex flex-col justify-center relative clip-path-slant p-16">
-            <p className="text-4xl font-extrabold">
-              “Your Trusted Partner for Every Home Need”
+          <div
+            className="text-white flex flex-col justify-center p-16 bg-cover bg-center h-[100vh] w-full relative"
+            style={{
+              backgroundImage: `url(${bannerimg})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* Darken the Image using a pseudo-element */}
+            <div className="absolute inset-0 bg-black opacity-65 z-0"></div>
+
+            <p className="text-5xl font-extrabold z-10 mt-20">
+              YOUR TRUSTED PARTNER <br />
+              <span className="block mt-6">FOR EVERY HOME NEED</span>
             </p>
-            <p className="text-lg font-serif mt-6 leading-relaxed">
+
+            <p className="text-lg mt-10 leading-relaxed z-10">
               Transform your home into a haven with Service Sathi — your trusted
-              partner for reliable, top-notch household services. From
-              meticulous cleaning to expert repairs, we deliver convenience,
-              quality, and peace of mind tailored to your unique needs.
-              Experience the ease of living with professionals who care as much
-              about your home as you do.
+              partner for reliable, <br />
+              top-notch household services. From meticulous cleaning to expert
+              repairs, we deliver <br />
+              convenience, quality, and peace of mind tailored to your unique
+              needs.
             </p>
+
             <button
               onClick={() => navigate("/about")}
-              className="mt-6 bg-[#2D64C5] text-white px-5 py-2 rounded-full hover:scale-105 transition-all duration-300 flex items-center"
+              className="mt-12 hover:bg-white hover:text-black border-white border-2 text-white pl-6 py-4 w-[185px] hover:scale-105 transition-all duration-300 flex items-center z-10"
             >
-              Discover More <i className="fa-solid fa-arrow-right ml-2"></i>
+              DISCOVER MORE <i className="fa-solid fa-arrow-right ml-1"></i>
             </button>
-          </div>
-
-          {/* Image Section */}
-          <div className="w-[35%] overflow-hidden relative bg-[#0A1F44]">
-            <img
-              src={home2}
-              alt="Picture"
-              className="object-cover w-full h-full"
-            />
           </div>
         </div>
       </div>
 
-      <div className="mt-16 mb-20" id="#category">
+      <div className="mt-10 mb-20" id="#category">
         <div>
-          <p className="ml-16 font-semibold text-2xl">Services Offered</p>
+          <p className="text-3xl font-semibold text-black flex justify-center">
+            Services Offered
+          </p>
         </div>
-        <div className="ml-16 mt-10 flex flex-wrap gap-x-16 gap-y-12">
-          {CategoryData.map((item, index) => (
-            <Link
-              onClick={() => scrollTo(0, 0)}
-              key={index}
-              to={`/services/${item.category}`}
-            >
-              <p className="border border-gray-500 bg-[#EFF6FC] text-base px-3 py-2 rounded-full whitespace-nowrap h-[48px] flex items-center justify-center hover:bg-blue-100 hover:translate-y-[-10px] transition-all duration-500">
-                {" "}
-                {item.category}
-              </p>
-            </Link>
-          ))}
+        <div className="-ml-14 mt-10 flex flex-col items-center space-y-12 space-x-16">
+          {/* Top Row - 3 Services */}
+          <div className="flex gap-x-40">
+            {CategoryData.slice(0, 3).map((item, index) => (
+              <Link
+                onClick={() => scrollTo(0, 0)}
+                key={index}
+                to={`/services/${item.category}`}
+                className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500"
+              >
+                <div className="flex flex-col items-start">
+                  <img
+                    src={icons[index % icons.length]}
+                    alt="Category Icon"
+                    className="w-12 h-12 mb-4"
+                  />
+                  <h3 className="text-xl font-bold text-[#333333] mb-2">
+                    {item.category}
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Find a variety of services under this category.
+                  </p>
+                </div>
+                <div className="mt-4 text-right">
+                  <span className="text-black text-lg">→</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Bottom Row - 2 Services in the gaps */}
+          <div className="flex gap-x-56 mt-[-40px]">
+            {" "}
+            {CategoryData.slice(3, 5).map((item, index) => (
+              <Link
+                onClick={() => scrollTo(0, 0)}
+                key={index + 3}
+                to={`/services/${item.category}`}
+                className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500"
+              >
+                <div className="flex flex-col items-start">
+                  <img
+                    src={icons[(index + 3) % icons.length]}
+                    alt="Category Icon"
+                    className="w-12 h-12 mb-4"
+                  />
+                  <h3 className="text-xl font-bold text-[#333333] mb-2">
+                    {item.category}
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Find a variety of services under this category.
+                  </p>
+                </div>
+                <div className="mt-4 text-right">
+                  <span className="text-black text-lg">→</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="mt-12 mb-16 flex flex-col items-center gap-4 text-gray-900 md:mx-10">
-        <div className="self-start">
-          <p className="ml-8 font-semibold text-2xl mb-8">Latest Picks</p>
+        <div>
+          <p className="text-3xl font-semibold text-black flex justify-center mb-5">
+            Latest Picks
+          </p>
         </div>
         <div className="w-full ml-[4rem] grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 pt-5 gap-y-8 px-3 sm:px-0 ">
           {Services.slice(0, 4).map((item, index) => (
@@ -79,23 +187,23 @@ const HomePage = () => {
                 navigate(`/bookings/${item._id}`);
                 scrollTo(0, 0);
               }}
-              className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[4rem]"
+              className="border bg-[#fbfbfb] border-blue-200 overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[4rem]"
               key={index}
             >
               <img
-                className="w-full h-40 object-cover bg-blue-50"
+                className="w-full h-48 object-cover bg-blue-50"
                 src={item.image}
                 alt=""
               />
               <div className="p-4">
                 <div
                   className={`flex items-center gap-2 text-sm text-center ${
-                    item.available ? "text-green-500" : "text-red-500"
+                    item.available ? "text-blue-500" : "text-red-500"
                   }`}
                 >
                   <p
                     className={`w-2 h-2 rounded-full ${
-                      item.available ? "bg-green-500" : "bg-red-500"
+                      item.available ? "bg-blue-500" : "bg-red-500"
                     }`}
                   ></p>
                   <p>{item.available ? "Available" : "Not Available"}</p>
@@ -113,32 +221,90 @@ const HomePage = () => {
             navigate("/services");
             scrollTo(0, 0);
           }}
-          className="mt-5 bg-[#2D64C5] text-white px-8 py-2 rounded-full hover:scale-105 transition-all duration-300"
+          className="mt-5 bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
         >
           All Services
         </button>
       </div>
 
-      <div className="ml-16 mb-16">
-        <p className="text-[#A33928] md:text-2xl text-xl font-bold">
-          Interested in Our Subscription Plans?
+      <div className="mb-16 ">
+        <p className="text-3xl font-semibold text-black flex justify-center mb-6">
+          Subscription Plans
         </p>
-        <p className="mt-5 font-sans lg:text-lg sm:text-base">
-          {" "}
-          Get access to exclusive benefits and regular maintenance tailored to
-          your needs. Choose a plan that suits your lifestyle and let us handle
-          the rest !
-        </p>
-        <button
-          className="bg-[#0A1F44] text-white p-2 px-4 mt-5 rounded-lg hover:scale-105 transition-all duration-300"
-          onClick={() => navigate("/subscriptions")}
-        >
-          View Plans
-        </button>
+        <div className="bg-[#eeeef0] h-[85vh]">
+          <div className="p-6 min-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-20">
+              {subscriptions.length > 0 ? (
+                subscriptions.map((subscription) => (
+                  <div
+                    key={subscription._id}
+                    className="border p-6 rounded-lg shadow-md bg-[#fbfbfb] hover:shadow-lg transition-all"
+                  >
+                    <p className="text-xl font-semibold text-black mb-4">
+                      {subscription.plan === "12-month" ? "Plan B" : "Plan A"}
+                    </p>
+                    <p className="text-sm text-gray-500 mb-3">
+                      Get the most out of your membership with exclusive perks
+                      and discounts.
+                    </p>
+                    <p className="text-xl font-semibold text-blue-500 mb-4">
+                      {subscription.plan === "12-month"
+                        ? "NPR 3500"
+                        : "NPR 2500"}
+                    </p>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2">
+                        <CheckCircleIcon className="text-gray-500" />
+                        {subscription.plan} subscription
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircleIcon className="text-gray-500" />
+                        {subscription.discount}% discount on selected services
+                      </li>
+                      <li className="flex items-start gap-2 text-sm text-gray-700">
+                        <CheckCircleIcon className="text-gray-500 w-6 h-6 flex-shrink-0" />
+                        <div>
+                          <span className="text-base text-black">
+                            Services included:
+                          </span>
+                          <br />
+                          Carpet and Upholstery Cleaning, Window Cleaning, Light
+                          Installation, Power Outlet Installation, Ceiling Fan
+                          Installation, Electrical Safety Inspections, Inverter
+                          Installation.
+                        </div>
+                      </li>
+
+                      {subscription.plan === "12-month" && (
+                        <li className="flex items-center gap-2">
+                          <CheckCircleIcon className="text-gray-500" />
+                          Free scheduled inspections every 4 months
+                        </li>
+                      )}
+                    </ul>
+                    <button
+                      onClick={() => handleChoosePlan(subscription)}
+                      className="mt-4 bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
+                    >
+                      Choose Plan
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600 col-span-2">
+                  No subscriptions available
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="ml-16 mb-4">
-        <p className="font-bold text-2xl"> Testimonials </p>
+      <div className="ml-16 mb-10">
+        <p className="text-3xl font-semibold text-black flex justify-center ">
+          {" "}
+          Testimonials{" "}
+        </p>
       </div>
       <div>
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-16">

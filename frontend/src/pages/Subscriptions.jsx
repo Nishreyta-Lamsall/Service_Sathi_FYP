@@ -6,7 +6,7 @@ import { CheckCircle as CheckCircleIcon } from "lucide-react";
 import {useNavigate} from 'react-router-dom'
 
 const Subscriptions = () => {
-  const { backendUrl, token, userData, subscribeUser } = useContext(AppContext); // Assuming backendUrl and token are in AppContext
+  const { backendUrl, token, userData, subscribeUser } = useContext(AppContext); 
 
   const [subscriptions, setSubscriptions] = useState([]);
 

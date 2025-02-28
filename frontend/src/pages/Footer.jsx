@@ -6,7 +6,7 @@ import linkedin from "../assets/linkedin.png";
 
 const Footer = () => {
   return (
-    <div className="bg-[#0A1F44] text-white py-8 px-4">
+    <div className="bg-[#1b1b1b] text-white py-8 px-4">
       {/* Container for all the contents */}
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-8 sm:space-y-0">
         {/* Left Section */}

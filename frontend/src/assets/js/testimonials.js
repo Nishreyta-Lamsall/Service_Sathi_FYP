@@ -1,11 +1,10 @@
-import comment1 from "../Comment1.png";
-import comment2 from "../Comment2.png";
-import comment3 from "../Comment3.png";
+import comment1 from "../comment1.jpg"
+import comment2 from "../comment2.jpg";
 
 export const testimonial = [
   {
     id: 1,
-    name: "John Doe",
+    name: "Shyam Nepali",
     rating: "★★★★☆",
     image: comment1,
     comment:
@@ -13,7 +12,7 @@ export const testimonial = [
   },
   {
     id: 2,
-    name: "Amy Ray",
+    name: "Hari Shrestha",
     rating: "★★★★☆",
     image: comment2,
     comment:
@@ -21,15 +20,15 @@ export const testimonial = [
   },
   {
     id: 3,
-    name: "Michael Jordan",
-    image: comment3,
+    name: "Ramesh Shrestha",
+    image: comment2,
     rating: "★★★★★",
     comment:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
   },
   {
     id: 4,
-    name: "Ria Day",
+    name: "Subigya Chaudhary",
     rating: "★★★★☆",
     image: comment1,
     comment:
