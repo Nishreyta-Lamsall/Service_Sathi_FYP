@@ -48,12 +48,14 @@ const MyProfile = () => {
           {isEdit ? (
             <label htmlFor="image">
               <div className="inline-block relative cursor-pointer">
-                <img className="w-36 rounded opacity-75"
+                <img
+                  className="w-36 rounded opacity-75"
                   src={image ? URL.createObjectURL(image) : userData.image}
                   alt=""
                 />
-                <img className="w-10 absolute bottom-12 right-12 opacity-35"
-                  src={image ? '' : assets.upload_icon}
+                <img
+                  className="w-10 absolute bottom-12 right-12 opacity-35"
+                  src={image ? "" : assets.upload_icon}
                   alt=""
                 />
               </div>
@@ -78,7 +80,7 @@ const MyProfile = () => {
           {/* Name Field */}
           {isEdit ? (
             <input
-              className="bg-white text-3xl font-semibold w-full border p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+              className="bg-white text-3xl font-semibold w-full border p-3 rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
               type="text"
               value={userData.name}
               onChange={(e) =>
@@ -86,7 +88,7 @@ const MyProfile = () => {
               }
             />
           ) : (
-            <p className="font-semibold text-3xl text-gray-800 hover:text-blue-600 transition-all duration-300">
+            <p className="text-3xl font-semibold text-black mb-6">
               {userData.name}
             </p>
           )}
@@ -94,22 +96,22 @@ const MyProfile = () => {
           <hr className="my-4 border-gray-300" />
 
           {/* Contact Information */}
-          <p className="font-bold text-lg text-blue-600 mb-2">
+          <p className="font-medium text-lg text-black mb-2">
             CONTACT INFORMATION
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-gray-600 font-medium">Email ID:</p>
-              <p className="font-medium text-blue-600 hover:text-blue-700 transition-all duration-300">
+              <p className="text-gray-900">Email ID:</p>
+              <p className=" text-blue-700 transition-all duration-300">
                 {userData.email}
               </p>
             </div>
 
             <div>
-              <p className="text-gray-600 font-medium">Phone:</p>
+              <p className="text-gray-900">Phone:</p>
               {isEdit ? (
                 <input
-                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
                   type="text"
                   value={userData.phone}
                   onChange={(e) =>
@@ -117,7 +119,7 @@ const MyProfile = () => {
                   }
                 />
               ) : (
-                <p className="font-medium text-gray-800 hover:text-blue-600 transition-all duration-300">
+                <p className=" text-gray-500 hover:text-gray-800 transition-all duration-300">
                   {userData.phone}
                 </p>
               )}
@@ -125,11 +127,11 @@ const MyProfile = () => {
 
             {/* Address Fields */}
             <div className="col-span-2">
-              <p className="text-gray-600 font-medium">Address:</p>
+              <p className="text-gray-900">Address:</p>
               {isEdit ? (
                 <>
                   <input
-                    className="border p-3 w-full rounded-lg mb-2 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+                    className="border p-3 w-full rounded-lg mb-2 shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
                     type="text"
                     value={userData.address.line1}
                     onChange={(e) =>
@@ -140,7 +142,7 @@ const MyProfile = () => {
                     }
                   />
                   <input
-                    className="border p-3 w-full rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+                    className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
                     type="text"
                     value={userData.address.line2}
                     onChange={(e) =>
@@ -152,7 +154,7 @@ const MyProfile = () => {
                   />
                 </>
               ) : (
-                <p className="font-medium text-gray-800 hover:text-blue-600 transition-all duration-300">
+                <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
                   {userData.address.line1}
                   <br />
                   {userData.address.line2}
@@ -160,17 +162,18 @@ const MyProfile = () => {
               )}
             </div>
           </div>
+          <hr className="my-4 border-gray-300" />
 
           {/* Other Information */}
-          <p className="font-bold text-lg text-blue-600 mt-6 mb-2">
+          <p className="font-medium text-lg text-black mt-6 mb-2">
             OTHER INFORMATION
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-gray-600 font-medium">Gender:</p>
+              <p className="text-gray-900">Gender:</p>
               {isEdit ? (
                 <select
-                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
                   onChange={(e) =>
                     setUserData((prev) => ({ ...prev, gender: e.target.value }))
                   }
@@ -180,17 +183,17 @@ const MyProfile = () => {
                   <option value="Female">Female</option>
                 </select>
               ) : (
-                <p className="font-medium text-gray-800 hover:text-blue-600 transition-all duration-300">
+                <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
                   {userData.gender}
                 </p>
               )}
             </div>
 
             <div>
-              <p className="text-gray-600 font-medium">Birthday:</p>
+              <p className="text-gray-900">Birthday:</p>
               {isEdit ? (
                 <input
-                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all duration-300"
+                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
                   type="date"
                   onChange={(e) =>
                     setUserData((prev) => ({ ...prev, dob: e.target.value }))
@@ -198,25 +201,26 @@ const MyProfile = () => {
                   value={userData.dob}
                 />
               ) : (
-                <p className="font-medium text-gray-800 hover:text-blue-600 transition-all duration-300">
+                <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
                   {userData.dob}
                 </p>
               )}
             </div>
           </div>
+          <hr className="my-4 border-gray-300" />
 
           {/* Edit Button */}
           <div className="mt-6 flex justify-start">
             {isEdit ? (
               <button
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
+                className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
                 onClick={updateUserProfileData}
               >
                 Save Information
               </button>
             ) : (
               <button
-                className="bg-gray-700 text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
                 onClick={() => setIsEdit(true)}
               >
                 Edit

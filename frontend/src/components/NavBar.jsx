@@ -146,7 +146,7 @@ const NavBar = () => {
               <img
                 src={userData.image}
                 alt="Profile"
-                className="w-8 h-8 rounded-full"
+                className="w-9 h-9 rounded-full object-cover"
               />
               <img src={dropdownIcon} alt="Dropdown" className="w-2.5 h-4" />
               <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">

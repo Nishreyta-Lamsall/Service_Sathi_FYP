@@ -221,7 +221,7 @@ const HomePage = () => {
             navigate("/services");
             scrollTo(0, 0);
           }}
-          className="mt-5 bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
+          className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
         >
           All Services
         </button>
@@ -231,9 +231,9 @@ const HomePage = () => {
         <p className="text-3xl font-semibold text-black flex justify-center mb-6">
           Subscription Plans
         </p>
-        <div className="bg-[#eeeef0] h-[85vh]">
+        <div className="bg-[#e6e6e7] h-[85vh]">
           <div className="p-6 min-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-[70px]">
               {subscriptions.length > 0 ? (
                 subscriptions.map((subscription) => (
                   <div
@@ -247,7 +247,7 @@ const HomePage = () => {
                       Get the most out of your membership with exclusive perks
                       and discounts.
                     </p>
-                    <p className="text-xl font-semibold text-blue-500 mb-4">
+                    <p className="text-xl font-semibold text-blue-700 mb-4">
                       {subscription.plan === "12-month"
                         ? "NPR 3500"
                         : "NPR 2500"}
@@ -284,7 +284,7 @@ const HomePage = () => {
                     </ul>
                     <button
                       onClick={() => handleChoosePlan(subscription)}
-                      className="mt-4 bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
+                      className="mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
                     >
                       Choose Plan
                     </button>

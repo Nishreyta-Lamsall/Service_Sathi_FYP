@@ -55,7 +55,7 @@ const OrderHistory = () => {
   return (
     <div className="flex flex-col min-h-screen p-6">
       <div className="flex-1 mx-16">
-        <p className="pb-4 mt-10 text-lg font-semibold text-gray-800 border-b">
+        <p className="pb-4 mt-10 text-2xl font-semibold text-black border-b">
           Order History
         </p>
 
@@ -94,12 +94,12 @@ const OrderHistory = () => {
                       <span
                         className={`font-semibold ${
                           item.orderStatus === "Booked"
-                            ? "text-green-600"
+                            ? "text-blue-600"
                             : item.orderStatus === "On the Way"
                             ? "text-yellow-600"
                             : item.orderStatus === "Completed"
                             ? "text-blue-600"
-                            : "text-red-600"
+                            : "text-red-700"
                         }`}
                       >
                         {item.orderStatus}
@@ -122,7 +122,6 @@ const OrderHistory = () => {
                       </button>
                     ) : (
                       <>
-                        {/* Add any actions like "Pay" or others for non-cancelled orders */}
                       </>
                     )}
                   </div>

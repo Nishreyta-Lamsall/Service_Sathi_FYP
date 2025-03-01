@@ -65,7 +65,6 @@ const AuthForm = () => {
   const resendVerificationEmail = async () => {
     try {
       setLoading(true);
-      toast.info("Sending verification email...");
 
       const response = await axios.post(
         backendUrl + "/api/user/resend-verification",
@@ -102,7 +101,7 @@ const AuthForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full bg-white shadow-xl rounded-lg overflow-hidden flex">
         {/* Welcome Section */}
-        <div className="hidden md:flex flex-1 bg-[#0A1F44] text-white flex-col items-center justify-center p-8">
+        <div className="hidden md:flex flex-1 bg-[#242424] text-white flex-col items-center justify-center p-8">
           <h1 className="text-5xl font-bold text-center">
             Welcome <br />
             <span className="text-3xl font-normal">to Service Sathi</span>
@@ -130,7 +129,7 @@ const AuthForm = () => {
                   name="name"
                   type="text"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-600 focus:border-gray-600"
                   onChange={(e) => setName(e.target.value)}
                   value={name}
                 />
@@ -148,7 +147,7 @@ const AuthForm = () => {
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-600 focus:border-gray-600"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
               />
@@ -165,7 +164,7 @@ const AuthForm = () => {
                 name="password"
                 type="password"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-600 focus:border-gray-600"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
               />
@@ -183,7 +182,7 @@ const AuthForm = () => {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-600 focus:border-gray-600"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   value={confirmPassword}
                 />
@@ -193,7 +192,7 @@ const AuthForm = () => {
               {state === "Login" && (
                 <button
                   onClick={handleForgotPassword}
-                  className="text-sm text-indigo-600 hover:text-indigo-500"
+                  className="text-sm text-blue-900 hover:text-indigo-500"
                 >
                   Forgot your password?
                 </button>
@@ -202,7 +201,7 @@ const AuthForm = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="flex justify-center w-full px-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
               >
                 {state === "Sign Up" ? "Sign Up" : "Login"}
               </button>
@@ -215,7 +214,7 @@ const AuthForm = () => {
                 Didn't receive a verification email?{" "}
                 <button
                   onClick={resendVerificationEmail}
-                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
+                  className="font-medium text-blue-900 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
                   disabled={loading}
                 >
                   Resend Email
@@ -230,7 +229,7 @@ const AuthForm = () => {
                 Already have an account?{" "}
                 <button
                   onClick={switchToLogin}
-                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
+                  className="font-medium text-blue-900 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
                 >
                   Login
                 </button>
@@ -240,7 +239,7 @@ const AuthForm = () => {
                 Don't have an account?{" "}
                 <button
                   onClick={switchToSignUp}
-                  className="font-medium text-indigo-600 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
+                  className="font-medium text-blue-900 hover:text-indigo-500 hover:scale-105 transition-all duration-300"
                 >
                   Sign Up
                 </button>

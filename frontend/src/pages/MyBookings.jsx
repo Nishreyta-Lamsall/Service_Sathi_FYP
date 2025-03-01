@@ -231,7 +231,7 @@ const MyBookings = () => {
   return (
     <div className="flex flex-col min-h-screen p-6">
       <div className="flex-1 mx-16">
-        <p className="pb-4 mt-10 text-lg font-semibold text-gray-800 border-b">
+        <p className="pb-4 mt-10 text-2xl font-semibold text-black border-b">
           My Bookings
         </p>
 
@@ -279,12 +279,12 @@ const MyBookings = () => {
                         <span
                           className={`font-semibold ${
                             item.orderStatus === "Booked"
-                              ? "text-green-600"
+                              ? "text-blue-600"
                               : item.orderStatus === "On the Way"
                               ? "text-yellow-600"
                               : item.orderStatus === "Completed"
                               ? "text-blue-600"
-                              : "text-red-600"
+                              : "text-red-700"
                           }`}
                         >
                           {item.orderStatus}
@@ -310,11 +310,11 @@ const MyBookings = () => {
                         {item.amount}
                         {discountedPrice && item.amount <= 2000 && (
                           <div className="mt-1 text-sm text-gray-500">
-                            <span className="line-through text-red-500">
+                            <span className="line-through text-blue-800">
                               {currencySymbol}
                               {item.amount}
                             </span>
-                            <span className="ml-2 font-medium text-green-600">
+                            <span className="ml-2 font-medium text-gray-600">
                               {currencySymbol}
                               {discountedPrice.toFixed(2)}
                             </span>
@@ -339,7 +339,7 @@ const MyBookings = () => {
                             discountedPrice
                           )
                         }
-                        className="text-sm font-medium text-blue-600 border border-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300"
+                        className="text-sm font-medium text-gray-700 border border-gray-700 px-4 py-1.5 rounded-lg hover:bg-gray-900 hover:text-white transition-all duration-300"
                       >
                         Pay Online
                       </button>
@@ -363,7 +363,7 @@ const MyBookings = () => {
         {bookings.filter((item) => item.orderStatus === "Completed").length >
           0 && (
           <div className="mt-12">
-            <p className="pb-4 text-lg font-semibold border-b">
+            <p className="pb-4 text-2xl font-semibold text-black border-b">
               Completed Bookings
             </p>
             <div className="mt-6 space-y-4">
@@ -419,7 +419,7 @@ const MyBookings = () => {
                             });
                             setReviewModalOpen(true);
                           }}
-                          className="text-sm font-medium text-blue-600 border border-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300"
+                          className="text-sm font-medium text-gray-700 border border-gray-700 px-4 py-1.5 rounded-lg hover:bg-gray-900 hover:text-white transition-all duration-300"
                         >
                           Leave Review
                         </button>
@@ -472,7 +472,7 @@ const MyBookings = () => {
             <div className="mt-4 flex justify-end">
               <button
                 onClick={submitReview}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-900"
               >
                 Submit Review
               </button>

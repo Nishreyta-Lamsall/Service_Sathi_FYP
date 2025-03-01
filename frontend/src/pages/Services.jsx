@@ -46,7 +46,7 @@ const Services = () => {
         />
         <button
           onClick={applyFilter}
-          className=" bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-4 py-2 pr-4 rounded-xl z-10 hover:scale-105 transition-all duration-300"
+          className=" bg-[#242424] hover:bg-white hover:text-black rounded-md border-black border-2 text-white pl-4 py-1.5 pr-4 z-10 hover:scale-105 transition-all duration-300"
         >
           Search
         </button>
@@ -82,7 +82,7 @@ const Services = () => {
                   : navigate(`/services/${service}`)
               }
               className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded transition-all cursor-pointer ${
-                category === service ? "bg-gray-500 text-white" : ""
+                category === service ? "bg-[#2d2d2d] text-white" : ""
               }`}
             >
               {service}
@@ -94,7 +94,7 @@ const Services = () => {
           {filterService.map((item, index) => (
             <div
               onClick={() => navigate(`/bookings/${item._id}`)}
-              className="border border-blue-200 overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
+              className="border border-blue-200 overflow-hidden cursor-pointer rounded-md hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
               key={index}
             >
               <img

@@ -134,7 +134,7 @@ const handleSubmit = async (e) => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="mt-5 bg-black hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
+              className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
             >
               Submit
             </button>

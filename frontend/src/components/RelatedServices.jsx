@@ -25,7 +25,7 @@ const RelatedServices = ({category, serviceId}) => {
         {relServices.slice(0, 7).map((item, index) => (
           <div
             onClick={() => {navigate(`/bookings/${item._id}`); scrollTo(0,0)}}
-            className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[4rem]"
+            className="border border-blue-200 rounded-lg overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500 mr-[4rem]"
             key={index}
           >
             <img
@@ -34,8 +34,8 @@ const RelatedServices = ({category, serviceId}) => {
               alt=""
             />
             <div className="p-4">
-              <div className="flex items-center gap-2 text-sm text-center text-green-500">
-                <p className="w-2 h-2 bg-green-500 rounded-full"></p>
+              <div className="flex items-center gap-2 text-sm text-center text-blue-500">
+                <p className="w-2 h-2 bg-blue-500 rounded-full"></p>
                 <p>Available</p>
               </div>
               <p className="text-gray-900 text-base font-medium">

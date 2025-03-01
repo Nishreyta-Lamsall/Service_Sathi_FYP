@@ -233,7 +233,7 @@ const Bookings = () => {
             <div>
               <p className="text-sm mt-1">{serviceInfo.category}</p>
               {serviceProvider ? (
-                <p className="text-sm font-medium text-indigo-600 mt-2">
+                <p className="text-sm font-medium text-blue-900 mt-2">
                   Provider: {serviceProvider.name}
                 </p>
               ) : (
@@ -269,7 +269,7 @@ const Bookings = () => {
                   key={index}
                   className={`text-center py-6 min-w-16 rounded-full cursor-pointer ${
                     slotIndex === index
-                      ? "bg-[#2D64C5] text-white"
+                      ? "bg-[#313131] text-white"
                       : "border border-gray-200"
                   }`}
                 >
@@ -286,7 +286,7 @@ const Bookings = () => {
                   onClick={() => setSlotTime(item.time)}
                   className={`text-sm font-light flex-shrink-0 py-2 rounded-full cursor-pointer px-7 ${
                     item.time === slotTime
-                      ? "bg-blue-600 text-white"
+                      ? "bg-[#313131] text-white"
                       : "text-gray-400 border border-gray-100"
                   }`}
                   key={index}
@@ -297,7 +297,7 @@ const Bookings = () => {
           </div>
           <button
             onClick={bookService}
-            className="bg-blue-900 text-white text-base font-light py-3 px-16 rounded-full my-6 mt-8"
+            className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 pr-6 rounded-xl hover:scale-105 transition-all duration-300 py-3 px-16 my-6 mt-8"
           >
             Book a service
           </button>

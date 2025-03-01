@@ -205,7 +205,7 @@ const AboutUs = () => {
               <div
                 key={index}
                 className={`border p-3 rounded-lg transition-all duration-500 ease-in-out ${
-                  openFaq === index ? "bg-gray-100" : "bg-white"
+                  openFaq === index ? "bg-gray-100" : "bg-gray-50"
                 }`}
               >
                 <div
@@ -248,7 +248,7 @@ const AboutUs = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="mt-5 bg-black hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 z-10"
+            className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 z-10"
           >
             Get Started Today →
           </button>
