@@ -267,7 +267,7 @@ const Bookings = () => {
                 <div
                   onClick={() => setSlotIndex(index)}
                   key={index}
-                  className={`text-center py-6 min-w-16 rounded-full cursor-pointer ${
+                  className={`text-center py-6 min-w-16 rounded-sm cursor-pointer ${
                     slotIndex === index
                       ? "bg-[#313131] text-white"
                       : "border border-gray-200"

@@ -38,7 +38,10 @@ const HomePage = () => {
         backendUrl + "/api/admin/get-subscriptions"
       );
       if (data) {
-        setSubscriptions(data); // Save the subscriptions to state
+        const filteredSubscriptions = data.filter(
+          (sub) => sub.plan === "12-month"
+        );
+        setSubscriptions(filteredSubscriptions);
       }
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
@@ -48,10 +51,8 @@ const HomePage = () => {
 
   // Fetch subscriptions on component mount
   useEffect(() => {
-    {
-      getSubscriptions();
-    }
-  });
+    getSubscriptions();
+  }, []);
 
   const handleChoosePlan = async (subscription) => {
     if (!token) {
@@ -59,12 +60,41 @@ const HomePage = () => {
       navigate("/login");
       return;
     }
-    const userId = userData._id;
-    const subscriptionId = subscription._id;
-    const plan = subscription.plan;
 
-    await subscribeUser(userId, subscriptionId, plan);
+    try {
+      const response = await fetch(
+        `${backendUrl}/api/subscription/initiate-payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: token, 
+          },
+          body: JSON.stringify({
+            subscriptionId: subscription._id, 
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.payment_url) {
+        window.location.href = data.payment_url; 
+      } else {
+        toast.error(data.message || "Payment initiation failed");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("Error initiating payment");
+    }
+
+    // After payment, fetch the updated user data
+    const userResponse = await axios.get(`${backendUrl}/api/user`);
+    if (userResponse.data) {
+      setUserData(userResponse.data); 
+    }
   };
+
 
   return (
     <div className="main">
@@ -231,9 +261,9 @@ const HomePage = () => {
         <p className="text-3xl font-semibold text-black flex justify-center mb-6">
           Subscription Plans
         </p>
-        <div className="bg-[#e6e6e7] h-[85vh]">
+        <div className="bg-[#262626] h-[85vh]">
           <div className="p-6 min-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-[70px]">
+            <div className="grid place-content-center gap-10 mt-[70px]">
               {subscriptions.length > 0 ? (
                 subscriptions.map((subscription) => (
                   <div

@@ -20,9 +20,7 @@ const NavBar = () => {
       {/* Left Side */}
       <div className="flex items-center gap-2 text-xs ml-16">
         <h1 className="text-3xl font-extrabold text-[#2D64C5]">ServiceSathi</h1>
-        <p className="mt-2 border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600">
-          {aToken && "Admin"}
-        </p>
+        
       </div>
       <button
         onClick={logout}

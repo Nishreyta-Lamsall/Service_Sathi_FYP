@@ -9,7 +9,6 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [serviceProviders, setServiceProviders] = useState({});
   const [reviewSubmitted, setReviewSubmitted] = useState({});
-  const [khaltiCheckout, setKhaltiCheckout] = useState(null);
 
   const months = [
     " ",
@@ -139,81 +138,6 @@ const MyBookings = () => {
   };
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js";
-    script.onload = () => {
-      const checkout = new window.KhaltiCheckout({
-        publicKey: import.meta.env.VITE_KHALTI_PUBLIC_KEY,
-        productIdentity: "your-product-identity",
-        productName: "Service Booking",
-        productUrl: window.location.href,
-        eventHandler: {
-          onSuccess(payload) {
-            handleKhaltiSuccess(payload);
-          },
-          onError(error) {
-            console.error("Khalti Payment Error:", error);
-            toast.error("Payment failed. Please try again.");
-          },
-          onClose() {
-            console.log("Khalti widget closed");
-          },
-        },
-      });
-      setKhaltiCheckout(checkout);
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  const handleKhaltiSuccess = async (payload) => {
-    try {
-      const bookingId = payload.purchaseOrderId; // Retrieve from Khalti
-
-      const { data } = await axios.post(
-        `${backendUrl}/api/payment/verify-khalti`,
-        {
-          token: payload.token,
-          amount: payload.amount / 100,
-          bookingId: payload.purchaseOrderId,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (data.success) {
-        toast.success("Payment successful!");
-        setBookings((prevBookings) =>
-          prevBookings.map((booking) =>
-            booking._id === bookingId ? { ...booking, payment: true } : booking
-          )
-        );
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.error("Error verifying payment:", error);
-      toast.error("Payment verification failed. Please contact support.");
-    }
-  };
-
-  const handlePayOnline = (bookingId, originalAmount, discountedPrice) => {
-    if (!khaltiCheckout) {
-      toast.error("Payment gateway is not ready. Please try again later.");
-      return;
-    }
-
-    const finalAmount = discountedPrice ? discountedPrice : originalAmount;
-    khaltiCheckout.show({
-      amount: finalAmount * 100,
-      purchaseOrderId: bookingId,
-    });
-  };
-
-  useEffect(() => {
     if (token) {
       getUserBookings();
       getServicesData();
@@ -331,18 +255,6 @@ const MyBookings = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
-                      <button
-                        onClick={() =>
-                          handlePayOnline(
-                            item._id,
-                            item.amount,
-                            discountedPrice
-                          )
-                        }
-                        className="text-sm font-medium text-gray-700 border border-gray-700 px-4 py-1.5 rounded-lg hover:bg-gray-900 hover:text-white transition-all duration-300"
-                      >
-                        Pay Online
-                      </button>
                       <button
                         onClick={() => cancelBooking(item._id)}
                         className="text-sm font-medium text-red-600 border border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300"

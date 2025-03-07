@@ -54,8 +54,10 @@ const Services = () => {
 
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
         <button
-          className={`p-1 px-3 border rounded text-sm transition-all sm:hidden ${
-            showFilter ? "bg-blue-900 text-white" : ""
+          className={`py-2.5 px-6 border rounded text-sm transition-all ${
+            showFilter
+              ? "text-black rounded-md border-black border-2  hover:scale-105 transition-all duration-300"
+              : "bg-[#4b4b4b] hover:bg-white hover:text-black rounded-md border-black border-2 text-white hover:scale-105 transition-all duration-300"
           }`}
           onClick={() => setShowFilter((prev) => !prev)}
         >
@@ -64,7 +66,7 @@ const Services = () => {
 
         <div
           className={`w-[17vw] flex-col gap-4 text-sm text-gray-600 ${
-            showFilter ? "flex" : "hidden sm:flex"
+            showFilter ? "flex" : "hidden "
           }`}
         >
           {[
@@ -81,8 +83,8 @@ const Services = () => {
                   ? navigate("/services")
                   : navigate(`/services/${service}`)
               }
-              className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded transition-all cursor-pointer ${
-                category === service ? "bg-[#2d2d2d] text-white" : ""
+              className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded-lg transition-all cursor-pointer ${
+                category === service ? "bg-[#3f3f3f] text-white" : ""
               }`}
             >
               {service}

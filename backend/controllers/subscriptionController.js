@@ -8,7 +8,6 @@ export const createSubscription = async (req, res) => {
 
     // Define plan details
     const planDetails = {
-      "6-month": { duration: 6, discount: 5 },
       "12-month": { duration: 12, discount: 10 },
     };
 

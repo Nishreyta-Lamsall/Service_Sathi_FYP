@@ -72,7 +72,7 @@ const AllBookings = () => {
 
       <div className="border rounded text-sm max-h-[80vh] min-h-[60vh] overflow-y-auto overflow-x-auto scrollbar-none">
         {/* Table Header */}
-        <div className="hidden sm:grid grid-cols-[0.3fr_0.7fr_0.3fr_1fr_0.7fr_1fr_1.7fr_0.6fr_0.7fr] text-center bg-gray-100 border-b border-gray-300">
+        <div className="hidden sm:grid grid-cols-[0.3fr_0.7fr_0.3fr_1.5fr_0.7fr_1fr_1.7fr_0.6fr_0.7fr] text-center bg-gray-100 border-b border-gray-300">
           <p className="py-3 px-2 border-r">S.N.</p>
           <p className="py-3 px-2 border-r">User</p>
           <p className="py-3 px-2 border-r max-sm:hidden">Age</p>
@@ -88,7 +88,7 @@ const AllBookings = () => {
         {bookings.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-[0.3fr_0.7fr_0.3fr_1fr_0.7fr_1fr_1.7fr_0.6fr_0.7fr] text-center border-b border-gray-300"
+            className="grid grid-cols-[0.3fr_0.7fr_0.3fr_1.5fr_0.7fr_1fr_1.7fr_0.6fr_0.7fr] text-center border-b border-gray-300"
           >
             <p className="py-3 px-2 border-r">{index + 1}</p>
             <p className="py-3 px-2 border-r">{item.userData.name}</p>

@@ -15,6 +15,7 @@ import OrderHistory from './pages/OrderHistory';
 import Subscriptions from './pages/Subscriptions';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import PaymentVerify from './pages/PaymentVerify';
 
 const App = () => {
   return (
@@ -35,6 +36,10 @@ const App = () => {
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/bookings/:serviceId" element={<Bookings />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route
+          path="/subscription-payment-verify"
+          element={<PaymentVerify />}
+        />
       </Routes>
       <Footer />
     </div>
