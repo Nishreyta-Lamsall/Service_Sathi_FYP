@@ -89,19 +89,39 @@ const NavBar = () => {
               <img
                 src={userData.image}
                 alt="Profile"
-                className="w-9 h-9 rounded-full object-cover"
+                className="w-9 h-9 rounded-full object-cover transition-transform duration-300 transform group-hover:scale-110"
               />
-              <img src={dropdownIcon} alt="Dropdown" className="w-2.5 h-4" />
-              <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
+              <img
+                src={dropdownIcon}
+                alt="Dropdown"
+                className="w-2.5 h-4 transition-transform duration-300 transform group-hover:rotate-180"
+              />
+              <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block ">
                 <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                  <p onClick={() => navigate("my-profile")}>{t("myProfile")}</p>
-                  <p onClick={() => navigate("my-bookings")}>
+                  <p
+                    onClick={() => navigate("my-profile")}
+                    className="hover:text-black transition-colors duration-300"
+                  >
+                    {t("myProfile")}
+                  </p>
+                  <p
+                    onClick={() => navigate("my-bookings")}
+                    className="hover:text-black transition-colors duration-300"
+                  >
                     {t("myBookings")}
                   </p>
-                  <p onClick={() => navigate("order-history")}>
+                  <p
+                    onClick={() => navigate("order-history")}
+                    className="hover:text-black transition-colors duration-300"
+                  >
                     {t("orderHistory")}
                   </p>
-                  <p onClick={logout}>{t("logout")}</p>
+                  <p
+                    className="hover:text-black transition-colors duration-300"
+                    onClick={logout}
+                  >
+                    {t("logout")}
+                  </p>
                 </div>
               </div>
             </div>
