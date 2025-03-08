@@ -1,23 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
-import profilePic from "../assets/profile_picc.png";
+import { useTranslation } from "react-i18next";
+import { LanguageContext } from "../context/LanguageContext"; // Import the context
 import dropdownIcon from "../assets/dropdown_icon.png";
-import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
-  const [language, setLanguage] = useState("English"); // Default language is English
-  const [isOpen, setIsOpen] = useState(false); // State to manage dropdown visibility
-  const [menuOpen, setMenuOpen] = useState(false); // State for mobile menu toggle
+  const { t, i18n } = useTranslation();
+  const { language, handleLanguageChange } = useContext(LanguageContext); // Get language context
+  const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  const {token, setToken, userData} = useContext(AppContext)
+  const { token, setToken, userData } = useContext(AppContext);
 
   const logout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-
+    const confirmLogout = window.confirm(t("logout"));
     if (confirmLogout) {
       setToken(false);
       localStorage.removeItem("token");
@@ -25,101 +24,46 @@ const NavBar = () => {
     }
   };
 
-  // Handle language selection
-  const handleLanguageChange = (lang) => {
-    setLanguage(lang);
-    setIsOpen(false); // Close the dropdown after selection
-  };
-
-  // Toggle dropdown visibility
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // Toggle mobile menu
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   return (
     <nav className="sticky top-0 z-20 bg-white shadow-md">
       <div className="flex justify-between items-center h-20 px-6 md:px-11">
-        {/* Left Side */}
         <div className="flex items-center gap-7">
           <Link to="/">
             <h1 className="text-3xl font-bold text-black">ServiceSathi</h1>
           </Link>
         </div>
-        {/* Hamburger Menu for Small Screens */}
+
         <div className="md:hidden">
-          <button onClick={toggleMenu}>
+          <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
 
         <ul className="md:flex gap-10 hidden transition-all duration-300 ease-in-out font-normal">
-          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "underline text-[#333333]"
-                  : "hover:underline transition-all duration-300 ease-in-out"
-              }
-            >
-              Home
-            </NavLink>
+          <li>
+            <NavLink to="/">{t("navbarHome")}</NavLink>
           </li>
-          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "underline text-[#333333]"
-                  : "hover:underline transition-all duration-300 ease-in-out"
-              }
-            >
-              About Us
-            </NavLink>
+          <li>
+            <NavLink to="/about">{t("about")}</NavLink>
           </li>
-          <li className="cursor-pointer hover:text-[#333333] transition-all duration-300 ease-in-out">
-            <NavLink
-              to="/services"
-              className={({ isActive }) =>
-                isActive
-                  ? "underline text-[#333333]"
-                  : "hover:underline transition-all duration-300 ease-in-out"
-              }
-            >
-              All Services
-            </NavLink>
+          <li>
+            <NavLink to="/services">{t("services")}</NavLink>
           </li>
-          <li className="cursor-pointer hover:text-[#333333] transition-all duration-700 ease-in-out">
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                isActive
-                  ? "underline text-[#333333]"
-                  : "hover:underline transition-all duration-300 ease-in-out"
-              }
-            >
-              Contact Us
-            </NavLink>
+          <li>
+            <NavLink to="/contact">{t("contact")}</NavLink>
           </li>
         </ul>
 
-        {/* Right Side - Language & Login */}
         <div className="pr-6 text-sm flex items-center gap-4">
-          {/* Language Button */}
           <div className="relative">
             <button
               className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 ease-in-out py-2 pl-3 pr-1 rounded-full focus:outline-none"
-              onClick={toggleDropdown}
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label={t("languageSwitch")}
             >
               {language} <span className="ml-2">&#9662;</span>
             </button>
 
-            {/* Dropdown menu */}
             {isOpen && (
               <div className="absolute left-0 mt-2 w-[7rem] bg-white shadow-lg rounded-md z-10">
                 <ul className="text-black">
@@ -133,16 +77,15 @@ const NavBar = () => {
                     className="py-2 pl-3 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleLanguageChange("Nepali")}
                   >
-                    Nepali
+                    नेपाली
                   </li>
                 </ul>
               </div>
             )}
           </div>
 
-          {/* Login Button */}
           {token && userData ? (
-            <div className="flex items-center gap-3 group relative">
+            <div className="flex items-center gap-3 group relative cursor-pointer">
               <img
                 src={userData.image}
                 alt="Profile"
@@ -151,62 +94,45 @@ const NavBar = () => {
               <img src={dropdownIcon} alt="Dropdown" className="w-2.5 h-4" />
               <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
                 <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                  <p
-                    onClick={() => navigate("my-profile")}
-                    className="hover:text-black cursor-pointer"
-                  >
-                    My Profile
+                  <p onClick={() => navigate("my-profile")}>{t("myProfile")}</p>
+                  <p onClick={() => navigate("my-bookings")}>
+                    {t("myBookings")}
                   </p>
-                  <p
-                    onClick={() => navigate("my-bookings")}
-                    className="hover:text-black cursor-pointer"
-                  >
-                    My Bookings
+                  <p onClick={() => navigate("order-history")}>
+                    {t("orderHistory")}
                   </p>
-                  <p
-                    onClick={() => navigate("order-history")}
-                    className="hover:text-black cursor-pointer"
-                  >
-                    Order History
-                  </p>
-                  <p
-                    onClick={logout}
-                    className="hover:text-black cursor-pointer"
-                  >
-                    Logout
-                  </p>
+                  <p onClick={logout}>{t("logout")}</p>
                 </div>
               </div>
             </div>
           ) : (
             <button className="text-black py-1.5 pl-3 pr-3 rounded-full border-2 border-black text-sm">
-              <Link to="/login">Login</Link>
+              <Link to="/login">{t("login")}</Link>
             </button>
           )}
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <ul className="md:hidden flex flex-col items-center gap-5 py-4 bg-white shadow-md">
           <li>
-            <Link to="/" onClick={toggleMenu}>
-              Home
+            <Link to="/" onClick={() => setMenuOpen(false)}>
+              {t("navbarHome")}
             </Link>
           </li>
           <li>
-            <Link to="/about" onClick={toggleMenu}>
-              About Us
+            <Link to="/about" onClick={() => setMenuOpen(false)}>
+              {t("about")}
             </Link>
           </li>
           <li>
-            <Link to="/services" onClick={toggleMenu}>
-              All Services
+            <Link to="/services" onClick={() => setMenuOpen(false)}>
+              {t("services")}
             </Link>
           </li>
           <li>
-            <Link to="/contact" onClick={toggleMenu}>
-              Contact Us
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>
+              {t("contact")}
             </Link>
           </li>
         </ul>

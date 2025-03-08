@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import categoryicon from "../assets/categoryicon.png";
 import electricalicon from "../assets/electricalicon.png";
 import carpentryicon from "../assets/carpentryicon.png";
@@ -16,6 +17,7 @@ import { toast } from "react-toastify";
 import { CheckCircle as CheckCircleIcon } from "lucide-react";
 
 const HomePage = () => {
+  const { t } = useTranslation(); // Initialize useTranslation
   const { Services } = useContext(AppContext);
   const icons = [
     categoryicon,
@@ -68,10 +70,10 @@ const HomePage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            token: token, 
+            token: token,
           },
           body: JSON.stringify({
-            subscriptionId: subscription._id, 
+            subscriptionId: subscription._id,
           }),
         }
       );
@@ -79,7 +81,7 @@ const HomePage = () => {
       const data = await response.json();
 
       if (response.ok && data.payment_url) {
-        window.location.href = data.payment_url; 
+        window.location.href = data.payment_url;
       } else {
         toast.error(data.message || "Payment initiation failed");
       }
@@ -91,16 +93,15 @@ const HomePage = () => {
     // After payment, fetch the updated user data
     const userResponse = await axios.get(`${backendUrl}/api/user`);
     if (userResponse.data) {
-      setUserData(userResponse.data); 
+      setUserData(userResponse.data);
     }
   };
-
 
   return (
     <div className="main">
       <div className="flex items-center justify-center min-h-screen -mt-20">
         <div className="w-full h-full flex relative overflow-hidden">
-          {/* Text Section */}
+          {/* Hero Section */}
           <div
             className="text-white flex flex-col justify-center p-16 bg-cover bg-center h-[100vh] w-full relative"
             style={{
@@ -109,37 +110,32 @@ const HomePage = () => {
               backgroundPosition: "center",
             }}
           >
-            {/* Darken the Image using a pseudo-element */}
             <div className="absolute inset-0 bg-black opacity-65 z-0"></div>
 
             <p className="text-5xl font-extrabold z-10 mt-20">
-              YOUR TRUSTED PARTNER <br />
-              <span className="block mt-6">FOR EVERY HOME NEED</span>
+              {t("home.hero.title")}
             </p>
 
             <p className="text-lg mt-10 leading-relaxed z-10">
-              Transform your home into a haven with Service Sathi — your trusted
-              partner for reliable, <br />
-              top-notch household services. From meticulous cleaning to expert
-              repairs, we deliver <br />
-              convenience, quality, and peace of mind tailored to your unique
-              needs.
+              {t("home.hero.description")}
             </p>
 
             <button
               onClick={() => navigate("/about")}
-              className="mt-12 hover:bg-white hover:text-black border-white border-2 text-white pl-6 py-4 w-[185px] hover:scale-105 transition-all duration-300 flex items-center z-10"
+              className="mt-12 hover:bg-white hover:text-black border-white border-2 text-white px-8 py-4 w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap"
             >
-              DISCOVER MORE <i className="fa-solid fa-arrow-right ml-1"></i>
+              {t("home.hero.button")}
+              <i className="fa-solid fa-arrow-right"></i>
             </button>
           </div>
         </div>
       </div>
 
+      {/* Services Section */}
       <div className="mt-10 mb-20" id="#category">
         <div>
           <p className="text-3xl font-semibold text-black flex justify-center">
-            Services Offered
+            {t("home.services.title")}
           </p>
         </div>
         <div className="-ml-14 mt-10 flex flex-col items-center space-y-12 space-x-16">
@@ -162,7 +158,7 @@ const HomePage = () => {
                     {item.category}
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    Find a variety of services under this category.
+                    {t("home.services.description")}
                   </p>
                 </div>
                 <div className="mt-4 text-right">
@@ -174,7 +170,6 @@ const HomePage = () => {
 
           {/* Bottom Row - 2 Services in the gaps */}
           <div className="flex gap-x-56 mt-[-40px]">
-            {" "}
             {CategoryData.slice(3, 5).map((item, index) => (
               <Link
                 onClick={() => scrollTo(0, 0)}
@@ -192,7 +187,7 @@ const HomePage = () => {
                     {item.category}
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    Find a variety of services under this category.
+                    {t("home.services.description")}
                   </p>
                 </div>
                 <div className="mt-4 text-right">
@@ -204,10 +199,11 @@ const HomePage = () => {
         </div>
       </div>
 
+      {/* Latest Picks Section */}
       <div className="mt-12 mb-16 flex flex-col items-center gap-4 text-gray-900 md:mx-10">
         <div>
           <p className="text-3xl font-semibold text-black flex justify-center mb-5">
-            Latest Picks
+            {t("home.latestPicks.title")}
           </p>
         </div>
         <div className="w-full ml-[4rem] grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 pt-5 gap-y-8 px-3 sm:px-0 ">
@@ -253,13 +249,14 @@ const HomePage = () => {
           }}
           className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-3.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
         >
-          All Services
+          {t("home.services.title")}
         </button>
       </div>
 
+      {/* Subscription Plans Section */}
       <div className="mb-16 ">
         <p className="text-3xl font-semibold text-black flex justify-center mb-6">
-          Subscription Plans
+          {t("home.subscriptionPlans.title")}
         </p>
         <div className="bg-[#262626] h-[85vh]">
           <div className="p-6 min-w-7xl mx-auto">
@@ -274,8 +271,7 @@ const HomePage = () => {
                       {subscription.plan === "12-month" ? "Plan B" : "Plan A"}
                     </p>
                     <p className="text-sm text-gray-500 mb-3">
-                      Get the most out of your membership with exclusive perks
-                      and discounts.
+                      {t("home.subscriptionPlans.description")}
                     </p>
                     <p className="text-xl font-semibold text-blue-700 mb-4">
                       {subscription.plan === "12-month"
@@ -295,7 +291,7 @@ const HomePage = () => {
                         <CheckCircleIcon className="text-gray-500 w-6 h-6 flex-shrink-0" />
                         <div>
                           <span className="text-base text-black">
-                            Services included:
+                            {t("home.subscriptionPlans.servicesIncluded")}
                           </span>
                           <br />
                           Carpet and Upholstery Cleaning, Window Cleaning, Light
@@ -316,7 +312,7 @@ const HomePage = () => {
                       onClick={() => handleChoosePlan(subscription)}
                       className="mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
                     >
-                      Choose Plan
+                      {t("home.subscriptionPlans.choosePlan")}
                     </button>
                   </div>
                 ))
@@ -330,10 +326,10 @@ const HomePage = () => {
         </div>
       </div>
 
+      {/* Testimonials Section */}
       <div className="ml-16 mb-10">
         <p className="text-3xl font-semibold text-black flex justify-center ">
-          {" "}
-          Testimonials{" "}
+          {t("home.testimonials.title")}
         </p>
       </div>
       <div>

@@ -57,7 +57,7 @@ const Services = () => {
           className={`py-2.5 px-6 border rounded text-sm transition-all ${
             showFilter
               ? "text-black rounded-md border-black border-2  hover:scale-105 transition-all duration-300"
-              : "bg-[#4b4b4b] hover:bg-white hover:text-black rounded-md border-black border-2 text-white hover:scale-105 transition-all duration-300"
+              : "bg-white text-black rounded-md border-black border-2  hover:scale-105 transition-all duration-300"
           }`}
           onClick={() => setShowFilter((prev) => !prev)}
         >
@@ -84,7 +84,7 @@ const Services = () => {
                   : navigate(`/services/${service}`)
               }
               className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded-lg transition-all cursor-pointer ${
-                category === service ? "bg-[#3f3f3f] text-white" : ""
+                category === service ? "bg-black text-white" : ""
               }`}
             >
               {service}

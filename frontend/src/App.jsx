@@ -16,32 +16,38 @@ import Subscriptions from './pages/Subscriptions';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import PaymentVerify from './pages/PaymentVerify';
+import { LanguageProvider } from './context/LanguageContext';
 
 const App = () => {
   return (
     <div>
-      <ToastContainer />
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/services/:category" element={<Services />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/my-profile" element={<MyProfile />} />
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/bookings/:serviceId" element={<Bookings />} />
-        <Route path="/subscriptions" element={<Subscriptions />} />
-        <Route
-          path="/subscription-payment-verify"
-          element={<PaymentVerify />}
-        />
-      </Routes>
-      <Footer />
+      <LanguageProvider>
+        <ToastContainer />
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:category" element={<Services />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/reset-password/:resetToken"
+            element={<ResetPassword />}
+          />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/bookings/:serviceId" element={<Bookings />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route
+            path="/subscription-payment-verify"
+            element={<PaymentVerify />}
+          />
+        </Routes>
+        <Footer />
+      </LanguageProvider>
     </div>
   );
 }
