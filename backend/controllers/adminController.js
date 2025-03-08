@@ -1,5 +1,4 @@
 import serviceModel from "../models/serviceModel.js";
-import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import bookingModel from "../models/bookingModel.js";
 import userModel from "../models/userModel.js";
@@ -13,9 +12,9 @@ import Contact from "../models/contactModel.js";
 const addService = async (req, res) => {
   try {
     const { name, category, about, price } = req.body;
-    const imageFile = req.file;
+    const imageFile = req.file; // Multer will add the file to req.file
 
-    //checking for all data to add srevice
+    // Checking for all required fields
     if (!name || !category || !about || !price) {
       return res.json({ success: false, message: "Missing details" });
     }
@@ -24,6 +23,7 @@ const addService = async (req, res) => {
       return res.status(400).json({ error: "Image file is required" });
     }
 
+    // Check if service with the same name already exists
     const existingService = await serviceModel.findOne({ name });
     if (existingService) {
       return res
@@ -31,12 +31,12 @@ const addService = async (req, res) => {
         .json({ success: false, message: "Service name must be unique" });
     }
 
-    //upload image to cloudinary
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-      resource_type: "image",
-    });
-    const imageUrl = imageUpload.secure_url;
+    // Construct the full image URL
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+      imageFile.filename
+    }`;
 
+    // Create a new service record
     const serviceData = {
       name,
       image: imageUrl,
@@ -48,9 +48,7 @@ const addService = async (req, res) => {
     const newService = new serviceModel(serviceData);
     await newService.save();
 
-    res.json({ success: true, message: "Service Added" });
-
-    // Proceed with saving the service to the database here
+    res.json({ success: true, message: "Service Added Successfully" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -73,7 +71,7 @@ const updateService = async (req, res) => {
         .json({ success: false, message: "Invalid service ID format" });
     }
 
-    // Fetch service from DB
+    // Fetch the existing service from the database
     const service = await serviceModel.findById(serviceId);
 
     if (!service) {
@@ -83,19 +81,13 @@ const updateService = async (req, res) => {
     }
 
     // Handle image upload if a new image is provided
-    let imageUrl = service.image;
-    if (imageFile) {
-      // Delete old image from Cloudinary if it exists
-      if (service.image) {
-        const publicId = service.image.split("/").pop().split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      }
+    let imageUrl = service.image; // Preserve the current image URL if no new image is provided
 
-      // Upload new image
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      imageUrl = imageUpload.secure_url;
+    if (imageFile) {
+      // If a new image is uploaded, we update the image URL to reflect the local file path
+      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        imageFile.filename
+      }`;
     }
 
     // Update service fields
@@ -104,10 +96,11 @@ const updateService = async (req, res) => {
     service.about = about || service.about;
     service.price = price !== undefined ? price : service.price;
     service.available = available !== undefined ? available : service.available;
-    service.image = imageUrl;
+    service.image = imageUrl; // Update the image field if a new one is uploaded
 
     console.log("Updated service before saving:", service);
 
+    // Save the updated service
     await service.save();
 
     console.log("Service successfully updated:", service);
@@ -135,12 +128,6 @@ const deleteService = async (req, res) => {
         .json({ success: false, message: "Service not found" });
     }
 
-    // Delete image from Cloudinary if exists
-    if (service.image) {
-      const publicId = service.image.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-    }
-
     // Delete service from database
     await serviceModel.deleteOne({ _id: serviceId });
 
@@ -151,6 +138,7 @@ const deleteService = async (req, res) => {
 };
 
 
+// API for adding a service provider
 const addServiceProvider = async (req, res) => {
   try {
     const {
@@ -163,7 +151,7 @@ const addServiceProvider = async (req, res) => {
       services,
       category,
     } = req.body;
-    const imageFile = req.file;
+    const imageFile = req.file; // This is handled by multer
 
     const parsedServices = services ? JSON.parse(services) : [];
 
@@ -182,8 +170,11 @@ const addServiceProvider = async (req, res) => {
     if (!category) {
       return res.json({ success: false, message: "Category missing" });
     }
-    if (!phone_number) {
-      return res.json({ success: false, message: "Phone number missing" });
+    if (!phone_number || phone_number.trim() === "") {
+      return res.json({
+        success: false,
+        message: "Phone number missing or invalid",
+      });
     }
     if (!citizenship_number) {
       return res.json({
@@ -204,33 +195,22 @@ const addServiceProvider = async (req, res) => {
     // Checking if the email already exists in the database
     const existingEmail = await serviceProviderModel.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({
-        success: false,
-        message: "Service provider with this email already exists",
-      });
+      return res.status(400).json({ success: false, message: "Service provider with this email already exists" });
     }
 
-    // Checking if the citizenship number already exists in the database
-    const existingCitizenship = await serviceProviderModel.findOne({
-      citizenship_number,
-    });
+    // Checking if the citizenship number already exists
+    const existingCitizenship = await serviceProviderModel.findOne({ citizenship_number });
     if (existingCitizenship) {
-      return res.status(400).json({
-        success: false,
-        message: "Service provider with this citizenship number already exists",
-      });
+      return res.status(400).json({ success: false, message: "Service provider with this citizenship number already exists" });
     }
 
-    // Image upload to cloudinary (if provided)
+    // Generate image URL if an image is provided (using multer's local path)
     let imageUrl = "";
     if (imageFile) {
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      imageUrl = imageUpload.secure_url;
+      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${imageFile.filename}`;
     }
 
-    // Create the new service provider data
+    // Create the service provider data
     const serviceProviderData = {
       name,
       email,
@@ -240,14 +220,16 @@ const addServiceProvider = async (req, res) => {
       address: parsedAddress, // The address object will be parsed here
       services: parsedServices, // Ensure services are an array of strings
       category,
-      image: imageUrl,
+      image: imageUrl, // Use the generated URL for the image
     };
 
+    // Save the new service provider to the database
     const newServiceProvider = new serviceProviderModel(serviceProviderData);
     await newServiceProvider.save();
 
     res.json({ success: true, message: "Service provider added successfully" });
   } catch (error) {
+    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -265,7 +247,7 @@ const updateServiceProvider = async (req, res) => {
       services,
       category,
     } = req.body;
-    const imageFile = req.file;
+    const imageFile = req.file; // Get the image file from the request
 
     // Check if the service provider exists
     const serviceProvider = await serviceProviderModel.findById(id);
@@ -309,19 +291,13 @@ const updateServiceProvider = async (req, res) => {
       }
     }
 
-    // Handle image upload if a new image is provided
-    let imageUrl = serviceProvider.image;
+    // Handle image upload if a new image is provided (Multer for local upload)
+    let imageUrl = serviceProvider.image; // Preserve the current image URL if no new image is uploaded
     if (imageFile) {
-      // Delete the old image from Cloudinary
-      if (serviceProvider.image) {
-        const publicId = serviceProvider.image.split("/").pop().split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      }
-      // Upload the new image
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      imageUrl = imageUpload.secure_url;
+      // Generate the local file path for the uploaded image
+      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        imageFile.filename
+      }`;
     }
 
     // Update the service provider data
@@ -334,8 +310,9 @@ const updateServiceProvider = async (req, res) => {
     serviceProvider.address = parsedAddress;
     serviceProvider.services = parsedServices;
     serviceProvider.category = category || serviceProvider.category;
-    serviceProvider.image = imageUrl;
+    serviceProvider.image = imageUrl; // Save the new image URL
 
+    // Save the updated service provider in the database
     await serviceProvider.save();
 
     res.json({

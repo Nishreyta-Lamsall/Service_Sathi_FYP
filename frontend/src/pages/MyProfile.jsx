@@ -70,7 +70,7 @@ const MyProfile = () => {
             <img
               className="w-48 h-48 object-cover rounded-full border-4 border-white shadow-lg transform transition-all duration-500 hover:scale-110"
               src={userData.image}
-              alt=""
+              alt="Profile"
             />
           )}
         </div>

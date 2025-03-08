@@ -2,7 +2,6 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import { v2 as cloudinary } from "cloudinary";
 import serviceModel from "../models/serviceModel.js";
 import bookingModel from "../models/bookingModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
@@ -314,7 +313,7 @@ const updateProfile = async (req, res) => {
     const { userId, name, phone, address, dob, gender } = req.body;
     const imageFile = req.file;
 
-    if ((!name, !phone, !address, !dob, !gender)) {
+    if (!name || !phone || !address || !dob || !gender) {
       return res.json({ success: false, message: "Data missing" });
     }
 
@@ -329,24 +328,23 @@ const updateProfile = async (req, res) => {
         gender,
       },
       { new: true }
-    ); // The `new` option returns the updated document.
+    );
 
     if (imageFile) {
-      // Upload image to Cloudinary
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      const imageURL = imageUpload.secure_url;
+      // Construct the full image URL
+      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        imageFile.filename
+      }`;
 
       // Update the image in the user model
-      await userModel.findByIdAndUpdate(userId, { image: imageURL });
-    }
+      await userModel.findByIdAndUpdate(userId, { image: imageUrl });
 
-    // Update the userData in all related bookings
-    await bookingModel.updateMany(
-      { userId }, 
-      { $set: { userData: updatedUser } } 
-    );
+      // Update the userData in all related bookings
+      await bookingModel.updateMany(
+        { userId },
+        { $set: { userData: { ...updatedUser.toObject(), image: imageUrl } } }
+      );
+    }
 
     res.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
