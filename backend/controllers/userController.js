@@ -120,7 +120,10 @@ const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      // Set the token expiration to 30 days
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "30d", // Token will expire in 30 days
+      });
       res.json({ success: true, token });
     } else {
       res.json({ success: false, message: "Invalid Credentials!" });
@@ -130,6 +133,7 @@ const loginUser = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 const resendVerification = async (req, res) => {
   try {

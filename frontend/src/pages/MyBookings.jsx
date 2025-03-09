@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const MyBookings = () => {
   const { backendUrl, token, getServicesData, currencySymbol } =
@@ -9,6 +10,8 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [serviceProviders, setServiceProviders] = useState({});
   const [reviewSubmitted, setReviewSubmitted] = useState({});
+
+  const { t} = useTranslation();
 
   const months = [
     " ",
@@ -156,7 +159,7 @@ const MyBookings = () => {
     <div className="flex flex-col min-h-screen p-6">
       <div className="flex-1 mx-16">
         <p className="pb-4 mt-10 text-2xl font-semibold text-black border-b">
-          My Bookings
+          {t("myBookingss.title")}
         </p>
 
         {bookings.filter(
@@ -198,7 +201,7 @@ const MyBookings = () => {
                       </p>
                       <p className="mt-2 text-sm">
                         <span className="font-medium text-gray-800">
-                          Order Status:{" "}
+                          {t("myBookingss.orderStatus")}{" "}
                         </span>
                         <span
                           className={`font-semibold ${
@@ -217,7 +220,7 @@ const MyBookings = () => {
 
                       <p className="mt-2 text-sm">
                         <span className="font-medium text-gray-800">
-                          Service Provider:{" "}
+                          {t("myBookingss.serviceProvider")}{" "}
                         </span>
                         <span className="font-semibold text-gray-800">
                           {serviceProvider
@@ -228,7 +231,7 @@ const MyBookings = () => {
 
                       <p className="mt-1 text-sm">
                         <span className="font-medium text-gray-800">
-                          Amount:{" "}
+                          {t("myBookingss.amount")}{" "}
                         </span>
                         {currencySymbol}
                         {item.amount}
@@ -248,7 +251,7 @@ const MyBookings = () => {
 
                       <p className="mt-1 text-sm">
                         <span className="font-medium text-gray-800">
-                          Date and Time:{" "}
+                          {t("myBookingss.dateTime")}{" "}
                         </span>
                         {slotDateFormat(item.slotDate)} | {item.slotTime}
                       </p>
@@ -259,7 +262,7 @@ const MyBookings = () => {
                         onClick={() => cancelBooking(item._id)}
                         className="text-sm font-medium text-red-600 border border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300"
                       >
-                        Cancel Booking
+                        {t("myBookingss.cancelBooking")}
                       </button>
                     </div>
                   </div>
@@ -268,7 +271,7 @@ const MyBookings = () => {
           </div>
         ) : (
           <p className="text-center text-gray-500 mt-10">
-            No bookings available.
+            {t("myBookingss.noBookings")}
           </p>
         )}
 
@@ -276,7 +279,7 @@ const MyBookings = () => {
           0 && (
           <div className="mt-12">
             <p className="pb-4 text-2xl font-semibold text-black border-b">
-              Completed Bookings
+              {t("myBookingss.completedBookings")}
             </p>
             <div className="mt-6 space-y-4">
               {bookings
@@ -303,7 +306,7 @@ const MyBookings = () => {
                         </p>
                         <p className="mt-2 text-sm">
                           <span className="font-medium text-gray-800">
-                            Order Status:{" "}
+                            {t("myBookingss.orderStatus")}{" "}
                           </span>
                           <span className="font-semibold text-blue-600">
                             Completed
@@ -312,7 +315,7 @@ const MyBookings = () => {
 
                         <p className="mt-2 text-sm">
                           <span className="font-medium text-gray-800">
-                            Service Provider:{" "}
+                            {t("myBookingss.serviceProvider")}{" "}
                           </span>
                           <span className="font-semibold text-gray-800">
                             {serviceProvider
@@ -333,7 +336,7 @@ const MyBookings = () => {
                           }}
                           className="text-sm font-medium text-gray-700 border border-gray-700 px-4 py-1.5 rounded-lg hover:bg-gray-900 hover:text-white transition-all duration-300"
                         >
-                          Leave Review
+                          {t("myBookingss.review")}
                         </button>
                       </div>
                     </div>
@@ -349,11 +352,11 @@ const MyBookings = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-xl w-1/3">
             <h3 className="text-lg font-semibold text-gray-800">
-              Leave a Review
+              {t("myBookingss.reviewTitle")}
             </h3>
             <div className="mt-4">
               <label htmlFor="rating" className="block text-sm text-gray-600">
-                Rating:
+                {t("myBookingss.rating")}
               </label>
               <select
                 id="rating"
@@ -371,7 +374,7 @@ const MyBookings = () => {
             </div>
             <div className="mt-4">
               <label htmlFor="comment" className="block text-sm text-gray-600">
-                Comment:
+                {t("myBookingss.comment")}
               </label>
               <textarea
                 id="comment"
@@ -386,13 +389,13 @@ const MyBookings = () => {
                 onClick={submitReview}
                 className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-900"
               >
-                Submit Review
+                {t("myBookingss.submit")}
               </button>
               <button
                 onClick={() => setReviewModalOpen(false)}
                 className="ml-4 px-4 py-2 border border-gray-400 rounded-lg text-gray-700 hover:bg-gray-200"
               >
-                Close
+                {t("myBookingss.close")}
               </button>
             </div>
           </div>

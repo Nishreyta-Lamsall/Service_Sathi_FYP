@@ -117,7 +117,11 @@ const Services = () => {
                       item.available ? "bg-blue-500" : "bg-red-500"
                     }`}
                   ></p>
-                  <p>{item.available ? "Available" : "Not Available"}</p>
+                  <p>
+                    {item.available
+                      ? t("service.availability.available")
+                      : t("service.availability.notAvailable")}
+                  </p>
                 </div>
 
                 <p className="text-gray-900 text-base font-medium">

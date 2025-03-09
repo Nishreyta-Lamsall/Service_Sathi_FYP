@@ -8,7 +8,7 @@ import { AppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
-  const { t, i18n } = useTranslation();
+  const { t} = useTranslation();
   const { language, handleLanguageChange } = useContext(LanguageContext); // Get language context
   const [isOpen, setIsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -102,7 +102,7 @@ const NavBar = () => {
                     onClick={() => navigate("my-profile")}
                     className="hover:text-black transition-colors duration-300"
                   >
-                    {t("myProfile")}
+                    {t("myProfilee")}
                   </p>
                   <p
                     onClick={() => navigate("my-bookings")}

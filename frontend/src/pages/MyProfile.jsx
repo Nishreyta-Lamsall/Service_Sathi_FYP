@@ -3,10 +3,13 @@ import { AppContext } from "../context/AppContext";
 import {assets} from '../assets/assets'
 import axios from "axios";
 import {toast} from 'react-toastify'
+import { useTranslation } from "react-i18next";
 
 const MyProfile = () => {
   
   const {userData, setUserData, token, backendUrl, loadUserProfileData} = useContext(AppContext)
+
+  const { t } = useTranslation(); 
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -97,18 +100,18 @@ const MyProfile = () => {
 
           {/* Contact Information */}
           <p className="font-medium text-lg text-black mb-2">
-            CONTACT INFORMATION
+            {t("myProfile.contactInformation")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-gray-900">Email ID:</p>
+              <p className="text-gray-900">{t("myProfile.emailId")}</p>
               <p className=" text-blue-700 transition-all duration-300">
                 {userData.email}
               </p>
             </div>
 
             <div>
-              <p className="text-gray-900">Phone:</p>
+              <p className="text-gray-900">{t("myProfile.phone")}</p>
               {isEdit ? (
                 <input
                   className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
@@ -127,7 +130,7 @@ const MyProfile = () => {
 
             {/* Address Fields */}
             <div className="col-span-2">
-              <p className="text-gray-900">Address:</p>
+              <p className="text-gray-900">{t("myProfile.address")}</p>
               {isEdit ? (
                 <>
                   <input
@@ -166,11 +169,11 @@ const MyProfile = () => {
 
           {/* Other Information */}
           <p className="font-medium text-lg text-black mt-6 mb-2">
-            OTHER INFORMATION
+            {t("myProfile.otherInformation")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-gray-900">Gender:</p>
+              <p className="text-gray-900">{t("myProfile.gender")}</p>
               {isEdit ? (
                 <select
                   className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
@@ -179,8 +182,8 @@ const MyProfile = () => {
                   }
                   value={userData.gender}
                 >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+                  <option value="Male">{t("myProfile.male")}</option>
+                  <option value="Female">{t("myProfile.female")}</option>
                 </select>
               ) : (
                 <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
@@ -190,7 +193,7 @@ const MyProfile = () => {
             </div>
 
             <div>
-              <p className="text-gray-900">Birthday:</p>
+              <p className="text-gray-900">{t("myProfile.birthday")}</p>
               {isEdit ? (
                 <input
                   className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
@@ -216,14 +219,14 @@ const MyProfile = () => {
                 className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
                 onClick={updateUserProfileData}
               >
-                Save Information
+                {t("myProfile.saveInformation")}
               </button>
             ) : (
               <button
                 className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
                 onClick={() => setIsEdit(true)}
               >
-                Edit
+                {t("myProfile.edit")}
               </button>
             )}
           </div>

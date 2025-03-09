@@ -3,9 +3,11 @@ import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const OrderHistory = () => {
   const { backendUrl, token, getServicesData } = useContext(AppContext);
+  const { t } = useTranslation();
 
   const [bookings, setBookings] = useState([]);
   const months = [
@@ -56,7 +58,7 @@ const OrderHistory = () => {
     <div className="flex flex-col min-h-screen p-6">
       <div className="flex-1 mx-16">
         <p className="pb-4 mt-10 text-2xl font-semibold text-black border-b">
-          Order History
+          {t("orderHistory")}
         </p>
 
         {bookings.filter(
@@ -89,7 +91,7 @@ const OrderHistory = () => {
                     <p className="text-gray-500">{item.serviceData.category}</p>
                     <p className="mt-2 text-sm">
                       <span className="font-medium text-gray-800">
-                        Order Status:{" "}
+                        {t("myBookingss.orderStatus")}{" "}
                       </span>
                       <span
                         className={`font-semibold ${
@@ -108,7 +110,7 @@ const OrderHistory = () => {
 
                     <p className="mt-1 text-sm">
                       <span className="font-medium text-gray-800">
-                        Date and Time:{" "}
+                        {t("myBookingss.dateTime")}{" "}
                       </span>
                       {slotDateFormat(item.slotDate)} | {item.slotTime}
                     </p>
@@ -118,11 +120,10 @@ const OrderHistory = () => {
                   <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
                     {item.cancelled ? (
                       <button className="text-sm font-medium text-gray-500 border border-gray-500 px-4 py-1.5 rounded-lg hover:bg-gray-500 hover:text-white transition-all duration-300">
-                        Cancelled
+                        {t("myBookingss.cancelled")}{" "}
                       </button>
                     ) : (
-                      <>
-                      </>
+                      <></>
                     )}
                   </div>
                 </div>
@@ -130,7 +131,7 @@ const OrderHistory = () => {
           </div>
         ) : (
           <p className="text-center text-gray-500 mt-10">
-            No orders found in history.
+            {t("myBookingss.noOrder")}
           </p>
         )}
       </div>
