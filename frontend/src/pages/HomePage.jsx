@@ -268,7 +268,7 @@ const HomePage = () => {
                     className="border p-6 rounded-lg shadow-md bg-[#fbfbfb] hover:shadow-lg transition-all"
                   >
                     <p className="text-xl font-semibold text-black mb-4">
-                      {subscription.plan === "12-month" ? "Plan B" : "Plan A"}
+                      {t("home.subscriptionPlans.title2")}
                     </p>
                     <p className="text-sm text-gray-500 mb-3">
                       {t("home.subscriptionPlans.description")}
@@ -281,11 +281,13 @@ const HomePage = () => {
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2">
                         <CheckCircleIcon className="text-gray-500" />
-                        {subscription.plan} subscription
+                        {subscription.plan}{" "}
+                        {t("home.subscriptionPlans.subscriptionDuration")}
                       </li>
                       <li className="flex items-center gap-2">
                         <CheckCircleIcon className="text-gray-500" />
-                        {subscription.discount}% discount on selected services
+                        {subscription.discount}%{" "}
+                        {t("home.subscriptionPlans.discountOffer")}
                       </li>
                       <li className="flex items-start gap-2 text-sm text-gray-700">
                         <CheckCircleIcon className="text-gray-500 w-6 h-6 flex-shrink-0" />
@@ -294,17 +296,14 @@ const HomePage = () => {
                             {t("home.subscriptionPlans.servicesIncluded")}
                           </span>
                           <br />
-                          Carpet and Upholstery Cleaning, Window Cleaning, Light
-                          Installation, Power Outlet Installation, Ceiling Fan
-                          Installation, Electrical Safety Inspections, Inverter
-                          Installation.
+                          {t("home.subscriptionPlans.discountedServices")}
                         </div>
                       </li>
 
                       {subscription.plan === "12-month" && (
                         <li className="flex items-center gap-2">
                           <CheckCircleIcon className="text-gray-500" />
-                          Free scheduled inspections every 4 months
+                          {t("home.subscriptionPlans.freeInspections")}
                         </li>
                       )}
                     </ul>
@@ -318,7 +317,7 @@ const HomePage = () => {
                 ))
               ) : (
                 <p className="text-center text-gray-600 col-span-2">
-                  No subscriptions available
+                  {t("home.subscriptionPlans.noSubscriptions")}
                 </p>
               )}
             </div>

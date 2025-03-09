@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 const Services = () => {
   const { category } = useParams();
@@ -9,6 +10,7 @@ const Services = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { Services } = useContext(AppContext);
 
@@ -33,13 +35,13 @@ const Services = () => {
 
   return (
     <div className="ml-10 mt-10">
-      <p className="text-gray-600">Discover the right service for you.</p>
+      <p className="text-gray-600"> {t("service.discover")}</p>
 
       {/* Search Bar */}
       <div className="flex items-center gap-2 mt-4">
         <input
           type="text"
-          placeholder="Search services..."
+          placeholder={t("service.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border border-gray-300 p-2 rounded w-64"
@@ -48,7 +50,7 @@ const Services = () => {
           onClick={applyFilter}
           className=" bg-[#242424] hover:bg-white hover:text-black rounded-md border-black border-2 text-white pl-4 py-1.5 pr-4 z-10 hover:scale-105 transition-all duration-300"
         >
-          Search
+          {t("service.searchButton")}
         </button>
       </div>
 
@@ -61,7 +63,7 @@ const Services = () => {
           }`}
           onClick={() => setShowFilter((prev) => !prev)}
         >
-          Filters
+          {t("service.filters")}
         </button>
 
         <div

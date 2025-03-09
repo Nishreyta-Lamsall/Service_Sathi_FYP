@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,8 @@ const ContactUs = () => {
     phone: "",
     message: "",
   });
+
+  const { t } = useTranslation();
 
   const [successMessage, setSuccessMessage] = useState(""); 
 
@@ -31,7 +34,7 @@ const handleSubmit = async (e) => {
     });
 
     if (response.ok) {
-      setSuccessMessage("Message sent successfully!");
+      setSuccessMessage(t("contactUs.successMessage"));
       setFormData({
         firstName: "",
         lastName: "",
@@ -40,10 +43,10 @@ const handleSubmit = async (e) => {
         message: "",
       });
     } else {
-      setSuccessMessage("Failed to send message. Try again!");
+      setSuccessMessage(t("contactUs.errorMessage.failed")); 
     }
   } catch (error) {
-    setSuccessMessage("Error occurred. Please try again!");
+    setSuccessMessage(t("contactUs.errorMessage.error"));
   }
 
   setTimeout(() => {
@@ -59,19 +62,21 @@ const handleSubmit = async (e) => {
           <div className="flex items-center justify-center w-36 h-36 bg-gray-300 rounded-full">
             <i className="fas fa-envelope text-7xl"></i>
           </div>
-          <h3 className="text-3xl font-bold mt-6">Contact the Help Team</h3>
+          <h3 className="text-3xl font-bold mt-6">
+            {t("contactUs.contactHelpTeam")}
+          </h3>
           <ul className="mt-6 text-gray-600 space-y-3">
             <li className="flex items-center gap-2">
               <span className="text-blue-600">&#128205;</span>
-              Balaju, Kathmandu
+              {t("contactUs.address")}
             </li>
             <li className="flex items-center gap-2">
               <span className="text-blue-600">&#128222;</span>
-              +977 9851097545
+              {t("contactUs.phone")}
             </li>
             <li className="flex items-center gap-2">
               <span className="text-blue-600">&#9993;</span>
-              servicesathi.business@gmail.com
+              {t("contactUs.email")}
             </li>
           </ul>
         </div>
@@ -81,7 +86,9 @@ const handleSubmit = async (e) => {
           onSubmit={handleSubmit}
           className="bg-gray-50 p-8 rounded-lg shadow-md space-y-6"
         >
-          <h2 className="text-3xl font-semibold text-center">Contact Us</h2>
+          <h2 className="text-3xl font-semibold text-center">
+            {t("contactUs.contactus")}
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
@@ -89,7 +96,7 @@ const handleSubmit = async (e) => {
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              placeholder="First Name*"
+              placeholder={t("contactUs.form.firstName")}
               className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
               required
             />
@@ -98,7 +105,7 @@ const handleSubmit = async (e) => {
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              placeholder="Last Name*"
+              placeholder={t("contactUs.form.lastName")}
               className="border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
               required
             />
@@ -108,7 +115,7 @@ const handleSubmit = async (e) => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Email*"
+            placeholder={t("contactUs.form.email")}
             className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
           />
@@ -117,7 +124,7 @@ const handleSubmit = async (e) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="Phone number*"
+            placeholder={t("contactUs.form.phone")}
             className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
           />
@@ -125,7 +132,7 @@ const handleSubmit = async (e) => {
             name="message"
             value={formData.message}
             onChange={handleChange}
-            placeholder="Your message..."
+            placeholder={t("contactUs.form.message")}
             rows="5"
             className="border border-gray-300 rounded-lg w-full p-4 focus:outline-none focus:ring-1 focus:ring-gray-500"
             required
@@ -136,7 +143,7 @@ const handleSubmit = async (e) => {
               type="submit"
               className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
             >
-              Submit
+              {t("contactUs.form.submitButton")}
             </button>
           </div>
 
