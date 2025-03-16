@@ -53,32 +53,35 @@ const AboutUs = () => {
         </div>
 
         {/* Image + Text Section */}
-        <div className="relative flex justify-center items-center mt-16 ml-52">
-          <div className="relative">
+        <div className="relative flex flex-col lg:flex-row justify-center items-center mt-16 mx-4 lg:mx-0 lg:ml-52">
+          {/* Image Container */}
+          <div className="relative w-full lg:w-auto">
             <img
               src={aboutusimg}
               alt="About Us"
-              className="w-[80vh] h-[90vh] object-cover"
+              className="w-full h-[50vh] lg:w-[80vh] lg:h-[90vh] object-cover"
             />
           </div>
 
-          <div className="absolute left-10 md:left-9 -mt-10 bg-white w-[300px] h-[55vh] md:w-[480px] p-10 shadow-2xl">
+          {/* Text Overlay Container */}
+          <div className="relative lg:absolute lg:left-10 lg:-mt-10 bg-white w-full lg:w-[300px] xl:w-[480px] h-auto lg:h-[55vh] p-6 lg:p-10 shadow-2xl mt-6 lg:mt-0">
             <p className="text-blue-950 uppercase text-base font-semibold">
               {t("imageTextSection.welcome")}
             </p>
-            <h2 className="text-4xl font-medium text-black leading-tight mt-6">
+            <h2 className="text-3xl lg:text-4xl font-medium text-black leading-tight mt-4 lg:mt-6">
               {t("imageTextSection.headline")}
             </h2>
-            <p className="text-gray-600 mt-6 font-sans">
+            <p className="text-gray-600 mt-4 lg:mt-6 font-sans">
               {t("imageTextSection.description")}
             </p>
           </div>
         </div>
 
         {/* What Makes Us Different Section */}
-        <div className="flex flex-col sm:flex-row items-start mt-14 gap-16 mx-auto max-w-7xl bg-gray-50 p-8 rounded-xl shadow-md">
-          <div className="w-full sm:w-1/2 mt-28 ml-10">
-            <p className="text-4xl font-semibold mb-4">
+        <div className="flex flex-col lg:flex-row items-start mt-14 gap-8 lg:gap-16 mx-auto max-w-7xl bg-gray-50 p-6 lg:p-8 rounded-xl shadow-md">
+          {/* Left Section - Title and Description */}
+          <div className="w-full lg:w-1/2 mt-8 lg:mt-28 ml-0 lg:ml-10">
+            <p className="text-3xl lg:text-4xl font-semibold mb-4">
               {t("whatMakesUsDifferent.title")}
             </p>
             <p className="text-base text-gray-700 leading-relaxed">
@@ -86,7 +89,8 @@ const AboutUs = () => {
             </p>
           </div>
 
-          <div className="w-full sm:w-[400px] flex flex-col gap-6">
+          {/* Right Section - Features */}
+          <div className="w-full lg:w-[400px] flex flex-col gap-6">
             {[
               {
                 img: (
@@ -125,10 +129,10 @@ const AboutUs = () => {
               <div
                 key={index}
                 className={`bg-white border border-gray-200 shadow-lg p-5 flex items-center gap-4 rounded-lg transition-all duration-300 hover:scale-105
-                  ${index === 0 ? "ml-[-20px]" : ""}
-                  ${index === 1 ? "ml-[20px]" : ""}
-                  ${index === 2 ? "ml-[-20px]" : ""}
-                `}
+          ${index === 0 ? "lg:ml-[-20px]" : ""}
+          ${index === 1 ? "lg:ml-[20px]" : ""}
+          ${index === 2 ? "lg:ml-[-20px]" : ""}
+        `}
               >
                 <div className="flex-shrink-0">{item.img}</div>
                 <div>
@@ -145,20 +149,28 @@ const AboutUs = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="w-full mt-16 p-8 rounded-lg mx-auto bg-gradient-to-r from-gray-50 to-gray-100 shadow-lg max-w-screen-2xl">
-          <p className="text-3xl font-semibold mb-8 text-center animate-fade-in">
+        <div className="w-full mt-16 p-4 sm:p-8 rounded-lg mx-auto bg-gradient-to-r from-gray-50 to-gray-100 shadow-lg max-w-screen-2xl">
+          {/* Title */}
+          <p className="text-2xl sm:text-3xl font-semibold mb-8 text-center animate-fade-in">
             {t("stats.title")}
           </p>
-          <div className="flex gap-40 overflow-x-auto mt-16 ml-28">
+
+          {/* Stats Container */}
+          <div className="flex flex-col sm:flex-row gap-8 sm:gap-40 overflow-x-auto sm:overflow-visible mt-8 sm:mt-16 mx-4 sm:ml-28">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="w-auto text-center flex flex-col items-center mb-6 transform transition-all hover:scale-95"
+                className="w-full sm:w-auto text-center flex flex-col items-center mb-6 transform transition-all hover:scale-95"
               >
+                {/* Stat Value */}
                 <p className="text-2xl font-semibold text-blue-900 animate-count-up">
                   {count}+
                 </p>
+
+                {/* Divider */}
                 <hr className="w-20 my-4 border-t-2 border-blue-300 rounded-full" />
+
+                {/* Stat Label */}
                 <p className="text-lg text-black font-semibold uppercase tracking-wide">
                   {stat.label}
                 </p>
@@ -168,23 +180,29 @@ const AboutUs = () => {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-12 mx-auto max-w-5xl">
-          <p className="text-3xl font-semibold mb-6 text-center">
+        <div className="mt-12 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          {/* Title */}
+          <p className="text-2xl sm:text-3xl font-semibold mb-6 text-center">
             {t("faq.title")}
           </p>
-          <div className="space-y-5">
+
+          {/* FAQ Items */}
+          <div className="space-y-4">
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className={`border p-3 rounded-lg transition-all duration-500 ease-in-out ${
+                className={`border p-4 sm:p-6 rounded-lg transition-all duration-500 ease-in-out ${
                   openFaq === index ? "bg-gray-100" : "bg-gray-50"
                 }`}
               >
+                {/* Question */}
                 <div
                   onClick={() => toggleFaq(index)}
-                  className="flex justify-between cursor-pointer"
+                  className="flex justify-between items-center cursor-pointer"
                 >
-                  <p className="text-lg font-base">{faq.question}</p>
+                  <p className="text-base sm:text-lg font-medium">
+                    {faq.question}
+                  </p>
                   <span
                     className={`text-blue-900 transform transition-transform duration-300 ${
                       openFaq === index ? "rotate-180" : ""
@@ -193,6 +211,8 @@ const AboutUs = () => {
                     &#9660;
                   </span>
                 </div>
+
+                {/* Answer */}
                 <div
                   className={`grid transition-all duration-500 ease-in-out overflow-hidden ${
                     openFaq === index

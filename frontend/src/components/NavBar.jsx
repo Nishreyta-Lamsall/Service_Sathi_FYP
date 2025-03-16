@@ -8,8 +8,8 @@ import { AppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
-  const { t} = useTranslation();
-  const { language, handleLanguageChange } = useContext(LanguageContext); // Get language context
+  const { t } = useTranslation();
+  const { language, handleLanguageChange } = useContext(LanguageContext);
   const [isOpen, setIsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ const NavBar = () => {
 
   return (
     <nav className="sticky top-0 z-20 bg-white shadow-md">
-      <div className="flex justify-between items-center h-20 px-6 md:px-11">
-        <div className="flex items-center gap-7">
-          <Link to="/">
-            <h1 className="text-3xl font-bold text-black">ServiceSathi</h1>
-          </Link>
-        </div>
+      <div className="flex justify-between items-center h-20 px-6 sm:px-6 md:px-11">
+        <Link to="/">
+          <h1 className="text-xl sm:text-3xl font-bold text-black">
+            ServiceSathi
+          </h1>
+        </Link>
 
         <div className="md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
@@ -39,7 +39,7 @@ const NavBar = () => {
           </button>
         </div>
 
-        <ul className="md:flex gap-10 hidden transition-all duration-300 ease-in-out font-normal">
+        <ul className="hidden md:flex gap-6 lg:gap-10 text-sm lg:text-base">
           <li>
             <NavLink to="/">{t("navbarHome")}</NavLink>
           </li>
@@ -54,27 +54,27 @@ const NavBar = () => {
           </li>
         </ul>
 
-        <div className="pr-6 text-sm flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className="relative">
             <button
-              className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 ease-in-out py-2 pl-3 pr-1 rounded-full focus:outline-none"
+              className="bg-white text-black border border-black hover:bg-black hover:text-white transition-all py-1 px-2 sm:py-2 sm:px-3 rounded-full text-xs sm:text-sm"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={t("languageSwitch")}
             >
-              {language} <span className="ml-2">&#9662;</span>
+              {language} <span className="ml-1 sm:ml-2">&#9662;</span>
             </button>
 
             {isOpen && (
-              <div className="absolute left-0 mt-2 w-[7rem] bg-white shadow-lg rounded-md z-10">
-                <ul className="text-black">
+              <div className="absolute right-0 mt-2 w-24 sm:w-28 bg-white shadow-md rounded-md z-10">
+                <ul className="text-black text-xs sm:text-sm">
                   <li
-                    className="py-2 pl-3 hover:bg-gray-100 cursor-pointer"
+                    className="pl-3 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleLanguageChange("English")}
                   >
                     English
                   </li>
                   <li
-                    className="py-2 pl-3 hover:bg-gray-100 cursor-pointer"
+                    className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleLanguageChange("Nepali")}
                   >
                     नेपाली
@@ -126,7 +126,7 @@ const NavBar = () => {
               </div>
             </div>
           ) : (
-            <button className="text-black py-1.5 pl-3 pr-3 rounded-full border-2 border-black text-sm">
+            <button className="text-black border border-black px-3 py-1.5 rounded-full text-xs sm:text-sm">
               <Link to="/login">{t("login")}</Link>
             </button>
           )}
@@ -134,7 +134,7 @@ const NavBar = () => {
       </div>
 
       {menuOpen && (
-        <ul className="md:hidden flex flex-col items-center gap-5 py-4 bg-white shadow-md">
+        <ul className="md:hidden flex flex-col items-center gap-3 py-4 bg-white shadow-md">
           <li>
             <Link to="/" onClick={() => setMenuOpen(false)}>
               {t("navbarHome")}

@@ -98,12 +98,12 @@ const HomePage = () => {
   };
 
   return (
-    <div className="main">
+    <div className="main overflow-x-hidden">
       <div className="flex items-center justify-center min-h-screen -mt-20">
         <div className="w-full h-full flex relative overflow-hidden">
           {/* Hero Section */}
           <div
-            className="text-white flex flex-col justify-center p-16 bg-cover bg-center h-[100vh] w-full relative"
+            className="text-white flex flex-col justify-center p-8 sm:p-12 bg-cover bg-center h-[100vh] w-full relative"
             style={{
               backgroundImage: `url(${bannerimg})`,
               backgroundSize: "cover",
@@ -112,7 +112,7 @@ const HomePage = () => {
           >
             <div className="absolute inset-0 bg-black opacity-65 z-0"></div>
 
-            <p className="text-5xl font-extrabold z-10 mt-20">
+            <p className="text-3xl sm:text-4xl md:text-5xl font-extrabold z-10 mt-20 md:mt-10">
               {t("home.hero.title")}
             </p>
 
@@ -122,25 +122,25 @@ const HomePage = () => {
 
             <button
               onClick={() => navigate("/about")}
-              className="mt-12 hover:bg-white hover:text-black border-white border-2 text-white px-8 py-4 w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap"
+              className="mt-8 md:mt-12 hover:bg-white hover:text-black border-white border-2 text-white px-6 md:px-8 py-3 md:py-4 w-[160px] md:w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap text-sm md:text-base"
             >
               {t("home.hero.button")}
-              <i className="fa-solid fa-arrow-right"></i>
+              <i className="fa-solid fa-arrow-right ml-1"></i>
             </button>
           </div>
         </div>
       </div>
 
       {/* Services Section */}
-      <div className="mt-10 mb-20" id="#category">
+      <div className="mt-10 mb-20 ml-8 lg:ml-0" id="#category">
         <div>
           <p className="text-3xl font-semibold text-black flex justify-center">
             {t("home.services.title")}
           </p>
         </div>
-        <div className="-ml-14 mt-10 flex flex-col items-center space-y-12 space-x-16">
+        <div className="mt-10 sm:items-center flex flex-col lg:flex-row lg:flex-wrap lg:justify-center lg:space-x-16 lg:space-y-0 space-y-12">
           {/* Top Row - 3 Services */}
-          <div className="flex gap-x-40">
+          <div className="flex flex-col lg:flex-row lg:gap-x-40 space-y-12 lg:space-y-0 lg:mb-20">
             {CategoryData.slice(0, 3).map((item, index) => (
               <Link
                 onClick={() => scrollTo(0, 0)}
@@ -169,7 +169,7 @@ const HomePage = () => {
           </div>
 
           {/* Bottom Row - 2 Services in the gaps */}
-          <div className="flex gap-x-56 mt-[-40px]">
+          <div className="flex flex-col lg:flex-row lg:gap-x-56 lg:mt-[-40px] space-y-12 lg:space-y-0">
             {CategoryData.slice(3, 5).map((item, index) => (
               <Link
                 onClick={() => scrollTo(0, 0)}
@@ -254,18 +254,18 @@ const HomePage = () => {
       </div>
 
       {/* Subscription Plans Section */}
-      <div className="mb-16 ">
+      <div className="mb-16">
         <p className="text-3xl font-semibold text-black flex justify-center mb-6">
           {t("home.subscriptionPlans.title")}
         </p>
         <div className="bg-[#262626] h-[85vh]">
-          <div className="p-6 min-w-7xl mx-auto">
-            <div className="grid place-content-center gap-10 mt-[70px]">
+          <div className="p-6 min-w-full mx-auto">
+            <div className="grid grid-cols-1 gap-10 md:mt-[70px] mt-4">
               {subscriptions.length > 0 ? (
                 subscriptions.map((subscription) => (
                   <div
                     key={subscription._id}
-                    className="border p-6 rounded-lg shadow-md bg-[#fbfbfb] hover:shadow-lg transition-all"
+                    className="border md:p-6 p-2 rounded-lg shadow-md bg-[#fbfbfb] hover:shadow-lg transition-all"
                   >
                     <p className="text-xl font-semibold text-black mb-4">
                       {t("home.subscriptionPlans.title2")}

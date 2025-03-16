@@ -186,7 +186,7 @@ const MyBookings = () => {
                   >
                     <div className="flex-shrink-0">
                       <img
-                        className="w-36 h-36 object-cover rounded-lg"
+                        className="md:w-28 md:h-28 w-40 h-40 object-cover rounded-lg"
                         src={item.serviceData.image}
                         alt="Service"
                       />

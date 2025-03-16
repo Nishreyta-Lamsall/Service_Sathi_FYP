@@ -1,47 +1,46 @@
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
-import {assets} from '../assets/assets'
+import { assets } from "../assets/assets";
 import axios from "axios";
-import {toast} from 'react-toastify'
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 const MyProfile = () => {
-  
-  const {userData, setUserData, token, backendUrl, loadUserProfileData} = useContext(AppContext)
-
-  const { t } = useTranslation(); 
-
+  const { userData, setUserData, token, backendUrl, loadUserProfileData } =
+    useContext(AppContext);
+  const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
-
-  const [image, setImage] = useState(false)
+  const [image, setImage] = useState(false);
 
   const updateUserProfileData = async () => {
     try {
-      const formData = new FormData()
-      formData.append('name', userData.name)
+      const formData = new FormData();
+      formData.append("name", userData.name);
       formData.append("phone", userData.phone);
       formData.append("address", JSON.stringify(userData.address));
       formData.append("gender", userData.gender);
       formData.append("dob", userData.dob);
+      image && formData.append("image", image);
 
-      image && formData.append('image', image)
+      const { data } = await axios.post(
+        backendUrl + "/api/user/update-profile",
+        formData,
+        { headers: { token } }
+      );
 
-      const {data} = await axios.post(backendUrl + '/api/user/update-profile', formData, {headers:{token}})
-
-      if(data.success){
-        toast.success(data.message)
-        await loadUserProfileData()
-        setIsEdit(false)
-        setImage(false)
-      } else{
-        toast.error(data.message)
+      if (data.success) {
+        toast.success(data.message);
+        await loadUserProfileData();
+        setIsEdit(false);
+        setImage(false);
+      } else {
+        toast.error(data.message);
       }
-
     } catch (error) {
-      console.log(error)
-      toast.error(error.message)
+      console.log(error);
+      toast.error(error.message);
     }
-  }
+  };
 
   return (
     userData && (
@@ -102,15 +101,17 @@ const MyProfile = () => {
           <p className="font-medium text-lg text-black mb-2">
             {t("myProfile.contactInformation")}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Email */}
+            <div className="col-span-1">
               <p className="text-gray-900">{t("myProfile.emailId")}</p>
-              <p className=" text-blue-700 transition-all duration-300">
+              <p className="text-blue-700 transition-all duration-300">
                 {userData.email}
               </p>
             </div>
 
-            <div>
+            {/* Phone Number */}
+            <div className="col-span-1">
               <p className="text-gray-900">{t("myProfile.phone")}</p>
               {isEdit ? (
                 <input
@@ -122,48 +123,49 @@ const MyProfile = () => {
                   }
                 />
               ) : (
-                <p className=" text-gray-500 hover:text-gray-800 transition-all duration-300">
+                <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
                   {userData.phone}
                 </p>
               )}
             </div>
+          </div>
+          <hr className="my-4 border-gray-300" />
 
-            {/* Address Fields */}
-            <div className="col-span-2">
-              <p className="text-gray-900">{t("myProfile.address")}</p>
-              {isEdit ? (
-                <>
-                  <input
-                    className="border p-3 w-full rounded-lg mb-2 shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
-                    type="text"
-                    value={userData.address.line1}
-                    onChange={(e) =>
-                      setUserData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, line1: e.target.value },
-                      }))
-                    }
-                  />
-                  <input
-                    className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
-                    type="text"
-                    value={userData.address.line2}
-                    onChange={(e) =>
-                      setUserData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, line2: e.target.value },
-                      }))
-                    }
-                  />
-                </>
-              ) : (
-                <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
-                  {userData.address.line1}
-                  <br />
-                  {userData.address.line2}
-                </p>
-              )}
-            </div>
+          {/* Address Fields */}
+          <div className="col-span-2">
+            <p className="text-gray-900">{t("myProfile.address")}</p>
+            {isEdit ? (
+              <>
+                <input
+                  className="border p-3 w-full rounded-lg mb-2 shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
+                  type="text"
+                  value={userData.address.line1}
+                  onChange={(e) =>
+                    setUserData((prev) => ({
+                      ...prev,
+                      address: { ...prev.address, line1: e.target.value },
+                    }))
+                  }
+                />
+                <input
+                  className="border p-3 w-full rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
+                  type="text"
+                  value={userData.address.line2}
+                  onChange={(e) =>
+                    setUserData((prev) => ({
+                      ...prev,
+                      address: { ...prev.address, line2: e.target.value },
+                    }))
+                  }
+                />
+              </>
+            ) : (
+              <p className="text-gray-500 hover:text-gray-800 transition-all duration-300">
+                {userData.address.line1}
+                <br />
+                {userData.address.line2}
+              </p>
+            )}
           </div>
           <hr className="my-4 border-gray-300" />
 

@@ -77,7 +77,7 @@ const OrderHistory = () => {
                   {/* Image Section */}
                   <div className="flex-shrink-0">
                     <img
-                      className="w-28 h-28 object-cover rounded-lg"
+                      className="md:w-28 md:h-28 w-40 h-40 object-cover rounded-lg"
                       src={item.serviceData.image}
                       alt="Service"
                     />

@@ -85,7 +85,7 @@ const Services = () => {
                   ? navigate("/services")
                   : navigate(`/services/${service}`)
               }
-              className={`sm:w-auto pl-3 py-1.5 pr-10 border border-gray-300 rounded-lg transition-all cursor-pointer ${
+              className={`pl-3 py-1.5 md:pr-10 pr-20 border border-gray-300 rounded-lg transition-all cursor-pointer ${
                 category === service ? "bg-black text-white" : ""
               }`}
             >
