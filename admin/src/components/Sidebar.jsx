@@ -126,6 +126,24 @@ const Sidebar = () => {
             <p className="text-sm font-medium">Contact Information</p>
           </NavLink>
           <hr />
+          <NavLink
+            to="/testimonial"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+                isActive
+                  ? "bg-blue-100 text-blue-800"
+                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+              }`
+            }
+          >
+            <img
+              src={assets.testimonial_icon}
+              alt="Services List"
+              className="w-5"
+            />
+            <p className="text-sm font-medium">User testimonials</p>
+          </NavLink>
+          <hr />
         </ul>
       )}
     </div>

@@ -17,6 +17,7 @@ import booking_icon from "./booking_icon.png";
 import user_icon from "./user_icon.png";
 import provider_icon from "./provider_icon.png";
 import contact_icon from "./contact_icon.png"
+import testimonial_icon from "./testimonial.png";
 
 export const assets = {
   add_icon,
@@ -37,5 +38,6 @@ export const assets = {
   booking_icon,
   user_icon,
   provider_icon,
-  contact_icon
+  contact_icon,
+  testimonial_icon
 };
