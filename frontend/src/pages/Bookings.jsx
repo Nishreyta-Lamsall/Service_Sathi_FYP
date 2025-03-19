@@ -302,17 +302,18 @@ const Bookings = () => {
             Book a service
           </button>
         </div>
-        <div className="reviews-section mt-8 ml-[6.5rem]">
+
+        <div className="reviews-section mt-8 mx-4 sm:mx-8 md:mx-12 lg:mx-16 xl:ml-[6.5rem]">
           <h3 className="text-xl font-semibold text-gray-900">
             Reviews for {serviceProvider?.name || "Loading..."}
           </h3>
           {/* Display Service Provider Name */}
           {reviews.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
               {reviews.map((review, index) => (
                 <div
                   key={index}
-                  className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
+                  className="bg-white shadow-md rounded-lg p-5 border border-gray-200"
                 >
                   <div className="flex justify-between items-center">
                     <p className="font-medium text-gray-800">

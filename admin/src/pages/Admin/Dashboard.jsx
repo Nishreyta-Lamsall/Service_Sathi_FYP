@@ -1,8 +1,14 @@
-import React from "react";
-import { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
-import { useEffect } from "react";
 import { assets } from "../../assets/assets";
+import {
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 const Dashboard = () => {
   const { aToken, getDashData, cancelBooking, dashData } =
@@ -21,133 +27,197 @@ const Dashboard = () => {
     });
   };
 
+  const userData = [
+    { name: "Subscribed", value: dashData?.subscribedUsers || 0 },
+    { name: "Regular", value: dashData?.regularUsers || 0 },
+  ];
+
+  const COLORS = ["#0088FE", "#00C49F"]; // Colors for the pie chart
+
   return (
     dashData && (
-      <div>
-        <div className="flex flex-wrap gap-8 border-3 border-gray-300 p-6 rounded-lg">
-          {/* Service Card */}
-          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
-            <img
-              src={assets.service_icon}
-              alt="Service"
-              className="w-12 h-12"
-            />
-            <div>
-              <p className="text-4xl font-medium text-red-600">
-                {dashData.services}
-              </p>
-              <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">Services</p>
+      <div className="p-6 bg-gray-50 max-h-[90vh] overflow-y-auto scrollbar-none">
+        {/* Header */}
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          Admin Dashboard
+        </h1>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Services Card */}
+          <div className="bg-gradient-to-r from-blue-500 to-blue-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-5xl font-bold text-white">
+                  {dashData.services}
+                </p>
+                <p className="text-sm text-blue-100 mt-2">Total Services</p>
+              </div>
+              <img
+                src={assets.service_icon}
+                alt="Services"
+                className="w-16 h-16 opacity-90"
+              />
             </div>
           </div>
 
-          {/* Booking Card */}
-          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
-            <img
-              src={assets.booking_icon}
-              alt="Booking"
-              className="w-12 h-12"
-            />
-            <div>
-              <p className="text-4xl font-medium text-red-600">
-                {dashData.bookings}
-              </p>
-              <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">Bookings</p>
+          {/* Bookings Card */}
+          <div className="bg-gradient-to-r from-green-500 to-green-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-5xl font-bold text-white">
+                  {dashData.bookings}
+                </p>
+                <p className="text-sm text-green-100 mt-2">Total Bookings</p>
+              </div>
+              <img
+                src={assets.booking_icon}
+                alt="Bookings"
+                className="w-16 h-16 opacity-90"
+              />
             </div>
           </div>
 
           {/* Subscribed Users Card */}
-          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
-            <img
-              src={assets.user_icon}
-              alt="Subscribed User"
-              className="w-12 h-12"
-            />
-            <div>
-              <p className="text-4xl font-medium text-red-600">
-                {dashData.subscribedUsers}
-              </p>
-              <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">
-                Subscribed Users
-              </p>
+          <div className="bg-gradient-to-r from-purple-500 to-purple-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-5xl font-bold text-white">
+                  {dashData.subscribedUsers}
+                </p>
+                <p className="text-sm text-purple-100 mt-2">Subscribed Users</p>
+              </div>
+              <img
+                src={assets.user_icon}
+                alt="Users"
+                className="w-16 h-16 opacity-90"
+              />
             </div>
           </div>
 
-          {/* Regular Users Card */}
-          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg flex-1 min-w-[200px]">
-            <img
-              src={assets.user_icon}
-              alt="Regular User"
-              className="w-12 h-12"
-            />
-            <div>
-              <p className="text-4xl font-medium text-red-600">
-                {dashData.regularUsers}
-              </p>
-              <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">Regular Users</p>
-            </div>
-          </div>
-
-          {/* Provider Card */}
-          <div className="flex items-center gap-4 p-4 bg-gray-100 hover:bg-gray-200 duration-300 ease-in-out hover:scale-105 transition-all rounded-lg flex-1 min-w-[200px]">
-            <img
-              src={assets.provider_icon}
-              alt="Provider"
-              className="w-12 h-12"
-            />
-            <div>
-              <p className="text-4xl font-medium text-red-600">
-                {dashData.serviceProviders}
-              </p>
-              <hr className="w-14 my-2 border-t-2 border-gray-300" />
-              <p className="text-sm font-semibold text-black">Providers</p>
+          {/* Providers Card */}
+          <div className="bg-gradient-to-r from-orange-500 to-orange-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-5xl font-bold text-white">
+                  {dashData.serviceProviders}
+                </p>
+                <p className="text-sm text-orange-100 mt-2">
+                  Service Providers
+                </p>
+              </div>
+              <img
+                src={assets.provider_icon}
+                alt="Providers"
+                className="w-16 h-16 opacity-90"
+              />
             </div>
           </div>
         </div>
-        <div>
-          <div className="flex items-center gap-3.5 px-4 py-4 mt-10 rounded-t border">
-            <p>Recent Bookings</p>
-          </div>
-          <div>
-            {dashData.latestBookings.map((item, index) => {
-              return (
-                <div
-                  className="flex items-center px-6 py-3 gap-3 hover:bg-gray-200 border overflow-y-auto overflow-x-auto scrollbar-none"
-                  key={index}
+
+        {/* Charts Section */}
+        <div className="mb-8">
+
+          {/* Users Pie Chart */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              User Distribution
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={userData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
                 >
-                  <img
-                    className="rounded-full w-10"
-                    src={item.serviceData.image}
-                    alt=""
-                  />
-                  <div className="flex-1 text-sm">
-                    <p className="text-gray-500 font-medium">
-                      {item.serviceData.name}
-                    </p>
-                    <p className="text-gray-500">{item.slotDate}</p>
-                  </div>
-                  <div>
-                    {item.cancelled ? (
-                      <p className="text-red-400 text-sm font-medium mt-3">
-                        Cancelled
-                      </p>
-                    ) : (
-                      <div className="py-3 px-2 flex justify-center">
+                  {userData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Recent Bookings Table */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Recent Bookings
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Service
+                  </th>
+                  <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {dashData.latestBookings.map((item, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
                         <img
-                          onClick={() => handleCancelBooking(item._id)}
-                          className="w-5 cursor-pointer"
-                          src={assets.cancel_icon}
-                          alt="Cancel"
+                          src={item.serviceData.image}
+                          alt="Service"
+                          className="w-10 h-10 rounded-full"
                         />
+                        <p className="ml-4 text-sm text-gray-900">
+                          {item.serviceData.name}
+                        </p>
                       </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {item.slotDate}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {item.cancelled ? (
+                        <span className="px-2 py-1 text-xs text-red-600 bg-red-100 rounded-full">
+                          Cancelled
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs text-green-600 bg-green-100 rounded-full">
+                          Active
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {!item.cancelled && (
+                        <button
+                          onClick={() => handleCancelBooking(item._id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <img
+                            src={assets.cancel_icon}
+                            alt="Cancel"
+                            className="w-5 h-5"
+                          />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

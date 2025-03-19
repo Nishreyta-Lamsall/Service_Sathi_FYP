@@ -332,7 +332,7 @@ const HomePage = () => {
         </p>
       </div>
       <div>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-16">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-7">
           {testimonial.map((item, index) => (
             <Testimonial
               key={index}
@@ -343,6 +343,11 @@ const HomePage = () => {
               image={item.image}
             />
           ))}
+        </div>
+        <div class="flex justify-center items-center h-20 mb-10">
+          <button class="lg:ml-20 mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
+            Leave Testimonial
+          </button>
         </div>
       </div>
     </div>
