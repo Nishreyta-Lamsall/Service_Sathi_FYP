@@ -4,6 +4,7 @@ import authUser from '../middlewares/authUser.js';
 import upload from '../middlewares/multer.js';
 import { cancelSubscription } from '../controllers/subscriptionController.js';
 import { addReview, deleteReview, getAllReviews, getReviewsByServiceProvider } from '../controllers/reviewController.js';
+import { addTestimonial } from '../controllers/testimonialController.js';
 
 const userRouter = express.Router()
 
@@ -25,5 +26,6 @@ userRouter.post("/addreview/:serviceProviderId", authUser, addReview);
 userRouter.get("/getreviews/:serviceProviderId", getReviewsByServiceProvider);
 userRouter.get("/get-all-reviews", getAllReviews);
 userRouter.delete("/delete-review/:reviewId", authUser, deleteReview);
+userRouter.post("/addtestimonial", authUser, addTestimonial);
 
 export default userRouter

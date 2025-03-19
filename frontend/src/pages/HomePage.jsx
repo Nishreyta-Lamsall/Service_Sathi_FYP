@@ -15,6 +15,7 @@ import { CategoryData } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CheckCircle as CheckCircleIcon } from "lucide-react";
+import { HashLink } from "react-router-hash-link";
 
 const HomePage = () => {
   const { t } = useTranslation(); // Initialize useTranslation
@@ -32,6 +33,27 @@ const HomePage = () => {
   const [subscriptions, setSubscriptions] = useState([]);
 
   const navigate = useNavigate();
+  
+  const [testimonials, setTestimonials] = useState([]);
+
+   useEffect(() => {
+     const fetchApprovedTestimonials = async () => {
+       try {
+         const response = await axios.get(
+           `${backendUrl}/api/admin/approved-testimonial`
+         );
+         if (response.data.success) {
+           setTestimonials(response.data.testimonials);
+         } else {
+           console.error(response.data.message);
+         }
+       } catch (error) {
+         console.error("Error fetching testimonials:", error);
+       }
+     };
+
+     fetchApprovedTestimonials();
+   }, [backendUrl]);
 
   // Get all subscriptions
   const getSubscriptions = async () => {
@@ -326,28 +348,33 @@ const HomePage = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="ml-16 mb-10">
-        <p className="text-3xl font-semibold text-black flex justify-center ">
+      <div className="mb-10">
+        <p className="text-3xl font-semibold text-black flex justify-center mb-8">
           {t("home.testimonials.title")}
         </p>
-      </div>
-      <div>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-7">
-          {testimonial.map((item, index) => (
-            <Testimonial
-              key={index}
-              name={item.name}
-              rating={item.rating}
-              comment={item.comment}
-              id={item.id}
-              image={item.image}
-            />
-          ))}
+        <div>
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-[3rem] mb-7">
+            {testimonials.map((item, index) => (
+              <Testimonial
+                key={index}
+                name={item.name}
+                rating={item.rating}
+                comment={item.message} // Make sure this matches your API response
+                id={item._id} // If you have an ID field
+                image={item.image}
+              />
+            ))}
+          </div>
         </div>
-        <div class="flex justify-center items-center h-20 mb-10">
-          <button class="lg:ml-20 mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
-            Leave Testimonial
-          </button>
+        <div className="flex justify-center items-center h-20 mb-10">
+          <HashLink
+            to="/contact#testimonial" // Navigate to the Contact Us page and scroll to the testimonial section
+            smooth
+          >
+            <button className="lg:ml-20 mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
+              Leave Testimonial
+            </button>
+          </HashLink>
         </div>
       </div>
     </div>

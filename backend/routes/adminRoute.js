@@ -24,6 +24,7 @@ import authAdmin from "../middlewares/authAdmin.js";
 import { changeAvailability } from "../controllers/ServiceController.js";
 import { changeProviderAvailability } from "../controllers/serviceProviderController.js";
 import { createSubscription, getUserSubscription } from "../controllers/subscriptionController.js";
+import { deleteTestimonial, getAllTestimonials, getApprovedTestimonials, toggleApproval } from "../controllers/testimonialController.js";
 
 const adminRouter = express.Router();
 
@@ -74,5 +75,9 @@ adminRouter.get("/get-subscription/:userId",authAdmin, getUserSubscription);
 adminRouter.get("/get-subscriptions",getSubscriptions); 
 adminRouter.get("/contact", getcontact);
 adminRouter.post("/contact", postContact);
+adminRouter.get("/all-testimonials", authAdmin, getAllTestimonials);
+adminRouter.delete("/delete-testimonial/:testimonialId", authAdmin, deleteTestimonial);
+adminRouter.patch("/toggle-approval/:testimonialId", authAdmin, toggleApproval);
+adminRouter.get("/approved-testimonial", getApprovedTestimonials);
 
 export default adminRouter;

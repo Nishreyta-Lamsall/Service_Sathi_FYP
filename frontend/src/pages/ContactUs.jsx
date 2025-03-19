@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -11,13 +14,23 @@ const ContactUs = () => {
   });
 
   const { t } = useTranslation();
-
   const [successMessage, setSuccessMessage] = useState(""); 
+  const [rating, setRating] = useState("");
+  const [message, setMessage] = useState("");
+  const { backendUrl, token, userData } = useContext(AppContext);
 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+    const handleRatingChange = (event) => {
+      setRating(event.target.value);
+    };
+
+    const handleMessageChange = (event) => {
+      setMessage(event.target.value);
+    };
 
 
 const handleSubmit = async (e) => {
@@ -54,8 +67,42 @@ const handleSubmit = async (e) => {
   }, 2000);
 };
 
+  const handleSubmitTestimonial = async (event) => {
+    event.preventDefault();
+
+    if (!userData || !userData.email) {
+      toast.error("You need to be logged in to submit a testimonial.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/addtestimonial`,
+        {
+          message,
+          rating,
+          userId: userData._id,
+        },
+        {
+          headers: { token },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Testimonial added successfully!");
+        setRating("");
+        setMessage("");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error adding testimonial:", error);
+      toast.error("Error adding testimonial");
+    }
+  };
+
   return (
-    <div className="bg-white min-h-screen flex items-center justify-center py-16 px-6">
+    <div className="bg-white min-h-screen flex flex-col items-center justify-center py-16 px-6">
       <div className="bg-[#eeeef0] shadow-xl rounded-lg p-8 w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Contact Information */}
         <div className="flex flex-col items-center md:items-start justify-center text-center md:text-left lg:-mt-16 lg:ml-12">
@@ -152,6 +199,60 @@ const handleSubmit = async (e) => {
               {successMessage}
             </p>
           )}
+        </form>
+      </div>
+      <div
+        id="testimonial"
+        className="testimonial-container p-5 bg-gray-100 rounded-lg shadow-md max-w-lg mx-auto mt-16"
+      >
+        <h2 className="text-2xl font-semibold text-center mb-4">
+          Submit Your Testimonial
+        </h2>
+        <form onSubmit={handleSubmitTestimonial} className="space-y-4">
+          <div>
+            <label
+              htmlFor="rating"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Rating (1 to 5)
+            </label>
+            <input
+              type="number"
+              id="rating"
+              min="1"
+              max="5"
+              value={rating}
+              onChange={handleRatingChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Your Message
+            </label>
+            <textarea
+              id="message"
+              value={message}
+              onChange={handleMessageChange}
+              className="mt-1 p-2 w-full h-32 border border-gray-300 rounded-md"
+              placeholder="Share your experience..."
+              required
+            />
+          </div>
+
+          <div className="text-center">
+            <button
+              type="submit"
+              className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
+            >
+              Submit
+            </button>
+          </div>
         </form>
       </div>
     </div>
