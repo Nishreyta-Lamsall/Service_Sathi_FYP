@@ -69,7 +69,7 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
-      toast.error("Failed to load subscriptions.");
+      toast.error(t("toastMessage.failedToLoadSubscriptions"));
     }
   };
 
@@ -80,7 +80,7 @@ const HomePage = () => {
 
   const handleChoosePlan = async (subscription) => {
     if (!token) {
-      toast.error("You must be logged in to subscribe to a plan.");
+      toast.error(t("toastMessage.youMustBeLoggedIn"));
       navigate("/login");
       return;
     }
@@ -105,11 +105,13 @@ const HomePage = () => {
       if (response.ok && data.payment_url) {
         window.location.href = data.payment_url;
       } else {
-        toast.error(data.message || "Payment initiation failed");
+        toast.error(
+          data.message || t("toastMessage.paymentInitiationFailed")
+        );
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Error initiating payment");
+      toast.error(t("toastMessage.errorInitiatingPayment"));
     }
 
     // After payment, fetch the updated user data
@@ -372,7 +374,7 @@ const HomePage = () => {
             smooth
           >
             <button className="lg:ml-20 mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
-              Leave Testimonial
+              {t("home.hero.tetsimonialButton")}
             </button>
           </HashLink>
         </div>

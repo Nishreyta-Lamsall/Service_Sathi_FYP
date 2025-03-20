@@ -71,7 +71,7 @@ const handleSubmit = async (e) => {
     event.preventDefault();
 
     if (!userData || !userData.email) {
-      toast.error("You need to be logged in to submit a testimonial.");
+      toast.error(t("toastMessage.errorSubmittingTestimonial"));
       return;
     }
 
@@ -89,7 +89,7 @@ const handleSubmit = async (e) => {
       );
 
       if (response.data.success) {
-        toast.success("Testimonial added successfully!");
+        toast.success(t("toastMessage.testimonialSuccessful"));
         setRating("");
         setMessage("");
       } else {
@@ -97,7 +97,7 @@ const handleSubmit = async (e) => {
       }
     } catch (error) {
       console.error("Error adding testimonial:", error);
-      toast.error("Error adding testimonial");
+      toast.error(t("toastMessage.testimonialFailure"));
     }
   };
 
@@ -206,7 +206,7 @@ const handleSubmit = async (e) => {
         className="testimonial-container p-5 bg-gray-100 rounded-lg shadow-md max-w-lg mx-auto mt-16"
       >
         <h2 className="text-2xl font-semibold text-center mb-4">
-          Submit Your Testimonial
+          {t("contactUs.submitTestimonial")}
         </h2>
         <form onSubmit={handleSubmitTestimonial} className="space-y-4">
           <div>
@@ -214,7 +214,7 @@ const handleSubmit = async (e) => {
               htmlFor="rating"
               className="block text-sm font-medium text-gray-700"
             >
-              Rating (1 to 5)
+              {t("contactUs.rating")}
             </label>
             <input
               type="number"
@@ -233,14 +233,14 @@ const handleSubmit = async (e) => {
               htmlFor="message"
               className="block text-sm font-medium text-gray-700"
             >
-              Your Message
+              {t("contactUs.yourMessage")}
             </label>
             <textarea
               id="message"
               value={message}
               onChange={handleMessageChange}
               className="mt-1 p-2 w-full h-32 border border-gray-300 rounded-md"
-              placeholder="Share your experience..."
+              placeholder={t("contactUs.placeholderMessage")}
               required
             />
           </div>
@@ -250,7 +250,7 @@ const handleSubmit = async (e) => {
               type="submit"
               className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
             >
-              Submit
+              {t("contactUs.submitButton")}
             </button>
           </div>
         </form>

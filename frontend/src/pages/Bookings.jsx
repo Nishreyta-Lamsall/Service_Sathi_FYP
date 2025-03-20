@@ -8,6 +8,7 @@ import { assets } from "../assets/assets";
 import RelatedServices from "../components/RelatedServices";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useTranslation } from "react-i18next"; 
 
 const Bookings = () => {
   const { serviceId } = useParams();
@@ -19,7 +20,9 @@ const Bookings = () => {
     getServicesData,
     userData,
   } = useContext(AppContext);
-  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const { t } = useTranslation(); 
+
+  const daysOfWeek = t("toastMessage.daysOfWeek", { returnObjects: true });;
   const [serviceProvider, setServiceProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
 
@@ -47,7 +50,6 @@ const Bookings = () => {
         setServiceProvider({ id: data._id, name: data.name });
       }
     } catch (error) {
-      console.error("Error fetching provider:", error);
       setServiceProvider({ id: "N/A", name: "Not Available" });
     }
   };
@@ -56,7 +58,7 @@ const Bookings = () => {
     try {
       if (!serviceProvider?.id) {
         console.log("No service provider ID, skipping reviews fetch");
-        return; // Ensure we have the ID
+        return; 
       }
 
       const { data } = await axios.get(
@@ -76,7 +78,6 @@ const Bookings = () => {
 
   const getAvailableSlots = async () => {
     if (!serviceInfo) {
-      console.log("Service info is not loaded yet.");
       return;
     }
     setServiceSlots([]);
@@ -141,7 +142,7 @@ const Bookings = () => {
 
   const bookService = async () => {
     if (!token) {
-      toast.warning("Login to book a service");
+      toast.warning(t("toastMessage.loginToBook"));
       return navigate("/login");
     }
 
@@ -183,7 +184,7 @@ const Bookings = () => {
       );
 
       if (data.success) {
-        toast.success("Review deleted successfully");
+        toast.success(t("toastMessage.reviewDeleted"));
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review._id !== reviewId)
         );
@@ -192,7 +193,7 @@ const Bookings = () => {
       }
     } catch (error) {
       console.error("Delete Review Error:", error);
-      toast.error("Error deleting review");
+      toast.error(t("toastMessage.reviewDeleteError"));
     }
   };
 
@@ -242,7 +243,7 @@ const Bookings = () => {
             </div>
             <div>
               <p className="flex items-center gap-1 font-medium text-gray-900 mt-3">
-                About{" "}
+                {t("toastMessage.aboutService")}{" "}
                 <img className="w-[1.2vw] ml-1" src={assets.info_icon} alt="" />
               </p>
               <p className="text-sm text-gray-500 max-w-[800px] mt-1">
@@ -250,7 +251,7 @@ const Bookings = () => {
               </p>
             </div>
             <p className="font-medium mt-4">
-              Service fee:{" "}
+              {t("toastMessage.fee")}{" "}
               <span className="text-gray-600">
                 {currencySymbol}
                 {serviceInfo.price}
@@ -260,7 +261,7 @@ const Bookings = () => {
         </div>
         {/* Booking Slots */}
         <div className="sm:ml-96 sm:pl-4 mt-9 font-medium text-gray-700">
-          <p> Booking Slots</p>
+          <p> {t("toastMessage.bookingSlots")}</p>
           <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4 scrollbar-hidden">
             {serviceSlots.length &&
               serviceSlots.map((item, index) => (
@@ -299,7 +300,7 @@ const Bookings = () => {
             onClick={bookService}
             className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 pr-6 rounded-xl hover:scale-105 transition-all duration-300 py-3 px-16 my-6 mt-8"
           >
-            Book a service
+            {t("toastMessage.bookAService")}
           </button>
         </div>
 
@@ -336,14 +337,16 @@ const Bookings = () => {
                       onClick={() => deleteReview(review._id)}
                       className="text-red-500 mt-2"
                     >
-                      Delete
+                      {t("toastMessage.delete")}
                     </button>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 mt-4">No reviews yet.</p>
+            <p className="text-gray-500 mt-4">
+              {t("toastMessage.noReviewsYet")}
+            </p>
           )}
         </div>
 

@@ -43,7 +43,7 @@ const MyBookings = () => {
   const submitReview = async () => {
     // Prevent submitting if a review already exists for this bookingId
     if (reviewSubmitted[reviewData.bookingId]) {
-      toast.error("You have already submitted a review for this booking.");
+      toast.error(t("toastMessage.alreadyReviewed"));
       return;
     }
 
@@ -59,7 +59,7 @@ const MyBookings = () => {
       );
 
       if (response.data.success) {
-        toast.success("Review submitted successfully!");
+        toast.success(t("toastMessage.reviewSuccessful"));
         setReviewModalOpen(false);
         setReviewSubmitted((prev) => ({
           ...prev,
@@ -69,7 +69,7 @@ const MyBookings = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error("Error submitting review");
+      toast.error(t("toastMessage.reviewError"));
       console.error(error);
     }
   };
