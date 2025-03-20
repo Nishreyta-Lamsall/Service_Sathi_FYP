@@ -29,11 +29,6 @@ const userSchema = new mongoose.Schema({
     ref: "subscription", // Reference to subscription model
     default: null,
   },
-  subscriptionPlan: {
-    type: String,
-    enum: ["6-month", "12-month"],
-    default: null,
-  },
 });
 
 const userModel =mongoose.models.user || mongoose.model('user', userSchema)

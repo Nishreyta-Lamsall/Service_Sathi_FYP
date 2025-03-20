@@ -8,7 +8,7 @@ import gardeningicon from "../assets/gardeningicon.png";
 import plumbingicon from "../assets/plumbingicon.png";
 import { testimonial } from "../assets/js/testimonials";
 import Testimonial from "../components/Testimonial";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
 import { CategoryData } from "../assets/assets";
@@ -33,33 +33,34 @@ const HomePage = () => {
   const [subscriptions, setSubscriptions] = useState([]);
 
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
   const [testimonials, setTestimonials] = useState([]);
 
-   useEffect(() => {
-     const fetchApprovedTestimonials = async () => {
-       try {
-         const response = await axios.get(
-           `${backendUrl}/api/admin/approved-testimonial`
-         );
-         if (response.data.success) {
-           setTestimonials(response.data.testimonials);
-         } else {
-           console.error(response.data.message);
-         }
-       } catch (error) {
-         console.error("Error fetching testimonials:", error);
-       }
-     };
+  useEffect(() => {
+    const fetchApprovedTestimonials = async () => {
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/admin/approved-testimonial`
+        );
+        if (response.data.success) {
+          setTestimonials(response.data.testimonials);
+        } else {
+          console.error(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+      }
+    };
 
-     fetchApprovedTestimonials();
-   }, [backendUrl]);
+    fetchApprovedTestimonials();
+  }, [backendUrl]);
 
   // Get all subscriptions
   const getSubscriptions = async () => {
     try {
       const { data } = await axios.get(
-        backendUrl + "/api/admin/get-subscriptions"
+        `${backendUrl}/api/admin/get-subscriptions`
       );
       if (data) {
         const filteredSubscriptions = data.filter(
@@ -73,14 +74,45 @@ const HomePage = () => {
     }
   };
 
-  // Fetch subscriptions on component mount
+  // Verify payment after redirect from Khalti
+  const verifyPayment = async (pidx) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/api/subscription/verify-khalti`,
+        {
+          params: { pidx },
+          headers: { token },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        // Update user subscription status in context (if subscribeUser updates userData)
+        subscribeUser(); // Assuming this refreshes userData in AppContext
+      } else {
+        toast.error(data.message || "Payment verification failed");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      toast.error("Error verifying payment");
+    }
+  };
+
+  // Fetch subscriptions and check for payment verification on mount
   useEffect(() => {
     getSubscriptions();
-  }, []);
+
+    // Check if redirected back from Khalti with pidx in query params
+    const queryParams = new URLSearchParams(location.search);
+    const pidx = queryParams.get("pidx");
+    if (pidx && token) {
+      verifyPayment(pidx);
+    }
+  }, [location.search, token]);
 
   const handleChoosePlan = async (subscription) => {
     if (!token) {
-      toast.error(t("toastMessage.youMustBeLoggedIn"));
+      toast.error("You must be logged in to subscribe to a plan.");
       navigate("/login");
       return;
     }
@@ -92,10 +124,12 @@ const HomePage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            token: token,
+            token, // Pass token as a custom header
           },
           body: JSON.stringify({
-            subscriptionId: subscription._id,
+            amount: 350000, // NPR 3500 in paisa (Khalti expects amount in paisa)
+            orderId: `SUB-${Date.now()}`,
+            orderName: "12-month Subscription",
           }),
         }
       );
@@ -103,21 +137,13 @@ const HomePage = () => {
       const data = await response.json();
 
       if (response.ok && data.payment_url) {
-        window.location.href = data.payment_url;
+        window.location.href = data.payment_url; // Redirect to Khalti payment page
       } else {
-        toast.error(
-          data.message || t("toastMessage.paymentInitiationFailed")
-        );
+        toast.error(data.message || "Payment initiation failed");
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error(t("toastMessage.errorInitiatingPayment"));
-    }
-
-    // After payment, fetch the updated user data
-    const userResponse = await axios.get(`${backendUrl}/api/user`);
-    if (userResponse.data) {
-      setUserData(userResponse.data);
+      toast.error("Error initiating payment");
     }
   };
 
@@ -331,12 +357,18 @@ const HomePage = () => {
                         </li>
                       )}
                     </ul>
-                    <button
-                      onClick={() => handleChoosePlan(subscription)}
-                      className="mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
-                    >
-                      {t("home.subscriptionPlans.choosePlan")}
-                    </button>
+                    {userData?.isSubscribed ? (
+                      <p className="text-green-600 font-semibold mt-6">
+                        You are subscribed!
+                      </p>
+                    ) : (
+                      <button
+                        onClick={() => handleChoosePlan(subscription)}
+                        className="mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10"
+                      >
+                        {t("home.subscriptionPlans.choosePlan")}
+                      </button>
+                    )}
                   </div>
                 ))
               ) : (

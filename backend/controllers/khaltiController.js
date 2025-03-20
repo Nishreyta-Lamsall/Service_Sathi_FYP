@@ -1,168 +1,202 @@
+// controllers/khaltiController.js
 import axios from "axios";
-import subscriptionModel from "../models/subscriptionModel.js";
-import userModel from "../models/userModel.js";
+import userModel from "../models/userModel.js"; // Adjust path as per your project structure
+import subscriptionModel from "../models/subscriptionModel.js"; // Adjust path as per your project structure
 
-const KHALTI_SECRET_KEY = process.env.KHALTI_SECRET_KEY;
-const KHALTI_BASE_URL = "https://a.khalti.com/api/v2";
+const khaltiSecretKey = process.env.KHALTI_SECRET_KEY;
+const khaltiInitiateUrl = "https://dev.khalti.com/api/v2/epayment/initiate/";
+const khaltiLookupUrl = "https://dev.khalti.com/api/v2/epayment/lookup/";
 
+// Initiate Payment
 export const initiateSubscriptionPayment = async (req, res) => {
   try {
-    const { subscriptionId } = req.body;
-    const userId = req.body.userId;  
-
-    if (!subscriptionId) {
-      return res.status(400).json({ message: "Subscription ID is required" });
+    const { userId } = req.body;
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "userId is required" });
     }
 
-    const subscription = await subscriptionModel.findById(subscriptionId);
-    if (!subscription) {
-      return res.status(404).json({ message: "Subscription not found" });
+    const { amount, orderId, orderName } = req.body;
+
+    if (!khaltiSecretKey) {
+      throw new Error("Khalti secret key not configured");
     }
 
+    // Fetch user details for customer_info
     const user = await userModel.findById(userId);
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    if (user.isSubscribed) {
-      return res.status(400).json({ message: "User is already subscribed" });
-    }
-
-    const subscriptionPrice = subscription.plan === "12-month" ? 3500 : 0;
-
-    const payload = {
-      return_url: `${process.env.FRONTEND_URL}/subscription-payment-verify`,
-      website_url: process.env.FRONTEND_URL,
-      amount: subscriptionPrice * 100,
-      purchase_order_id: `SUB_${Date.now()}`,
-      purchase_order_name: `Subscription Plan - ${subscription.plan}`,
+    const paymentData = {
+      return_url: "http://localhost:5173/", 
+      website_url: "http://localhost:5173",
+      amount: amount || 350000, 
+      purchase_order_id: orderId || `SUB-${Date.now()}`,
+      purchase_order_name: orderName || "12-month Subscription",
       customer_info: {
         name: user.name,
         email: user.email,
-        phone: user.phone || "9800000000",
+        phone: user.phone || "9800000000", // Use user's phone or default test number
       },
     };
 
-    const response = await axios.post(
-      `${KHALTI_BASE_URL}/epayment/initiate/`,
-      payload,
-      {
-        headers: {
-          Authorization: `Key ${KHALTI_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post(khaltiInitiateUrl, paymentData, {
+      headers: {
+        Authorization: `Key ${khaltiSecretKey}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-    res.json(response.data);
+    res.json({ success: true, payment_url: response.data.payment_url });
   } catch (error) {
+    console.error(
+      "Error initiating payment:",
+      error.response?.data || error.message
+    );
     res.status(500).json({
-      message: error.response?.data?.detail || error.message,
-      error: error.toString(),
+      success: false,
+      message: "Failed to initiate payment",
+      error: error.response?.data?.detail || error.message,
     });
   }
 };
 
 export const verifySubscriptionPayment = async (req, res) => {
   try {
-    const { pidx, transaction_id, userId } = req.query;
-
-    console.log("Received Data:", { pidx, transaction_id, userId });
+    const { userId } = req.body;
+    const { pidx } = req.query;
 
     if (!userId) {
-      console.error("User ID is missing!");
-      return res.status(400).json({ message: "User ID is required" });
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
     }
-
     if (!pidx) {
-      console.error("Payment ID (pidx) is missing!");
-      return res.status(400).json({ message: "Payment ID (pidx) is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Payment index (pidx) is required",
+      });
     }
 
-    const user = await userModel.findById(userId);
-    if (!user) {
-      console.error("User not found!");
-      return res.status(404).json({ message: "User not found" });
+    console.log("Verifying payment for userId:", userId, "with pidx:", pidx);
+
+    // Check if payment is already verified
+    const existingSubscription = await subscriptionModel.findOne({
+      "users.pidx": pidx,
+    });
+    if (existingSubscription) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment already verified",
+      });
     }
 
-    console.log("User Found:", user);
-
-    if (!user.subscription) {
-      console.error("User does not have a subscription assigned!");
-      return res
-        .status(400)
-        .json({ message: "User does not have a subscription" });
-    }
-
-    let subscription = await subscriptionModel.findById(user.subscription);
-    if (!subscription) {
-      console.error("Subscription not found for user!");
-      return res.status(404).json({ message: "Subscription not found" });
-    }
-
-    console.log("Subscription Found:", subscription);
-
-    const isUserSubscribed = subscription.users.some(
-      (sub) => sub.userId.toString() === userId
-    );
-
-    if (isUserSubscribed) {
-      console.warn("User is already subscribed!");
-      return res.status(400).json({ message: "User is already subscribed" });
-    }
-
-    // Verify payment with Khalti API
-    const paymentVerification = await axios.post(
-      `${KHALTI_BASE_URL}/epayment/verify/`,
-      {
-        transaction_id: transaction_id,
-        pidx: pidx,
-      },
+    // Verify payment with Khalti
+    const verificationResponse = await axios.post(
+      khaltiLookupUrl,
+      { pidx },
       {
         headers: {
-          Authorization: `Key ${KHALTI_SECRET_KEY}`,
+          Authorization: `Key ${khaltiSecretKey}`,
+          "Content-Type": "application/json",
         },
       }
     );
+    console.log("Khalti verification response:", verificationResponse.data);
 
-    // Check payment verification response
-    if (!paymentVerification.data || !paymentVerification.data.success) {
-      console.error("Payment verification failed!");
-      return res.status(400).json({ message: "Payment verification failed" });
+    if (verificationResponse.data.status !== "Completed") {
+      return res.status(400).json({
+        success: false,
+        message: `Payment not completed. Status: ${verificationResponse.data.status}`,
+      });
     }
 
-    console.log("Payment Verified:", paymentVerification.data);
+    const transactionId = verificationResponse.data.transaction_id;
 
+    // Fetch user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check for existing active subscription
+    if (user.isSubscribed && user.subscription) {
+      const existingSub = await subscriptionModel.findById(user.subscription);
+      if (
+        existingSub &&
+        existingSub.users.some(
+          (u) =>
+            u.userId.toString() === userId.toString() && u.status === "active"
+        )
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "You already have an active subscription.",
+        });
+      }
+    }
+
+    // Calculate subscription dates
     const startDate = new Date();
-    const endDate = new Date();
+    const endDate = new Date(startDate);
     endDate.setFullYear(endDate.getFullYear() + 1);
 
-    subscription.users.push({
-      userId,
-      startDate,
-      endDate,
-      status: "active",
-      nextInspection: null,
-      pidx: pidx,
-    });
+    // Manage subscription
+    let subscription = await subscriptionModel.findOne();
+    if (!subscription) {
+      subscription = new subscriptionModel({
+        plan: "12-month",
+        discount: 10,
+        users: [],
+      });
+    }
 
-    console.log("Updated Subscription Users List:", subscription.users);
+    const userIndex = subscription.users.findIndex(
+      (u) => u.userId.toString() === userId.toString()
+    );
+    if (userIndex !== -1) {
+      subscription.users[userIndex] = {
+        userId,
+        startDate,
+        endDate,
+        status: "active",
+        pidx,
+        transactionId,
+      };
+    } else {
+      subscription.users.push({
+        userId,
+        startDate,
+        endDate,
+        status: "active",
+        pidx,
+        transactionId,
+      });
+    }
 
     await subscription.save();
-    console.log("Subscription saved successfully!");
-
     user.isSubscribed = true;
     user.subscription = subscription._id;
-    user.subscriptionPlan = "12-month";
-
-    console.log("Updated User:", user);
-
     await user.save();
-    console.log("User saved successfully!");
 
-    res.json({ message: "Subscription updated successfully" });
+    res.json({
+      success: true,
+      message: "Subscription activated successfully!",
+    });
   } catch (error) {
-    console.error("Error verifying payment:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Verification error:", error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: "Payment verification failed",
+      error: error.message,
+    });
   }
 };

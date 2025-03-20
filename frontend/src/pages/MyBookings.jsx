@@ -95,16 +95,21 @@ const MyBookings = () => {
     return `${dateArray[0]} ${months[Number(dateArray[1])]} ${dateArray[2]}`;
   };
 
-  const getDiscountedPrice = (originalPrice, subscriptionPlan) => {
+  const getDiscountedPrice = (originalPrice, isSubscribed) => {
     let discount = 0;
-    if (originalPrice <= 2000) {
-      if (subscriptionPlan === "6-month") {
-        discount = 0.05;
-      } else if (subscriptionPlan === "12-month") {
-        discount = 0.1;
-      }
+
+    console.log("Original Price:", originalPrice);
+    console.log("Is Subscribed:", isSubscribed);
+
+    if (isSubscribed) {
+      discount = 0.1; // 10% discount for subscribed users
     }
-    return originalPrice - originalPrice * discount;
+
+    const discountedPrice = originalPrice - originalPrice * discount;
+
+    console.log("Discounted Price:", discountedPrice);
+
+    return discountedPrice;
   };
 
   const getUserBookings = async () => {
@@ -172,10 +177,10 @@ const MyBookings = () => {
               )
               .map((item, index) => {
                 const user = item.userData;
-                const discountedPrice =
-                  user && user.isSubscribed
-                    ? getDiscountedPrice(item.amount, user.subscriptionPlan)
-                    : null;
+               const discountedPrice =
+                 user && user.isSubscribed
+                   ? getDiscountedPrice(item.amount, user.isSubscribed)
+                   : item.amount;
 
                 const serviceProvider = serviceProviders[item.serviceData._id];
 
