@@ -183,6 +183,8 @@ const resources = {
         verificationEmailSent: "Verification email has been sent.",
         failedToResendEmail: "Failed to resend email. Try again!",
         errorOccurred: "Error occurred. Please try again!",
+        emailVerifiedSuccess: "User verified, please login",
+        loginSuccess: "You have successfully been logged in.",
       },
       myProfile: {
         contactInformation: "CONTACT INFORMATION",
@@ -436,6 +438,8 @@ const resources = {
         verificationEmailSent: "प्रमाणिकरण इमेल पठाइयो।",
         failedToResendEmail: "इमेल पुन: पठाउन असफल। फेरि प्रयास गर्नुहोस्!",
         errorOccurred: "त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्!",
+        emailVerifiedSuccess: "प्रयोगकर्ता प्रमाणित भयो, कृपया लगइन गर्नुहोस्",
+        loginSuccess: "तपाईं सफलतापूर्वक लगइन हुनुभयो।",
       },
       myProfile: {
         contactInformation: "सम्पर्क जानकारी",

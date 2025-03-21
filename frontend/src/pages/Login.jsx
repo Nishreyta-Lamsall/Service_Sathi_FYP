@@ -1,23 +1,40 @@
-import React, { useState } from "react";
-import { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next"; 
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const AuthForm = () => {
   const { backendUrl, token, setToken } = useContext(AppContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
 
-  const [state, setState] = useState("Sign Up");
+  const [state, setState] = useState(
+    location.pathname === "/login" ? "Login" : "Sign Up"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation(); 
+
+  // Redirect to home if token exists, but not on /login
+  useEffect(() => {
+    if (token && location.pathname !== "/login") {
+      navigate("/");
+    }
+  }, [token, navigate, location.pathname]);
+
+  // Handle verification redirect
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get("verified") === "true") {
+      setState("Login");
+      toast.success(t("authForm.emailVerifiedSuccess"));
+    }
+  }, [location, t]);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -31,17 +48,12 @@ const AuthForm = () => {
           confirmPassword,
         });
         if (data.success) {
-          // Show success message
-         toast.success(t("authForm.userRegistered"));
-
-          // Clear form fields
+          toast.success(t("authForm.userRegistered"));
           setName("");
           setEmail("");
           setPassword("");
           setConfirmPassword("");
-
-          localStorage.setItem("token", data.token);
-          setToken(data.token);
+          setState("Login");
         } else {
           toast.error(data.message);
         }
@@ -53,6 +65,8 @@ const AuthForm = () => {
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          toast.success(t("authForm.loginSuccess")); 
+          navigate("/"); 
         } else {
           toast.error(data.message);
         }
@@ -65,12 +79,10 @@ const AuthForm = () => {
   const resendVerificationEmail = async () => {
     try {
       setLoading(true);
-
       const response = await axios.post(
         backendUrl + "/api/user/resend-verification",
         { email }
       );
-      
       toast.success(t("authForm.verificationEmailSent"));
     } catch (error) {
       toast.error(
@@ -92,12 +104,6 @@ const AuthForm = () => {
   const switchToLogin = () => {
     setState("Login");
   };
-
-  useEffect(() => {
-    if (token) {
-      navigate("/");
-    }
-  }, [token]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

@@ -87,17 +87,22 @@ const verifyUser = async (req, res) => {
     const user = await userModel.findOne({ verificationToken: token });
 
     if (!user) {
-      return res.json({ success: false, message: "Invalid or expired token" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
     }
 
     user.isVerified = true;
     user.verificationToken = null;
     await user.save();
 
-    res.json({ success: true, message: "Email verified successfully!" });
+    // Redirect to the frontend login page
+    return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
   } catch (error) {
     console.error(error);
-    res.json({ success: false, message: error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error during verification" });
   }
 };
 
@@ -212,7 +217,8 @@ const forgotPassword = async (req, res) => {
       },
     });
 
-    const resetLink = `http://localhost:3000/api/user/reset-password/${resetToken}`;
+    // Point to frontend route
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
@@ -222,11 +228,10 @@ const forgotPassword = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    // Send back the reset token in the response
     return res.json({
       success: true,
       message: "Password reset email sent",
-      resetToken,
+      resetToken, // Optional, for debugging
     });
   } catch (error) {
     console.error(error);

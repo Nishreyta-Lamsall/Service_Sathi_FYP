@@ -5,15 +5,17 @@ const LanguageContext = createContext();
 
 const LanguageProvider = ({ children }) => {
   const { i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language || "English");
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("selectedLanguage") || "English";
+  });
 
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
+    localStorage.setItem("selectedLanguage", lang);
   };
 
   useEffect(() => {
-    // Ensure the language is set when the component mounts
     if (i18n.language !== language) {
       i18n.changeLanguage(language);
     }

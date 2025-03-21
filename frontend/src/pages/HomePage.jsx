@@ -405,7 +405,7 @@ const HomePage = () => {
             to="/contact#testimonial" // Navigate to the Contact Us page and scroll to the testimonial section
             smooth
           >
-            <button className="lg:ml-20 mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
+            <button className="mt-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2.5 pr-6 rounded-xl hover:scale-105 transition-all duration-300 flex items-center z-10">
               {t("home.hero.tetsimonialButton")}
             </button>
           </HashLink>
