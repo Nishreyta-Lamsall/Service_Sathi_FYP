@@ -217,6 +217,8 @@ const resources = {
         close: "Close",
         cancelled: "Cancelled",
         noOrder: "No orders found in history.",
+        milestoneButton: "View Milestone Details",
+        milestoneDetails: "Milestone Details",
       },
       toastMessage: {
         loginToBook: "Login to book a service",
@@ -472,6 +474,8 @@ const resources = {
         close: "बन्द गर्नुहोस्",
         cancelled: " रद्ध गरिएको",
         noOrder: "इतिहासमा कुनै अर्डर भेटिएन।",
+        milestoneButton: "माइलस्टोन विवरण हेर्नुहोस्",
+        milestoneDetails: "माइलस्टोन विवरण",
       },
       toastMessage: {
         loginToBook: "लगइन गरेर सेवा बुक गर्नुहोस्",

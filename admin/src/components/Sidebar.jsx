@@ -1,11 +1,10 @@
-import React, { useContext } from 'react'
-import { AdminContext } from '../context/AdminContext'
-import { NavLink } from 'react-router-dom'
-import {assets} from "../assets/assets"
+import React, { useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
+import { NavLink } from "react-router-dom";
+import { assets } from "../assets/assets";
 
 const Sidebar = () => {
-
-  const {aToken} = useContext(AdminContext)
+  const { aToken } = useContext(AdminContext);
   return (
     <div className="min-h-screen w-56 border-r shadow-lg p-4">
       {aToken && (
@@ -15,8 +14,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -30,8 +29,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -45,8 +44,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -60,8 +59,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -75,8 +74,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -94,8 +93,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -113,8 +112,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -131,8 +130,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
                 isActive
-                  ? "bg-blue-100 text-blue-800"
-                  : "text-gray-700 hover:bg-blue-200 hover:text-blue-800"
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -148,6 +147,6 @@ const Sidebar = () => {
       )}
     </div>
   );
-}
+};
 
-export default Sidebar
+export default Sidebar;

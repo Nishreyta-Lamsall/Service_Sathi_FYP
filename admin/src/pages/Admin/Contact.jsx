@@ -29,7 +29,7 @@ const Contact = () => {
 
   return (
     <div className="h-[97vh] p-8 overflow-y-auto">
-      <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
+      <h2 className="text-3xl font-bold text-center text-black mb-6">
         Contact Messages
       </h2>
 

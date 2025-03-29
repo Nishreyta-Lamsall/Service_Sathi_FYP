@@ -19,12 +19,12 @@ const NavBar = () => {
     <div className="flex justify-between items-center px-4 sm:px-1 py-3 sticky top-0 z-10 bg-white shadow-md">
       {/* Left Side */}
       <div className="flex items-center gap-2 text-xs ml-16">
-        <h1 className="text-3xl font-extrabold text-[#2D64C5]">ServiceSathi</h1>
+        <h1 className="text-3xl font-extrabold text-black">ServiceSathi</h1>
         
       </div>
       <button
         onClick={logout}
-        className="bg-blue-900 text-white text-sm px-10 py-2 rounded-full mr-16"
+        className="bg-black text-white text-sm px-10 py-2 rounded-full mr-16"
       >
         Logout
       </button>

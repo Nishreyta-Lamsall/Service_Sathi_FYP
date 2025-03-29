@@ -1,3 +1,4 @@
+// Booking.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
@@ -21,6 +22,15 @@ const bookingSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now },
     cancelled: { type: Boolean, default: false },
     isCompleted: { type: Boolean, default: false },
+    workflowMessage: {
+      content: String,
+      sentAt: Date,
+      sentBy: String,
+      isRead: {
+        type: Boolean,
+        default: false,
+      },
+    },
   },
   { timestamps: true }
 );

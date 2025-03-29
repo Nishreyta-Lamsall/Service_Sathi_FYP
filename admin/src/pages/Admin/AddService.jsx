@@ -168,7 +168,7 @@ const AddService = () => {
           className={`w-full py-3 rounded-md font-medium transition ${
             loading
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-900 text-white hover:bg-blue-700"
+              : "bg-black text-white "
           }`}
           disabled={loading}
         >

@@ -394,11 +394,21 @@ const bookService = async (req, res) => {
 
     const userData = await userModel.findById(userId).select("-password");
 
-    // Check if the user has provided a phone number and address
+    // Check if the user has provided a phone number, dob and address
     if (!userData.phone || userData.phone === "0000000000") {
       return res.json({
         success: false,
-        message: "Please provide a valid phone number in your profile before booking.",
+        message:
+          "Please provide a valid phone number in your profile before booking.",
+      });
+    }
+
+    // Check if the user has provided a dob
+    if (!userData.dob) {
+      return res.json({
+        success: false,
+        message:
+          "Please provide a valid date of birth in your profile before booking.",
       });
     }
 
@@ -410,7 +420,8 @@ const bookService = async (req, res) => {
     ) {
       return res.json({
         success: false,
-        message: "Please provide complete address in your profile before booking.",
+        message:
+          "Please provide complete address in your profile before booking.",
       });
     }
 

@@ -578,6 +578,75 @@ const updateStatus = async (req, res) => {
   }
 };
 
+const sendWorkflow = async (req, res) => {
+  try {
+    const { bookingId, workflowMessage } = req.body;
+
+    if (!bookingId || !workflowMessage) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Missing bookingId or workflowMessage",
+        });
+    }
+
+    const booking = await bookingModel.findById(bookingId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    // Update booking with workflow message and timestamp
+    booking.workflowMessage = {
+      content: workflowMessage,
+      sentAt: new Date(),
+      sentBy: req.user?.id || "admin",
+    };
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Workflow message saved successfully",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error sending workflow:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+const markWorkflowAsRead = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+
+    const booking = await bookingModel.findById(bookingId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    if (booking.workflowMessage) {
+      booking.workflowMessage.isRead = true;
+      await booking.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Workflow marked as read",
+      booking,
+    });
+  } catch (error) {
+    console.error("Error marking workflow as read:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
 
 const getServiceById = async (req, res) => {
   try {
@@ -697,5 +766,7 @@ export {
   updateStatus,
   getSubscriptions,
   getcontact,
-  postContact
+  postContact,
+  markWorkflowAsRead,
+  sendWorkflow
 };

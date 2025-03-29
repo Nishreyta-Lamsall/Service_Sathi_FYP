@@ -288,7 +288,7 @@ const onSubmitHandler = async (event) => {
         <div className="text-center">
           <button
             type="submit"
-            className="w-full py-3 bg-blue-900 text-white rounded-md font-medium hover:bg-blue-700 transition"
+            className="w-full py-3 bg-black text-white rounded-md font-medium transition"
           >
             Add Provider
           </button>

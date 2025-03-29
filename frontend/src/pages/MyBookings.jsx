@@ -10,8 +10,9 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [serviceProviders, setServiceProviders] = useState({});
   const [reviewSubmitted, setReviewSubmitted] = useState({});
+  const [showWorkflow, setShowWorkflow] = useState(null); 
 
-  const { t} = useTranslation();
+  const { t } = useTranslation();
 
   const months = [
     " ",
@@ -41,7 +42,6 @@ const MyBookings = () => {
   };
 
   const submitReview = async () => {
-    // Prevent submitting if a review already exists for this bookingId
     if (reviewSubmitted[reviewData.bookingId]) {
       toast.error(t("toastMessage.alreadyReviewed"));
       return;
@@ -177,17 +177,17 @@ const MyBookings = () => {
               )
               .map((item, index) => {
                 const user = item.userData;
-               const discountedPrice =
-                 user && user.isSubscribed
-                   ? getDiscountedPrice(item.amount, user.isSubscribed)
-                   : item.amount;
+                const discountedPrice =
+                  user && user.isSubscribed
+                    ? getDiscountedPrice(item.amount, user.isSubscribed)
+                    : item.amount;
 
                 const serviceProvider = serviceProviders[item.serviceData._id];
 
                 return (
                   <div
                     key={index}
-                    className="flex flex-col sm:flex-row items-center bg-white shadow-lg rounded-lg p-4 border border-gray-200"
+                    className="flex flex-col sm:flex-row items-center bg-white shadow-lg rounded-lg p-4 border border-gray-200 relative"
                   >
                     <div className="flex-shrink-0">
                       <img
@@ -263,6 +263,15 @@ const MyBookings = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
+                      {/* View Milestone Details Button */}
+                      {item.workflowMessage && (
+                        <button
+                          onClick={() => setShowWorkflow(item)}
+                          className="text-sm font-medium text-black border border-black px-4 py-1.5 rounded-lg hover:bg-black hover:text-white transition-all duration-300"
+                        >
+                          {t("myBookingss.milestoneButton")}
+                        </button>
+                      )}
                       <button
                         onClick={() => cancelBooking(item._id)}
                         className="text-sm font-medium text-red-600 border border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300"
@@ -270,6 +279,36 @@ const MyBookings = () => {
                         {t("myBookingss.cancelBooking")}
                       </button>
                     </div>
+
+                    {/* Workflow Modal */}
+                    {showWorkflow?._id === item._id && (
+                      <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center mt-14">
+                        <div className="bg-white p-6 rounded-lg shadow-xl w-11/12 max-w-md max-h-[80vh] flex flex-col">
+                          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                            {t("myBookingss.milestoneDetails")}
+                          </h3>
+                          <div className="flex-1 overflow-y-auto mb-4">
+                            <p className="text-gray-700 whitespace-pre-wrap">
+                              {item.workflowMessage.content}
+                            </p>
+                            <p className="mt-2 text-sm text-gray-500">
+                              Sent on:{" "}
+                              {new Date(
+                                item.workflowMessage.sentAt
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => setShowWorkflow(null)}
+                              className="px-4 py-2 border border-gray-400 rounded-lg text-gray-700 hover:bg-gray-200"
+                            >
+                              {t("myBookingss.close")}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

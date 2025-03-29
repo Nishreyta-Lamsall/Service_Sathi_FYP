@@ -18,6 +18,8 @@ import {
   getSubscriptions,
   getcontact,
   postContact,
+  sendWorkflow,
+  markWorkflowAsRead,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -79,5 +81,11 @@ adminRouter.get("/all-testimonials", authAdmin, getAllTestimonials);
 adminRouter.delete("/delete-testimonial/:testimonialId", authAdmin, deleteTestimonial);
 adminRouter.patch("/toggle-approval/:testimonialId", authAdmin, toggleApproval);
 adminRouter.get("/approved-testimonial", getApprovedTestimonials);
+adminRouter.post("/send-workflow", authAdmin, sendWorkflow);
+adminRouter.put(
+  "/:bookingId/mark-workflow-read",
+  authAdmin,
+  markWorkflowAsRead
+);
 
 export default adminRouter;
