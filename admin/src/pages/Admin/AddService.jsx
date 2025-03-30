@@ -4,12 +4,39 @@ import { AdminContext } from "../../context/AdminContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
+// Predefined category mapping
+const categoryMapping = {
+  "House Cleaning Services": {
+    en: "House Cleaning Services",
+    np: "घर सफाई सेवाहरू",
+  },
+  "Electrical Services": {
+    en: "Electrical Services",
+    np: "विद्युतीय सेवाहरू",
+  },
+  "Carpentry Services": {
+    en: "Carpentry Services",
+    np: "काठको काम सेवाहरू",
+  },
+  "Gardening Services": {
+    en: "Gardening Services",
+    np: "बगैंचा सेवाहरू",
+  },
+  "Plumbing Services": {
+    en: "Plumbing Services",
+    np: "प्लम्बिङ सेवाहरू",
+  },
+};
+
 const AddService = () => {
   const [serviceImg, setServiceImg] = useState(false);
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [about, setAbout] = useState("");
-  const [category, setCategory] = useState("House Cleaning Services");
+  const [nameEn, setNameEn] = useState(""); // English name
+  const [nameNp, setNameNp] = useState(""); // Nepali name
+  const [priceEn, setPriceEn] = useState(""); // English price
+  const [priceNp, setPriceNp] = useState(""); // Nepali price
+  const [aboutEn, setAboutEn] = useState(""); // English about
+  const [aboutNp, setAboutNp] = useState(""); // Nepali about
+  const [category, setCategory] = useState("House Cleaning Services"); // Single category value
   const [loading, setLoading] = useState(false);
 
   const { backendUrl, aToken } = useContext(AdminContext);
@@ -24,12 +51,18 @@ const AddService = () => {
     setLoading(true);
 
     try {
+      const selectedCategory = categoryMapping[category]; // Get the mapped category
+
       const formData = new FormData();
-      formData.append("name", name);
+      formData.append("nameEn", nameEn); // English name
+      formData.append("nameNp", nameNp); // Nepali name
       formData.append("image", serviceImg);
-      formData.append("price", Number(price));
-      formData.append("about", about);
-      formData.append("category", category);
+      formData.append("priceEn", Number(priceEn)); // English price
+      formData.append("priceNp", priceNp); // Nepali price
+      formData.append("aboutEn", aboutEn); // English about
+      formData.append("aboutNp", aboutNp); // Nepali about
+      formData.append("categoryEn", selectedCategory.en); // English category
+      formData.append("categoryNp", selectedCategory.np); // Nepali category
 
       const { data } = await axios.post(
         backendUrl + "/api/admin/add-service",
@@ -40,9 +73,13 @@ const AddService = () => {
       if (data.success) {
         toast.success(data.message);
         setServiceImg(false);
-        setName("");
-        setPrice("");
-        setAbout("");
+        setNameEn("");
+        setNameNp("");
+        setPriceEn("");
+        setPriceNp("");
+        setAboutEn("");
+        setAboutNp("");
+        setCategory("House Cleaning Services"); // Reset to default
       } else {
         toast.error(data.message);
       }
@@ -67,7 +104,7 @@ const AddService = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="w-[700px] mx-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
+      className="w-[700px] mx-auto bg-white p-8 rounded-lg h-[85vh] overflow-y-auto shadow-lg space-y-6"
     >
       <h2 className="text-2xl font-semibold text-gray-700 text-center">
         Add Service
@@ -99,13 +136,26 @@ const AddService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Service Name
+              Service Name (English)
             </label>
             <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={(e) => setNameEn(e.target.value)}
+              value={nameEn}
               type="text"
-              placeholder="Enter name"
+              placeholder="Enter name in English"
+              required
+              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Service Name (Nepali)
+            </label>
+            <input
+              onChange={(e) => setNameNp(e.target.value)}
+              value={nameNp}
+              type="text"
+              placeholder="नेपालीमा नाम प्रविष्ट गर्नुहोस्"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
@@ -120,13 +170,11 @@ const AddService = () => {
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             >
-              <option value="House Cleaning Services">
-                House Cleaning Services
-              </option>
-              <option value="Electrical Services">Electrical Services</option>
-              <option value="Carpentry Services">Carpentry Services</option>
-              <option value="Gardening Services">Gardening Services</option>
-              <option value="Plumbing Services">Plumbing Services</option>
+              {Object.keys(categoryMapping).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat} {/* Displays English name in dropdown */}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -135,26 +183,51 @@ const AddService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Price
+              Price (English)
             </label>
             <input
-              onChange={(e) => setPrice(e.target.value)}
-              value={price}
+              onChange={(e) => setPriceEn(e.target.value)}
+              value={priceEn}
               type="number"
-              placeholder="Enter price"
+              placeholder="Enter price in English"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              About Service
+              Price (Nepali)
+            </label>
+            <input
+              onChange={(e) => setPriceNp(e.target.value)}
+              value={priceNp}
+              placeholder="नेपालीमा मूल्य प्रविष्ट गर्नुहोस्"
+              required
+              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              About Service (English)
             </label>
             <textarea
-              onChange={(e) => setAbout(e.target.value)}
-              value={about}
-              placeholder="Write about service"
-              rows="5"
+              onChange={(e) => setAboutEn(e.target.value)}
+              value={aboutEn}
+              placeholder="Write about service in English"
+              rows="3"
+              required
+              className="mt-1 w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none resize-none"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              About Service (Nepali)
+            </label>
+            <textarea
+              onChange={(e) => setAboutNp(e.target.value)}
+              value={aboutNp}
+              placeholder="सेवाको बारेमा नेपालीमा लेख्नुहोस्"
+              rows="3"
               required
               className="mt-1 w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none resize-none"
             ></textarea>
@@ -166,9 +239,7 @@ const AddService = () => {
       <div className="text-center">
         <button
           className={`w-full py-3 rounded-md font-medium transition ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-black text-white "
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white "
           }`}
           disabled={loading}
         >

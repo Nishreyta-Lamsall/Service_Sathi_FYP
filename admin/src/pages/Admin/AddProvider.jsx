@@ -9,8 +9,8 @@ const AddProvider = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("Select a Category");
-  const [services, setServices] = useState([]); // State to store available services
-  const [selectedServices, setSelectedServices] = useState([]); // State to store selected services
+  const [services, setServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
   const [number, setNumber] = useState("");
   const [citizen, setCitizen] = useState("");
   const [experience, setExperience] = useState("");
@@ -20,19 +20,16 @@ const AddProvider = () => {
   const { backendUrl, aToken } = useContext(AdminContext);
 
   useEffect(() => {
-    // Fetch available services on component mount
     const fetchServices = async () => {
       try {
         const { data } = await axios.post(
-          backendUrl + "/api/admin/all-services",
+          `${backendUrl}/api/admin/all-services`,
           {},
-          {
-            headers: { aToken },
-          }
+          { headers: { aToken } }
         );
-
         if (data.success) {
-          setServices(data.services); // Assuming response is an array of service categories
+          setServices(data.services);
+          console.log("Fetched services:", data.services); // Debug
         } else {
           toast.error(data.message);
         }
@@ -40,79 +37,74 @@ const AddProvider = () => {
         toast.error(error.message);
       }
     };
-
     fetchServices();
   }, [backendUrl, aToken]);
 
   const handleServiceChange = (e) => {
     const { value, checked } = e.target;
-
-    // Find the selected service from the services array using the serviceId
     const selectedService = services.find((service) => service._id === value);
 
     if (checked) {
-      // If the checkbox is checked, add the service with both `serviceId` and `serviceName`
       setSelectedServices((prev) => [
         ...prev,
-        { serviceId: selectedService._id, serviceName: selectedService.name },
+        {
+          serviceId: selectedService._id,
+          serviceName: selectedService.name.en,
+        }, // Use .en
       ]);
     } else {
-      // If the checkbox is unchecked, remove the service
       setSelectedServices((prev) =>
         prev.filter((service) => service.serviceId !== value)
       );
     }
   };
 
-const onSubmitHandler = async (event) => {
-  event.preventDefault();
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
 
-  try {
-    if (!providerImg) {
-      return toast.error("Image not selected");
+    try {
+      if (!providerImg) {
+        return toast.error("Image not selected");
+      }
+
+      const formData = new FormData();
+      formData.append("image", providerImg);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("category", category);
+      formData.append("phone_number", JSON.stringify(number));
+      formData.append("citizenship_number", citizen);
+      formData.append("experience", experience);
+      formData.append(
+        "address",
+        JSON.stringify({ line1: address1, line2: address2 })
+      );
+      formData.append("services", JSON.stringify(selectedServices));
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/admin/add-serviceprovider`,
+        formData,
+        { headers: { aToken } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setProviderImg(null);
+        setName("");
+        setEmail("");
+        setNumber("");
+        setCitizen("");
+        setExperience("");
+        setAddress1("");
+        setAddress2("");
+        setSelectedServices([]);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
-
-    const formData = new FormData();
-    formData.append("image", providerImg);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("category", category);
-    formData.append("phone_number", JSON.stringify(number));
-    formData.append("citizenship_number", citizen);
-    formData.append("experience", experience);
-    formData.append(
-      "address",
-      JSON.stringify({ line1: address1, line2: address2 })
-    );
-
-    // Append the entire services array as a JSON string
-    formData.append("services", JSON.stringify(selectedServices));
-
-    const { data } = await axios.post(
-      backendUrl + "/api/admin/add-serviceprovider",
-      formData,
-      { headers: { aToken } }
-    );
-
-    if (data.success) {
-      toast.success(data.message);
-      // Reset form fields
-      setProviderImg(null);
-      setName("");
-      setEmail("");
-      setNumber("");
-      setCitizen("");
-      setExperience("");
-      setAddress1("");
-      setAddress2("");
-      setSelectedServices([]);
-    } else {
-      toast.error(data.message);
-    }
-  } catch (error) {
-    toast.error(error.message);
-  }
-};
+  };
 
   return (
     <div className="flex justify-center items-center h-[97vh]">
@@ -214,12 +206,14 @@ const onSubmitHandler = async (event) => {
               required
               className="w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             >
-              <option>Select a category</option>
-              <option>House Cleaning Services</option>
-              <option>Electrical Services</option>
-              <option>Carpentry Services</option>
-              <option>Gardening Services</option>
-              <option>Plumbing Services</option>
+              <option value="Select a Category">Select a category</option>
+              <option value="House Cleaning Services">
+                House Cleaning Services
+              </option>
+              <option value="Electrical Services">Electrical Services</option>
+              <option value="Carpentry Services">Carpentry Services</option>
+              <option value="Gardening Services">Gardening Services</option>
+              <option value="Plumbing Services">Plumbing Services</option>
             </select>
           </div>
           <div>
@@ -247,7 +241,7 @@ const onSubmitHandler = async (event) => {
               <div key={service._id} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  value={service._id} // Store the serviceId as value
+                  value={service._id}
                   onChange={handleServiceChange}
                   checked={selectedServices.some(
                     (selectedService) =>
@@ -255,7 +249,7 @@ const onSubmitHandler = async (event) => {
                   )}
                   className="w-4 h-4"
                 />
-                <label>{service.name}</label>
+                <label>{service.name.en}</label> {/* Use English name */}
               </div>
             ))}
           </div>

@@ -8,14 +8,31 @@ import subscriptionModel from "../models/subscriptionModel.js";
 import twilio from "twilio";
 import Contact from "../models/contactModel.js";
 
-//API for adding services
 const addService = async (req, res) => {
   try {
-    const { name, category, about, price } = req.body;
-    const imageFile = req.file; // Multer will add the file to req.file
+    const {
+      nameEn,
+      nameNp,
+      categoryEn,
+      categoryNp,
+      aboutEn,
+      aboutNp,
+      priceEn,
+      priceNp,
+    } = req.body;
+    const imageFile = req.file;
 
     // Checking for all required fields
-    if (!name || !category || !about || !price) {
+    if (
+      !nameEn ||
+      !nameNp ||
+      !categoryEn ||
+      !categoryNp ||
+      !aboutEn ||
+      !aboutNp ||
+      !priceEn ||
+      !priceNp
+    ) {
       return res.json({ success: false, message: "Missing details" });
     }
 
@@ -23,8 +40,10 @@ const addService = async (req, res) => {
       return res.status(400).json({ error: "Image file is required" });
     }
 
-    // Check if service with the same name already exists
-    const existingService = await serviceModel.findOne({ name });
+    // Check if service with the same name (English or Nepali) already exists
+    const existingService = await serviceModel.findOne({
+      $or: [{ "name.en": nameEn }, { "name.np": nameNp }],
+    });
     if (existingService) {
       return res
         .status(400)
@@ -38,11 +57,11 @@ const addService = async (req, res) => {
 
     // Create a new service record
     const serviceData = {
-      name,
+      name: { en: nameEn, np: nameNp },
+      category: { en: categoryEn, np: categoryNp },
+      about: { en: aboutEn, np: aboutNp },
+      price: { en: Number(priceEn), np: Number(priceNp) }, // Convert to numbers
       image: imageUrl,
-      category,
-      about,
-      price,
     };
 
     const newService = new serviceModel(serviceData);
@@ -58,7 +77,17 @@ const addService = async (req, res) => {
 const updateService = async (req, res) => {
   try {
     const { serviceId } = req.params;
-    const { name, category, about, price, available } = req.body;
+    const {
+      nameEn,
+      nameNp,
+      categoryEn,
+      categoryNp,
+      aboutEn,
+      aboutNp,
+      priceEn,
+      priceNp,
+      available,
+    } = req.body;
     const imageFile = req.file;
 
     console.log("Received serviceId:", serviceId);
@@ -81,22 +110,46 @@ const updateService = async (req, res) => {
     }
 
     // Handle image upload if a new image is provided
-    let imageUrl = service.image; // Preserve the current image URL if no new image is provided
-
+    let imageUrl = service.image;
     if (imageFile) {
-      // If a new image is uploaded, we update the image URL to reflect the local file path
       imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
         imageFile.filename
       }`;
     }
 
-    // Update service fields
-    service.name = name || service.name;
-    service.category = category || service.category;
-    service.about = about || service.about;
-    service.price = price !== undefined ? price : service.price;
+    // Update service fields (only update provided fields, preserve others)
+    service.name.en = nameEn || service.name.en;
+    service.name.np = nameNp || service.name.np;
+    service.category.en = categoryEn || service.category.en;
+    service.category.np = categoryNp || service.category.np;
+    service.about.en = aboutEn || service.about.en;
+    service.about.np = aboutNp || service.about.np;
+    service.price.en =
+      priceEn !== undefined ? Number(priceEn) : service.price.en;
+    service.price.np =
+      priceNp !== undefined ? Number(priceNp) : service.price.np;
     service.available = available !== undefined ? available : service.available;
-    service.image = imageUrl; // Update the image field if a new one is uploaded
+    service.image = imageUrl;
+
+    // Optional: Check for uniqueness if name fields are updated
+    if (nameEn || nameNp) {
+      const existingService = await serviceModel.findOne({
+        $and: [
+          { _id: { $ne: serviceId } },
+          {
+            $or: [
+              { "name.en": nameEn || service.name.en },
+              { "name.np": nameNp || service.name.np },
+            ],
+          },
+        ],
+      });
+      if (existingService) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Service name must be unique" });
+      }
+    }
 
     console.log("Updated service before saving:", service);
 

@@ -12,7 +12,8 @@ const MyBookings = () => {
   const [reviewSubmitted, setReviewSubmitted] = useState({});
   const [showWorkflow, setShowWorkflow] = useState(null); 
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(); 
+  const currentLang = i18n.language === "Nepali" ? "np" : "en";
 
   const months = [
     " ",

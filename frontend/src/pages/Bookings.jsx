@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
 import { assets } from "../assets/assets";
 import RelatedServices from "../components/RelatedServices";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useTranslation } from "react-i18next"; 
+import { useTranslation } from "react-i18next";
 
 const Bookings = () => {
   const { serviceId } = useParams();
@@ -20,22 +18,33 @@ const Bookings = () => {
     getServicesData,
     userData,
   } = useContext(AppContext);
-    const { t } = useTranslation(); 
+  const { t, i18n } = useTranslation();
 
-  const daysOfWeek = t("toastMessage.daysOfWeek", { returnObjects: true });;
+  // Dynamically determine current language
+  const currentLang = i18n.language === "Nepali" ? "np" : "en";
+  console.log(
+    "Current Language in Bookings:",
+    i18n.language,
+    "Using:",
+    currentLang
+  );
+
+  // Dynamically fetch translated days of week
+  const daysOfWeek = t("toastMessage.daysOfWeek", { returnObjects: true });
+
   const [serviceProvider, setServiceProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
-
-  const navigate = useNavigate();
-
   const [serviceInfo, setServiceInfo] = useState(null);
   const [serviceSlots, setServiceSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
 
-  const fetchserviceInfo = async () => {
+  const navigate = useNavigate();
+
+  const fetchServiceInfo = async () => {
     const serviceInfo = Services.find((service) => service._id === serviceId);
     setServiceInfo(serviceInfo);
+    console.log("Service Info:", serviceInfo); // Debug service data
   };
 
   const fetchServiceProvider = async () => {
@@ -43,9 +52,7 @@ const Bookings = () => {
       const { data } = await axios.get(
         `${backendUrl}/api/service/service-provider/${serviceId}`
       );
-
-      console.log("Full API Response:", data); // Log entire response
-
+      console.log("Full API Response:", data);
       if (data) {
         setServiceProvider({ id: data._id, name: data.name });
       }
@@ -58,34 +65,24 @@ const Bookings = () => {
     try {
       if (!serviceProvider?.id) {
         console.log("No service provider ID, skipping reviews fetch");
-        return; 
+        return;
       }
-
       const { data } = await axios.get(
         `${backendUrl}/api/user/getreviews/${serviceProvider.id}`
       );
-
       console.log("Reviews:", data);
-      setReviews(data); // Store the reviews in state
+      setReviews(data);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
   };
 
-  useEffect(() => {
-    fetchServiceProvider();
-  }, [serviceId]);
-
   const getAvailableSlots = async () => {
-    if (!serviceInfo) {
-      return;
-    }
+    if (!serviceInfo) return;
     setServiceSlots([]);
 
     let today = new Date();
-
     const startHour = 9;
-    const startMinute = 0;
     const interval = 3;
 
     for (let i = 0; i < 7; i++) {
@@ -97,18 +94,13 @@ const Bookings = () => {
 
       let timeSlots = [];
 
-      if (i === 0 && today.getHours() >= 16) {
-        continue;
-      }
+      if (i === 0 && today.getHours() >= 16) continue;
 
       for (let hour = startHour; hour <= 16; hour += interval) {
         let slotDate = new Date(currentDate);
-        slotDate.setHours(hour, startMinute, 0, 0);
+        slotDate.setHours(hour, 0, 0, 0);
 
-        // Skip past slots for today
-        if (i === 0 && slotDate < today) {
-          continue;
-        }
+        if (i === 0 && slotDate < today) continue;
 
         let formattedTime = slotDate.toLocaleTimeString([], {
           hour: "2-digit",
@@ -135,7 +127,6 @@ const Bookings = () => {
           });
         }
       }
-
       setServiceSlots((prev) => [...prev, timeSlots]);
     }
   };
@@ -148,15 +139,13 @@ const Bookings = () => {
 
     try {
       const date = serviceSlots[slotIndex][0].datetime;
-
       let day = date.getDate();
       let month = date.getMonth() + 1;
       let year = date.getFullYear();
-
-      const slotDate = day + "/" + month + "/" + year;
+      const slotDate = `${day}/${month}/${year}`;
 
       const { data } = await axios.post(
-        backendUrl + "/api/user/book-service",
+        `${backendUrl}/api/user/book-service`,
         { serviceId, slotDate, slotTime },
         { headers: { token } }
       );
@@ -182,7 +171,6 @@ const Bookings = () => {
           data: { userId: userData._id },
         }
       );
-
       if (data.success) {
         toast.success(t("toastMessage.reviewDeleted"));
         setReviews((prevReviews) =>
@@ -198,7 +186,7 @@ const Bookings = () => {
   };
 
   useEffect(() => {
-    fetchserviceInfo();
+    fetchServiceInfo();
   }, [Services, serviceId]);
 
   useEffect(() => {
@@ -206,8 +194,12 @@ const Bookings = () => {
   }, [serviceInfo]);
 
   useEffect(() => {
-    console.log(serviceSlots);
+    console.log("Service Slots:", serviceSlots);
   }, [serviceSlots]);
+
+  useEffect(() => {
+    fetchServiceProvider();
+  }, [serviceId]);
 
   useEffect(() => {
     if (serviceProvider?.id) {
@@ -223,19 +215,21 @@ const Bookings = () => {
             <img
               className="w-96 h-72 object-cover rounded-lg"
               src={serviceInfo.image}
-              alt=""
+              alt={serviceInfo.name[currentLang]}
             />
           </div>
 
           <div className="flex-1 border border-gray-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0">
             <p className="flex items-center gap-2 text-2xl font-medium text-gray-900">
-              {serviceInfo.name}
+              {serviceInfo.name[currentLang]}
             </p>
             <div>
-              <p className="text-sm mt-1">{serviceInfo.category}</p>
+              <p className="text-sm mt-1">
+                {serviceInfo.category[currentLang]}
+              </p>
               {serviceProvider ? (
                 <p className="text-sm font-medium text-blue-900 mt-2">
-                  Provider: {serviceProvider.name}
+                  {t("footer.provider")} {serviceProvider.name}
                 </p>
               ) : (
                 <p>Loading provider...</p> // Or a loading spinner
@@ -247,18 +241,19 @@ const Bookings = () => {
                 <img className="w-[1.2vw] ml-1" src={assets.info_icon} alt="" />
               </p>
               <p className="text-sm text-gray-500 max-w-[800px] mt-1">
-                {serviceInfo.about}
+                {serviceInfo.about[currentLang]}
               </p>
             </div>
             <p className="font-medium mt-4">
               {t("toastMessage.fee")}{" "}
               <span className="text-gray-600">
                 {currencySymbol}
-                {serviceInfo.price}
+                {serviceInfo.price[currentLang]}
               </span>
             </p>
           </div>
         </div>
+
         {/* Booking Slots */}
         <div className="sm:ml-96 sm:pl-4 mt-9 font-medium text-gray-700">
           <p> {t("toastMessage.bookingSlots")}</p>
@@ -306,7 +301,8 @@ const Bookings = () => {
 
         <div className="reviews-section mt-8 mx-4 sm:mx-8 md:mx-12 lg:mx-16 xl:ml-[6.5rem]">
           <h3 className="text-xl font-semibold text-gray-900">
-            Reviews for {serviceProvider?.name || "Loading..."}
+            {t("toastMessage.reviewsFor")}{" "}
+            {serviceProvider?.name || "Loading..."}
           </h3>
           {/* Display Service Provider Name */}
           {reviews.length > 0 ? (
@@ -330,8 +326,6 @@ const Bookings = () => {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">{review.comment}</p>
-
-                  {/* Check if user is logged in and if they are the reviewer */}
                   {userData && userData._id === review.user?._id && (
                     <button
                       onClick={() => deleteReview(review._id)}
@@ -353,7 +347,7 @@ const Bookings = () => {
         {/* Related Services */}
         <RelatedServices
           serviceId={serviceId}
-          category={serviceInfo.category}
+          category={serviceInfo.category[currentLang]}
         />
       </div>
     )

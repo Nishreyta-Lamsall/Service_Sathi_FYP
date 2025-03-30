@@ -17,26 +17,45 @@ const EditProvider = () => {
     citizenship_number: "",
     experience: "",
     category: "",
-    services: [],
+    services: [], // Array of { serviceId, serviceName }
     address: { line1: "", line2: "" },
     image: null,
   });
-
+  const [allServices, setAllServices] = useState([]); // All services from DB
   const [loading, setLoading] = useState(false);
 
+  // Fetch provider details and all services on mount
   useEffect(() => {
-    const fetchProvider = async () => {
-      const provider = await getServiceProviderById(id);
-      if (provider) {
-        setFormData({
-          ...provider,
-          address: provider.address || { line1: "", line2: "" },
-          services: provider.services || [],
-        });
+    const fetchProviderAndServices = async () => {
+      try {
+        // Fetch provider details
+        const provider = await getServiceProviderById(id);
+        if (provider) {
+          setFormData({
+            ...provider,
+            address: provider.address || { line1: "", line2: "" },
+            services: provider.services || [], // Existing services
+          });
+        }
+
+        // Fetch all services
+        const { data } = await axios.post(
+          `${backendUrl}/api/admin/all-services`,
+          {},
+          { headers: { aToken } }
+        );
+        if (data.success) {
+          setAllServices(data.services);
+          console.log("All Services:", data.services);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.message);
       }
     };
-    fetchProvider();
-  }, [id]);
+    fetchProviderAndServices();
+  }, [id, backendUrl, aToken, getServiceProviderById]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,9 +73,36 @@ const EditProvider = () => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
   };
 
+  const handleServiceChange = (e) => {
+    const { value, checked } = e.target;
+    const selectedService = allServices.find(
+      (service) => service._id === value
+    );
+
+    if (checked) {
+      setFormData((prev) => ({
+        ...prev,
+        services: [
+          ...prev.services,
+          {
+            serviceId: selectedService._id,
+            serviceName: selectedService.name.en, // Use English name
+          },
+        ],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        services: prev.services.filter(
+          (service) => service.serviceId !== value
+        ),
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
       const formDataToSend = new FormData();
@@ -85,12 +131,12 @@ const EditProvider = () => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      setLoading(false); // Stop loading after request completes
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white shadow-md rounded-lg">
+    <div className="max-w-3xl mx-auto h-[80vh] overflow-auto p-8 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-6">
         Edit Service Provider
       </h2>
@@ -172,6 +218,30 @@ const EditProvider = () => {
           />
         </div>
 
+        {/* Services Section */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-600">
+            Services
+          </label>
+          <div className="max-h-40 overflow-y-auto border p-2 rounded">
+            {allServices.map((service) => (
+              <div key={service._id} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  value={service._id}
+                  onChange={handleServiceChange}
+                  checked={formData.services.some(
+                    (s) => s.serviceId === service._id
+                  )}
+                  className="w-4 h-4"
+                />
+                <label>{service.name.en}</label> {/* Use English name */}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Image Upload */}
         <div className="flex flex-col items-center space-y-3">
           {formData.image && (
             <img

@@ -18,7 +18,9 @@ import { CheckCircle as CheckCircleIcon } from "lucide-react";
 import { HashLink } from "react-router-hash-link";
 
 const HomePage = () => {
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language === "Nepali" ? "np" : "en";
+  console.log("Current Language:", i18n.language, "Using:", currentLang);
   const { Services } = useContext(AppContext);
   const icons = [
     categoryicon,
@@ -36,6 +38,28 @@ const HomePage = () => {
   const location = useLocation();
 
   const [testimonials, setTestimonials] = useState([]);
+
+const [categories, setCategories] = useState([]);
+
+useEffect(() => {
+  if (Services && Services.length > 0) {
+    const uniqueCategories = [];
+    const categoryMap = new Map();
+
+    Services.forEach((service) => {
+      const categoryEn = service.category?.en || "Unknown Category";
+      const categoryNp = service.category?.np || "Unknown Category";
+      const categoryKey = categoryEn;
+
+      if (!categoryMap.has(categoryKey)) {
+        categoryMap.set(categoryKey, { en: categoryEn, np: categoryNp });
+        uniqueCategories.push({ en: categoryEn, np: categoryNp });
+      }
+    });
+
+    setCategories(uniqueCategories.slice(0, 5));
+  }
+}, [Services]);
 
   useEffect(() => {
     const fetchApprovedTestimonials = async () => {
@@ -182,71 +206,91 @@ const HomePage = () => {
       </div>
 
       {/* Services Section */}
-      <div className="mt-10 mb-20 ml-8 lg:ml-0" id="#category">
+      <div className="mt-10 mb-20 ml-8 lg:ml-0" id="category">
         <div>
           <p className="text-3xl font-semibold text-black flex justify-center">
             {t("home.services.title")}
           </p>
         </div>
-        <div className="mt-10 sm:items-center flex flex-col lg:flex-row lg:flex-wrap lg:justify-center lg:space-x-16 lg:space-y-0 space-y-12">
-          {/* Top Row - 3 Services */}
-          <div className="flex flex-col lg:flex-row lg:gap-x-40 space-y-12 lg:space-y-0 lg:mb-20">
-            {CategoryData.slice(0, 3).map((item, index) => (
-              <Link
-                onClick={() => scrollTo(0, 0)}
-                key={index}
-                to={`/services/${item.category}`}
-                className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500"
-              >
-                <div className="flex flex-col items-start">
-                  <img
-                    src={icons[index % icons.length]}
-                    alt="Category Icon"
-                    className="w-12 h-12 mb-4"
-                  />
-                  <h3 className="text-xl font-bold text-[#333333] mb-2">
-                    {item.category}
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    {t("home.services.description")}
-                  </p>
+        {Services.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">Loading services...</p>
+        ) : categories.length > 0 ? (
+          <div className="mt-10 sm:items-center flex flex-col lg:flex-row lg:flex-wrap lg:justify-center lg:space-x-16 lg:space-y-0 space-y-12">
+            {/* Top Row - 3 Services */}
+            <div className="flex flex-col lg:flex-row lg:gap-x-40 space-y-12 lg:space-y-0 lg:mb-20">
+              {categories.slice(0, 3).map((item, index) => (
+                <div
+                  onClick={() => {
+                    const slug = (item.en || "")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
+                    navigate(`/services/${slug}`, {
+                      state: { scrollTo: slug },
+                    });
+                  }}
+                  key={index}
+                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
+                >
+                  <div className="flex flex-col items-start">
+                    <img
+                      src={icons[index % icons.length]}
+                      alt="Category Icon"
+                      className="w-12 h-12 mb-4"
+                    />
+                    <h3 className="text-xl font-bold text-[#333333] mb-2">
+                      {item[currentLang] || "Unknown Category"}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {t("home.services.description")}
+                    </p>
+                  </div>
+                  <div className="mt-4 text-right">
+                    <span className="text-black text-lg">→</span>
+                  </div>
                 </div>
-                <div className="mt-4 text-right">
-                  <span className="text-black text-lg">→</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Bottom Row - 2 Services in the gaps */}
-          <div className="flex flex-col lg:flex-row lg:gap-x-56 lg:mt-[-40px] space-y-12 lg:space-y-0">
-            {CategoryData.slice(3, 5).map((item, index) => (
-              <Link
-                onClick={() => scrollTo(0, 0)}
-                key={index + 3}
-                to={`/services/${item.category}`}
-                className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500"
-              >
-                <div className="flex flex-col items-start">
-                  <img
-                    src={icons[(index + 3) % icons.length]}
-                    alt="Category Icon"
-                    className="w-12 h-12 mb-4"
-                  />
-                  <h3 className="text-xl font-bold text-[#333333] mb-2">
-                    {item.category}
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    {t("home.services.description")}
-                  </p>
+            {/* Bottom Row - 2 Services */}
+            <div className="flex flex-col lg:flex-row lg:gap-x-56 lg:mt-[-40px] space-y-12 lg:space-y-0">
+              {categories.slice(3, 5).map((item, index) => (
+                <div
+                  onClick={() => {
+                    const slug = (item.en || "")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
+                    navigate(`/services/${slug}`, {
+                      state: { scrollTo: slug },
+                    });
+                  }}
+                  key={index + 3}
+                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
+                >
+                  <div className="flex flex-col items-start">
+                    <img
+                      src={icons[(index + 3) % icons.length]}
+                      alt="Category Icon"
+                      className="w-12 h-12 mb-4"
+                    />
+                    <h3 className="text-xl font-bold text-[#333333] mb-2">
+                      {item[currentLang] || "Unknown Category"}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {t("home.services.description")}
+                    </p>
+                  </div>
+                  <div className="mt-4 text-right">
+                    <span className="text-black text-lg">→</span>
+                  </div>
                 </div>
-                <div className="mt-4 text-right">
-                  <span className="text-black text-lg">→</span>
-                </div>
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="text-center text-gray-500 mt-10">
+            No categories available
+          </p>
+        )}
       </div>
 
       {/* Latest Picks Section */}
@@ -257,7 +301,7 @@ const HomePage = () => {
           </p>
         </div>
         <div className="w-full ml-[4rem] grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 pt-5 gap-y-8 px-3 sm:px-0 ">
-          {Services.slice(0, 4).map((item, index) => (
+          {Services.slice(0, 8).map((item, index) => (
             <div
               onClick={() => {
                 navigate(`/bookings/${item._id}`);
@@ -269,7 +313,7 @@ const HomePage = () => {
               <img
                 className="w-full h-48 object-cover bg-blue-50"
                 src={item.image}
-                alt=""
+                alt={item.name[currentLang]}
               />
               <div className="p-4">
                 <div
@@ -282,12 +326,18 @@ const HomePage = () => {
                       item.available ? "bg-blue-500" : "bg-red-500"
                     }`}
                   ></p>
-                  <p>{item.available ? "Available" : "Not Available"}</p>
+                  <p>
+                    {item.available
+                      ? t("service.availability.available")
+                      : t("service.availability.notAvailable")}
+                  </p>
                 </div>
                 <p className="text-gray-900 text-base font-medium">
-                  {item.name}
+                  {item.name[currentLang]}
                 </p>
-                <p className="text-gray-600 text-sm">{item.category}</p>
+                <p className="text-gray-600 text-sm">
+                  {item.category[currentLang]}
+                </p>
               </div>
             </div>
           ))}
@@ -359,7 +409,7 @@ const HomePage = () => {
                     </ul>
                     {userData?.isSubscribed ? (
                       <p className="text-green-600 font-semibold mt-6">
-                        You are subscribed!
+                        {t("contactUs.issubscribed")}
                       </p>
                     ) : (
                       <button

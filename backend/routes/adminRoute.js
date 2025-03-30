@@ -51,7 +51,7 @@ adminRouter.delete(
 );
 adminRouter.get("/get-serviceprovider/:id", authAdmin, getServiceProviderById);
 adminRouter.get("/get-service/:serviceId", authAdmin, getServiceById);
-adminRouter.put(
+adminRouter.post(
   "/update-service/:serviceId",
   authAdmin,
   upload.single("image"),

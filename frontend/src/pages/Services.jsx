@@ -8,36 +8,59 @@ const Services = () => {
   const { category } = useParams();
   const [filterService, setFilterService] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation();
   const { Services } = useContext(AppContext);
 
+  const currentLang = i18n.language === "Nepali" ? "np" : "en";
+  console.log("Current Language:", i18n.language, "Using:", currentLang);
+
   const applyFilter = () => {
+    console.log("Services Data:", Services);
     let filtered = category
-      ? Services.filter((service) => service.category === category)
+      ? Services.filter((service) => {
+          const serviceCategorySlug = (service.category.en || "")
+            .toLowerCase()
+            .replace(/\s+/g, "-"); // Match URL slug format
+          console.log(
+            "Comparing category:",
+            category,
+            "with",
+            serviceCategorySlug
+          );
+          return serviceCategorySlug === category;
+        })
       : Services;
 
-    // Apply search filter
     if (searchQuery.trim()) {
-      filtered = filtered.filter((service) =>
-        service.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      filtered = filtered.filter((service) => {
+        const serviceName = service.name[currentLang];
+        return serviceName?.toLowerCase().includes(searchQuery.toLowerCase());
+      });
     }
 
+    console.log("Filtered Services:", filtered);
     setFilterService(filtered);
   };
 
   useEffect(() => {
     applyFilter();
-  }, [Services, category, searchQuery]); // Re-run when searchQuery changes
+  }, [Services, category, searchQuery, currentLang]);
+
+  // Categories must match DB values exactly
+  const serviceCategories = [
+    { en: "House Cleaning Services", np: "घर सफाई सेवाहरू" },
+    { en: "Electrical Services", np: "विद्युतीय सेवाहरू" },
+    { en: "Carpentry Services", np: "काठको काम सेवाहरू" },
+    { en: "Gardening Services", np: "बगैंचा सेवाहरू" },
+    { en: "Plumbing Services", np: "प्लम्बिंग सेवाहरू" },
+  ];
 
   return (
     <div className="ml-10 mt-10">
-      <p className="text-gray-600"> {t("service.discover")}</p>
+      <p className="text-gray-600">{t("service.discover")}</p>
 
-      {/* Search Bar */}
       <div className="flex items-center gap-2 mt-4">
         <input
           type="text"
@@ -48,7 +71,7 @@ const Services = () => {
         />
         <button
           onClick={applyFilter}
-          className=" bg-[#242424] hover:bg-white hover:text-black rounded-md border-black border-2 text-white pl-4 py-1.5 pr-4 z-10 hover:scale-105 transition-all duration-300"
+          className="bg-[#242424] hover:bg-white hover:text-black rounded-md border-black border-2 text-white pl-4 py-1.5 pr-4 z-10 hover:scale-105 transition-all duration-300"
         >
           {t("service.searchButton")}
         </button>
@@ -58,8 +81,8 @@ const Services = () => {
         <button
           className={`py-2.5 px-6 border rounded text-sm transition-all ${
             showFilter
-              ? "text-black rounded-md border-black border-2  hover:scale-105 transition-all duration-300"
-              : "bg-white text-black rounded-md border-black border-2  hover:scale-105 transition-all duration-300"
+              ? "text-black rounded-md border-black border-2 hover:scale-105 transition-all duration-300"
+              : "bg-white text-black rounded-md border-black border-2 hover:scale-105 transition-all duration-300"
           }`}
           onClick={() => setShowFilter((prev) => !prev)}
         >
@@ -68,28 +91,26 @@ const Services = () => {
 
         <div
           className={`w-[17vw] flex-col gap-4 text-sm text-gray-600 ${
-            showFilter ? "flex" : "hidden "
+            showFilter ? "flex" : "hidden"
           }`}
         >
-          {[
-            "House Cleaning Services",
-            "Electrical Services",
-            "Carpentry Services",
-            "Gardening Services",
-            "Plumbing Services",
-          ].map((service) => (
+          {serviceCategories.map((service) => (
             <p
-              key={service}
-              onClick={() =>
-                category === service
-                  ? navigate("/services")
-                  : navigate(`/services/${service}`)
-              }
+              key={service.en}
+              onClick={() => {
+                const slug = (service.en || "")
+                  .toLowerCase()
+                  .replace(/\s+/g, "-");
+                navigate(category === slug ? "/services" : `/services/${slug}`);
+              }}
               className={`pl-3 py-1.5 md:pr-10 pr-20 border border-gray-300 rounded-lg transition-all cursor-pointer ${
-                category === service ? "bg-black text-white" : ""
+                category ===
+                (service.en || "").toLowerCase().replace(/\s+/g, "-")
+                  ? "bg-black text-white"
+                  : ""
               }`}
             >
-              {service}
+              {service[currentLang]}
             </p>
           ))}
         </div>
@@ -104,7 +125,7 @@ const Services = () => {
               <img
                 className="w-full h-40 object-cover bg-blue-50"
                 src={item.image}
-                alt={item.name}
+                alt={item.name[currentLang]}
               />
               <div className="p-4">
                 <div
@@ -125,9 +146,11 @@ const Services = () => {
                 </div>
 
                 <p className="text-gray-900 text-base font-medium">
-                  {item.name}
+                  {item.name[currentLang]}
                 </p>
-                <p className="text-gray-600 text-sm">{item.category}</p>
+                <p className="text-gray-600 text-sm">
+                  {item.category[currentLang]}
+                </p>
               </div>
             </div>
           ))}

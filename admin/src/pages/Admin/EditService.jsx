@@ -4,16 +4,31 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AdminContext } from "../../context/AdminContext";
 
+// Category mapping for bilingual support
+const categoryMapping = {
+  "House Cleaning Services": {
+    en: "House Cleaning Services",
+    np: "घर सफाई सेवाहरू",
+  },
+  "Electrical Services": { en: "Electrical Services", np: "विद्युतीय सेवाहरू" },
+  "Carpentry Services": { en: "Carpentry Services", np: "काठको काम सेवाहरू" },
+  "Gardening Services": { en: "Gardening Services", np: "बगैंचा सेवाहरू" },
+  "Plumbing Services": { en: "Plumbing Services", np: "प्लम्बिङ सेवाहरू" },
+};
+
 const EditService = () => {
   const { serviceId } = useParams();
   const { getServiceById, backendUrl, aToken } = useContext(AdminContext);
   const navigate = useNavigate();
 
   const [serviceImg, setServiceImg] = useState(null);
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [about, setAbout] = useState("");
-  const [category, setCategory] = useState("House Cleaning Services");
+  const [nameEn, setNameEn] = useState("");
+  const [nameNp, setNameNp] = useState("");
+  const [priceEn, setPriceEn] = useState("");
+  const [priceNp, setPriceNp] = useState("");
+  const [aboutEn, setAboutEn] = useState("");
+  const [aboutNp, setAboutNp] = useState("");
+  const [category, setCategory] = useState("House Cleaning Services"); // English key for dropdown
   const [available, setAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -21,12 +36,19 @@ const EditService = () => {
     const fetchService = async () => {
       const data = await getServiceById(serviceId);
       if (data) {
-        setName(data.name);
-        setCategory(data.category);
-        setAbout(data.about);
-        setPrice(data.price);
+        setNameEn(data.name.en);
+        setNameNp(data.name.np);
+        setPriceEn(data.price.en);
+        setPriceNp(data.price.np);
+        setAboutEn(data.about.en);
+        setAboutNp(data.about.np);
         setAvailable(data.available);
         setServiceImg(data.image);
+        // Find the category key based on English value
+        const selectedCategory = Object.keys(categoryMapping).find(
+          (key) => categoryMapping[key].en === data.category.en
+        );
+        setCategory(selectedCategory || "House Cleaning Services");
       }
     };
     fetchService();
@@ -41,17 +63,22 @@ const EditService = () => {
     setLoading(true);
 
     try {
+      const selectedCategory = categoryMapping[category];
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("category", category);
-      formData.append("about", about);
-      formData.append("price", price);
+      formData.append("nameEn", nameEn);
+      formData.append("nameNp", nameNp);
+      formData.append("categoryEn", selectedCategory.en);
+      formData.append("categoryNp", selectedCategory.np);
+      formData.append("aboutEn", aboutEn);
+      formData.append("aboutNp", aboutNp);
+      formData.append("priceEn", Number(priceEn));
+      formData.append("priceNp", Number(priceNp));
       formData.append("available", available);
       if (serviceImg instanceof File) {
         formData.append("image", serviceImg);
       }
 
-      const { data } = await axios.put(
+      const { data } = await axios.post(
         `${backendUrl}/api/admin/update-service/${serviceId}`,
         formData,
         { headers: { aToken, "Content-Type": "multipart/form-data" } }
@@ -64,7 +91,7 @@ const EditService = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Error updating service");
+      toast.error(error.response?.data?.message || "Error updating service");
     } finally {
       setLoading(false);
     }
@@ -73,7 +100,7 @@ const EditService = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-[700px] mx-auto overflow-y-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
+      className="w-[700px] mx-auto h-[80vh] overflow-y-auto bg-white p-8 rounded-lg shadow-lg space-y-6"
     >
       <h2 className="text-2xl font-semibold text-gray-700 text-center">
         Edit Service
@@ -100,7 +127,7 @@ const EditService = () => {
           onChange={handleFileChange}
           hidden
         />
-        <p className="text-gray-600">Upload service image</p>
+        <p className="text-gray-600">Upload service image (optional)</p>
       </div>
 
       {/* Two Column Layout */}
@@ -109,18 +136,30 @@ const EditService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Service Name
+              Service Name (English)
             </label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter name"
+              value={nameEn}
+              onChange={(e) => setNameEn(e.target.value)}
+              placeholder="Enter name in English"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
           </div>
-
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Service Name (Nepali)
+            </label>
+            <input
+              type="text"
+              value={nameNp}
+              onChange={(e) => setNameNp(e.target.value)}
+              placeholder="नेपालीमा नाम प्रविष्ट गर्नुहोस्"
+              required
+              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-600">
               Service Category
@@ -131,13 +170,11 @@ const EditService = () => {
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             >
-              <option value="House Cleaning Services">
-                House Cleaning Services
-              </option>
-              <option value="Electrical Services">Electrical Services</option>
-              <option value="Carpentry Services">Carpentry Services</option>
-              <option value="Gardening Services">Gardening Services</option>
-              <option value="Plumbing Services">Plumbing Services</option>
+              {Object.keys(categoryMapping).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -146,30 +183,65 @@ const EditService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Price
+              Price (English)
             </label>
             <input
               type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="Enter price"
+              value={priceEn}
+              onChange={(e) => setPriceEn(e.target.value)}
+              placeholder="Enter price in English"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              About Service
+              Price (Nepali)
+            </label>
+            <input
+              value={priceNp}
+              onChange={(e) => setPriceNp(e.target.value)}
+              placeholder="नेपालीमा मूल्य प्रविष्ट गर्नुहोस्"
+              required
+              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              About Service (English)
             </label>
             <textarea
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              placeholder="Write about service"
-              rows="5"
+              value={aboutEn}
+              onChange={(e) => setAboutEn(e.target.value)}
+              placeholder="Write about service in English"
+              rows="3"
               required
               className="mt-1 w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none resize-none"
             ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              About Service (Nepali)
+            </label>
+            <textarea
+              value={aboutNp}
+              onChange={(e) => setAboutNp(e.target.value)}
+              placeholder="सेवाको बारेमा नेपालीमा लेख्नुहोस्"
+              rows="3"
+              required
+              className="mt-1 w-full p-3 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none resize-none"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Available
+            </label>
+            <input
+              type="checkbox"
+              checked={available}
+              onChange={(e) => setAvailable(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-blue-600"
+            />
           </div>
         </div>
       </div>
