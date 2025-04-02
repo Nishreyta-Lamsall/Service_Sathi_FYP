@@ -434,7 +434,7 @@ const bookService = async (req, res) => {
       serviceId,
       userData,
       serviceData,
-      amount: serviceData.price,
+      amount: serviceData.price.en,
       slotTime,
       slotDate,
       date: Date.now(),

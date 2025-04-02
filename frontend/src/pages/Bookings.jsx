@@ -248,7 +248,7 @@ const Bookings = () => {
               {t("toastMessage.fee")}{" "}
               <span className="text-gray-600">
                 {currencySymbol}
-                {serviceInfo.price[currentLang]}
+                {serviceInfo.price.en}
               </span>
             </p>
           </div>

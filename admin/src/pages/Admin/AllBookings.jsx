@@ -116,7 +116,9 @@ const AllBookings = () => {
                 {item.userData.email}
               </p>
               <p className="py-4 px-3 border-r text-gray-800 font-medium">
-                {item.serviceData.name}
+                {item.serviceData.name?.en ||
+                  item.serviceData.name?.np ||
+                  "N/A"}
               </p>
               <p className="py-4 px-3 border-r text-gray-600">
                 {slotDateFormat(item.slotDate)}, {item.slotTime}
@@ -163,7 +165,7 @@ const AllBookings = () => {
 
               <p className="py-4 px-3 border-r text-gray-700 font-medium">
                 {currency}
-                {item.serviceData.price}
+                {item.serviceData.price.en}
               </p>
 
               {item.cancelled ? (

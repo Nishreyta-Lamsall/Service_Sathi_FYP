@@ -203,7 +203,7 @@ const handleSubmit = async (e) => {
       </div>
       <div
         id="testimonial"
-        className="testimonial-container p-5 bg-gray-100 rounded-lg shadow-md max-w-lg mx-auto mt-16"
+        className="testimonial-container p-5 bg-gray-100 rounded-lg shadow-md mx-auto mt-16"
       >
         <h2 className="text-2xl font-semibold text-center mb-4">
           {t("contactUs.submitTestimonial")}

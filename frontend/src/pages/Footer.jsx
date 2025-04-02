@@ -4,6 +4,7 @@ import instagram from "../assets/instagram.png";
 import twitter from "../assets/twitter.png";
 import linkedin from "../assets/linkedin.png";
 import { useTranslation } from "react-i18next";
+import { HashLink } from "react-router-hash-link";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -33,6 +34,16 @@ const Footer = () => {
               <a href="/contact" className="hover:underline">
                 {t("footer.contactUs")}
               </a>
+            </li>
+            <li>
+               <HashLink
+                          to="/contact#testimonial" // Navigate to the Contact Us page and scroll to the testimonial section
+                          smooth
+                        >
+              <a href="/contact" className="hover:underline">
+                {t("home.hero.tetsimonialButton")}
+              </a>
+              </HashLink>
             </li>
           </ul>
         </div>

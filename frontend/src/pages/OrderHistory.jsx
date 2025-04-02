@@ -7,7 +7,8 @@ import { useTranslation } from "react-i18next";
 
 const OrderHistory = () => {
   const { backendUrl, token, getServicesData } = useContext(AppContext);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language === "Nepali" ? "np" : "en";
 
   const [bookings, setBookings] = useState([]);
   const months = [
@@ -38,6 +39,7 @@ const OrderHistory = () => {
       const { data } = await axios.get(backendUrl + "/api/user/bookings", {
         headers: { token },
       });
+      console.log("All Bookings:", data.bookings); // Log for debugging
       if (data.success) {
         setBookings(data.bookings.reverse());
       }
@@ -45,6 +47,23 @@ const OrderHistory = () => {
       console.log(error);
       toast.error(error.message);
     }
+  };
+
+  // Helper function to get display value for name and category
+  const getDisplayValue = (field) => {
+    if (typeof field === "string") {
+      // Map English strings to translations if in Nepali mode
+      if (currentLang === "np") {
+        const translations = {
+          "Leak Repairs": "लिक मर्मत",
+          "Plumbing Services": "प्लम्बिंग सेवाहरू",
+          // Add more as needed
+        };
+        return translations[field] || field; // Use translation or fallback to English
+      }
+      return field; // In English mode, return the string as-is
+    }
+    return field?.[currentLang] || "Unknown"; // If it's an object, use currentLang
   };
 
   useEffect(() => {
@@ -86,9 +105,11 @@ const OrderHistory = () => {
                   {/* Booking Details */}
                   <div className="flex-1 sm:ml-6 text-sm text-gray-700">
                     <p className="text-base font-semibold text-gray-900">
-                      {item.serviceData.name}
+                      {getDisplayValue(item.serviceData.name)}
                     </p>
-                    <p className="text-gray-500">{item.serviceData.category}</p>
+                    <p className="text-gray-500">
+                      {getDisplayValue(item.serviceData.category)}
+                    </p>
                     <p className="mt-2 text-sm">
                       <span className="font-medium text-gray-800">
                         {t("myBookingss.orderStatus")}{" "}
@@ -120,7 +141,7 @@ const OrderHistory = () => {
                   <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
                     {item.cancelled ? (
                       <button className="text-sm font-medium text-gray-500 border border-gray-500 px-4 py-1.5 rounded-lg hover:bg-gray-500 hover:text-white transition-all duration-300">
-                        {t("myBookingss.cancelled")}{" "}
+                        {t("myBookingss.cancelled")}
                       </button>
                     ) : (
                       <></>

@@ -10,9 +10,9 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [serviceProviders, setServiceProviders] = useState({});
   const [reviewSubmitted, setReviewSubmitted] = useState({});
-  const [showWorkflow, setShowWorkflow] = useState(null); 
+  const [showWorkflow, setShowWorkflow] = useState(null);
 
-  const { t, i18n } = useTranslation(); 
+  const { t, i18n } = useTranslation();
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
 
   const months = [
@@ -35,7 +35,23 @@ const MyBookings = () => {
     rating: 1,
     comment: "",
     serviceProviderId: "",
+    bookingId: "", // Added to track the booking being reviewed
   });
+
+  const getDisplayValue = (field) => {
+    if (typeof field === "string") {
+      // Map English strings to translations if in Nepali mode
+      if (currentLang === "np") {
+        const translations = {
+          "Leak Repairs": "लिक मर्मत",
+          "Plumbing Services": "प्लम्बिंग सेवाहरू",
+        };
+        return translations[field] || field; // Use translation or fallback to English
+      }
+      return field; 
+    }
+    return field?.[currentLang] || "Unknown"; 
+  };
 
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
@@ -200,10 +216,10 @@ const MyBookings = () => {
 
                     <div className="flex-1 sm:ml-6 text-sm text-gray-700">
                       <p className="text-base font-semibold text-gray-900">
-                        {item.serviceData.name}
+                        {item.serviceData.name[currentLang]}
                       </p>
                       <p className="text-gray-500">
-                        {item.serviceData.category}
+                        {item.serviceData.category[currentLang]}
                       </p>
                       <p className="mt-2 text-sm">
                         <span className="font-medium text-gray-800">
@@ -264,7 +280,6 @@ const MyBookings = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
-                      {/* View Milestone Details Button */}
                       {item.workflowMessage && (
                         <button
                           onClick={() => setShowWorkflow(item)}
@@ -281,7 +296,6 @@ const MyBookings = () => {
                       </button>
                     </div>
 
-                    {/* Workflow Modal */}
                     {showWorkflow?._id === item._id && (
                       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center mt-14">
                         <div className="bg-white p-6 rounded-lg shadow-xl w-11/12 max-w-md max-h-[80vh] flex flex-col">
@@ -344,10 +358,10 @@ const MyBookings = () => {
                     >
                       <div className="flex-1 sm:ml-6 text-sm text-gray-700">
                         <p className="text-base font-semibold text-gray-900">
-                          {item.serviceData.name}
+                          {getDisplayValue(item.serviceData.name)}
                         </p>
                         <p className="text-gray-500">
-                          {item.serviceData.category}
+                          {getDisplayValue(item.serviceData.category)}
                         </p>
                         <p className="mt-2 text-sm">
                           <span className="font-medium text-gray-800">
@@ -374,8 +388,10 @@ const MyBookings = () => {
                         <button
                           onClick={() => {
                             setReviewData({
-                              ...reviewData,
-                              serviceProviderId: serviceProvider.id,
+                              rating: 1,
+                              comment: "",
+                              serviceProviderId: serviceProvider?.id || "",
+                              bookingId: item._id, // Set the bookingId
                             });
                             setReviewModalOpen(true);
                           }}
@@ -392,7 +408,6 @@ const MyBookings = () => {
         )}
       </div>
 
-      {/* Review Modal */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-xl w-1/3">

@@ -117,7 +117,6 @@ const Dashboard = () => {
 
         {/* Charts Section */}
         <div className="mb-8">
-
           {/* Users Pie Chart */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -175,16 +174,22 @@ const Dashboard = () => {
                 {dashData.latestBookings.map((item, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <img
-                          src={item.serviceData.image}
-                          alt="Service"
-                          className="w-10 h-10 rounded-full"
-                        />
-                        <p className="ml-4 text-sm text-gray-900">
-                          {item.serviceData.name}
-                        </p>
-                      </div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <img
+                            src={item.serviceData.image}
+                            alt="Service"
+                            className="w-10 h-10 rounded-full"
+                          />
+                          <p className="ml-4 text-sm text-gray-900">
+                            {typeof item.serviceData.name === "string"
+                              ? item.serviceData.name
+                              : item.serviceData.name?.en ||
+                                item.serviceData.name?.np ||
+                                "N/A"}
+                          </p>
+                        </div>
+                      </td>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {item.slotDate}
