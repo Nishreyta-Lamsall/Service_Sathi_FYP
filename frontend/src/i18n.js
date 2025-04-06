@@ -95,6 +95,10 @@ const resources = {
             "Transform your home into a haven with Service Sathi — your trusted partner for reliable, top-notch household services. From meticulous cleaning to expert repairs, we deliver convenience, quality, and peace of mind tailored to your unique needs.",
           button: "DISCOVER MORE",
           tetsimonialButton: "Leave Testimonial",
+          planA: "2000 sq.ft or less houses",
+          planB: "2000 sq.ft and above houses",
+          A: "A",
+          B: "B",
         },
         services: {
           title: "Services Offered",
@@ -375,6 +379,10 @@ const resources = {
             "सर्भिस साथीको साथ तपाईंको घरलाई स्वर्ग बनाउनुहोस् — विश्वसनीय, उत्कृष्ट गृह सेवाहरूको लागि तपाईंको विश्वसनीय साथी। सफाइदेखि मर्मतसम्म, हामी तपाईंको आवश्यकताको आधारमा सुविधा, गुणस्तर, र मनको शान्ति प्रदान गर्छौं।",
           button: "थप जान्नुहोस्",
           tetsimonialButton: "समीक्षा छोड्नुहोस्",
+          planA: "२००० वर्ग फिट वा कम घरहरू",
+          planB: "२००० वर्ग फिट र माथिका घरहरू",
+          A: "ए",
+          B: "बी",
         },
         services: {
           title: "प्रदान गरिएका सेवाहरू",

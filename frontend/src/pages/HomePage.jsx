@@ -392,12 +392,21 @@ const isUserSubscribedToPlan = (plan) => {
                     className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-300"
                   >
                     <p className="text-2xl font-semibold text-gray-900 mb-3">
-                      {subscription.plan} {t("home.subscriptionPlans.title2")}
+                      {t("home.subscriptionPlans.title2")}{" "}
+                      {subscription.plan === "6-month"
+                        ? t("home.hero.B")
+                        : t("home.hero.A")}
+                    </p>
+                    <p className="text-gray-700 font-semibold mb-2">
+                      [
+                      {subscription.plan === "6-month"
+                        ? t("home.hero.planB")
+                        : t("home.hero.planA")}
+                      ]
                     </p>
                     <p className="text-gray-600 mb-4">
                       {t("home.subscriptionPlans.description")}
                     </p>
-
                     <p className="text-2xl font-bold text-blue-700 mb-5">
                       {subscription.plan === "6-month"
                         ? "NPR 2000"
@@ -405,11 +414,6 @@ const isUserSubscribedToPlan = (plan) => {
                     </p>
 
                     <ul className="space-y-3 text-gray-700">
-                      <li className="flex items-center gap-3">
-                        <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                        {subscription.plan}{" "}
-                        {t("home.subscriptionPlans.subscriptionDuration")}
-                      </li>
                       <li className="flex items-center gap-3">
                         <CheckCircleIcon className="text-green-500 w-5 h-5" />
                         {subscription.discount}%{" "}
@@ -426,12 +430,10 @@ const isUserSubscribedToPlan = (plan) => {
                           </p>
                         </div>
                       </li>
-                      {subscription.plan === "12-month" && (
-                        <li className="flex items-center gap-3">
-                          <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                          {t("home.subscriptionPlans.freeInspections")}
-                        </li>
-                      )}
+                      <li className="flex items-center gap-3">
+                        <CheckCircleIcon className="text-green-500 w-5 h-5" />
+                        {t("home.subscriptionPlans.freeInspections")}
+                      </li>
                     </ul>
 
                     {isUserSubscribedToPlan(subscription.plan) ? (
