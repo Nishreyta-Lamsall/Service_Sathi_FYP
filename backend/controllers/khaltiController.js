@@ -1,29 +1,31 @@
-// controllers/khaltiController.js
 import axios from "axios";
-import userModel from "../models/userModel.js"; // Adjust path as per your project structure
-import subscriptionModel from "../models/subscriptionModel.js"; // Adjust path as per your project structure
+import userModel from "../models/userModel.js";
+import subscriptionModel from "../models/subscriptionModel.js";
 
 const khaltiSecretKey = process.env.KHALTI_SECRET_KEY;
 const khaltiInitiateUrl = "https://dev.khalti.com/api/v2/epayment/initiate/";
 const khaltiLookupUrl = "https://dev.khalti.com/api/v2/epayment/lookup/";
 
-// Initiate Payment
 export const initiateSubscriptionPayment = async (req, res) => {
   try {
-    const { userId } = req.body;
-    if (!userId) {
+    const { userId, amount, orderId, orderName } = req.body;
+    if (!userId || !orderName) {
       return res
         .status(400)
-        .json({ success: false, message: "userId is required" });
+        .json({ success: false, message: "userId and orderName are required" });
     }
 
-    const { amount, orderId, orderName } = req.body;
+    const plan = orderName.split(" ")[0]; // Extract "6-month" or "12-month" from "6-month Subscription"
+    if (!["6-month", "12-month"].includes(plan)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid plan in orderName" });
+    }
 
     if (!khaltiSecretKey) {
       throw new Error("Khalti secret key not configured");
     }
 
-    // Fetch user details for customer_info
     const user = await userModel.findById(userId);
     if (!user) {
       return res
@@ -32,15 +34,15 @@ export const initiateSubscriptionPayment = async (req, res) => {
     }
 
     const paymentData = {
-      return_url: "http://localhost:5173/", 
+      return_url: "http://localhost:5173/",
       website_url: "http://localhost:5173",
-      amount: amount || 350000, 
+      amount: amount,
       purchase_order_id: orderId || `SUB-${Date.now()}`,
-      purchase_order_name: orderName || "12-month Subscription",
+      purchase_order_name: orderName,
       customer_info: {
         name: user.name,
         email: user.email,
-        phone: user.phone || "9800000000", // Use user's phone or default test number
+        phone: user.phone || "9800000000",
       },
     };
 
@@ -50,6 +52,18 @@ export const initiateSubscriptionPayment = async (req, res) => {
         "Content-Type": "application/json",
       },
     });
+
+    // Store pidx and plan temporarily (could use a DB or in-memory store like Redis)
+    // For simplicity, we'll assume Khalti returns pidx in the response (it does in the payment_url)
+    const pidx =
+      response.data.pidx ||
+      new URL(response.data.payment_url).searchParams.get("pidx");
+    if (pidx) {
+      // Temporary storage (e.g., in-memory or DB)
+      // Here, we'll simulate with a simple object for demonstration; use a proper store in production
+      global.paymentPlans = global.paymentPlans || {};
+      global.paymentPlans[pidx] = { userId, plan };
+    }
 
     res.json({ success: true, payment_url: response.data.payment_url });
   } catch (error) {
@@ -70,33 +84,42 @@ export const verifySubscriptionPayment = async (req, res) => {
     const { userId } = req.body;
     const { pidx } = req.query;
 
-    if (!userId) {
+    console.log("Verifying payment:", { userId, pidx });
+
+    if (!userId || !pidx) {
+      console.log("Missing fields:", { userId, pidx });
       return res.status(400).json({
         success: false,
-        message: "User ID is required",
-      });
-    }
-    if (!pidx) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment index (pidx) is required",
+        message: "userId and pidx are required",
       });
     }
 
-    console.log("Verifying payment for userId:", userId, "with pidx:", pidx);
+    // Retrieve plan from temporary storage
+    const storedData = global.paymentPlans?.[pidx];
+    const plan = storedData?.plan;
+    if (!plan || !["6-month", "12-month"].includes(plan)) {
+      return res.status(400).json({
+        success: false,
+        message: "Plan not found or invalid for this payment",
+      });
+    }
 
-    // Check if payment is already verified
+    if (storedData.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "User ID does not match payment initiator",
+      });
+    }
+
     const existingSubscription = await subscriptionModel.findOne({
       "users.pidx": pidx,
     });
     if (existingSubscription) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment already verified",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment already verified" });
     }
 
-    // Verify payment with Khalti
     const verificationResponse = await axios.post(
       khaltiLookupUrl,
       { pidx },
@@ -107,7 +130,7 @@ export const verifySubscriptionPayment = async (req, res) => {
         },
       }
     );
-    console.log("Khalti verification response:", verificationResponse.data);
+    console.log("Khalti response:", verificationResponse.data);
 
     if (verificationResponse.data.status !== "Completed") {
       return res.status(400).json({
@@ -117,17 +140,13 @@ export const verifySubscriptionPayment = async (req, res) => {
     }
 
     const transactionId = verificationResponse.data.transaction_id;
-
-    // Fetch user
     const user = await userModel.findById(userId);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    // Check for existing active subscription
     if (user.isSubscribed && user.subscription) {
       const existingSub = await subscriptionModel.findById(user.subscription);
       if (
@@ -137,24 +156,24 @@ export const verifySubscriptionPayment = async (req, res) => {
             u.userId.toString() === userId.toString() && u.status === "active"
         )
       ) {
-        return res.status(400).json({
-          success: false,
-          message: "You already have an active subscription.",
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "You already have an active subscription.",
+          });
       }
     }
 
-    // Calculate subscription dates
     const startDate = new Date();
     const endDate = new Date(startDate);
-    endDate.setFullYear(endDate.getFullYear() + 1);
+    endDate.setMonth(endDate.getMonth() + (plan === "6-month" ? 6 : 12));
 
-    // Manage subscription
-    let subscription = await subscriptionModel.findOne();
+    let subscription = await subscriptionModel.findOne({ plan });
     if (!subscription) {
       subscription = new subscriptionModel({
-        plan: "12-month",
-        discount: 10,
+        plan,
+        discount: plan === "6-month" ? 5 : 10,
         users: [],
       });
     }
@@ -162,30 +181,32 @@ export const verifySubscriptionPayment = async (req, res) => {
     const userIndex = subscription.users.findIndex(
       (u) => u.userId.toString() === userId.toString()
     );
+    const subscriptionData = {
+      userId,
+      startDate,
+      endDate,
+      status: "active",
+      pidx,
+      transactionId,
+    };
     if (userIndex !== -1) {
-      subscription.users[userIndex] = {
-        userId,
-        startDate,
-        endDate,
-        status: "active",
-        pidx,
-        transactionId,
-      };
+      subscription.users[userIndex] = subscriptionData;
     } else {
-      subscription.users.push({
-        userId,
-        startDate,
-        endDate,
-        status: "active",
-        pidx,
-        transactionId,
-      });
+      subscription.users.push(subscriptionData);
     }
 
     await subscription.save();
+    console.log("Subscription updated:", subscription);
+
     user.isSubscribed = true;
     user.subscription = subscription._id;
     await user.save();
+    console.log("User updated:", user);
+
+    // Clean up temporary storage
+    if (global.paymentPlans?.[pidx]) {
+      delete global.paymentPlans[pidx];
+    }
 
     res.json({
       success: true,

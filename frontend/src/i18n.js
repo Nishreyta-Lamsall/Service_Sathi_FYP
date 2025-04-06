@@ -14,6 +14,7 @@ const resources = {
       myProfilee: "My Profile",
       myBookings: "My Bookings",
       orderHistory: "Order History",
+      mySubscription: "My Subscriptions",
       language: "Language",
 
       // About Us Section
@@ -247,6 +248,13 @@ const resources = {
         reviewSuccessful: "Review submitted successfully!",
         reviewError: "Error submitting review",
         reviewsFor: "Reviews for",
+        alreadySubscribed: "You've already subscribed to a plan",
+        loginRequired: "Please log in to verify payment",
+        loadingUserData: "Please wait while we load your account details...",
+        paymentVerificationFailed:
+          "Payment verification failed. Please try again.",
+        paymentVerificationError:
+          "Something went wrong while verifying your payment. Please try again later.",
       },
       footer: {
         serviceSathi: "Service Sathi",
@@ -259,6 +267,18 @@ const resources = {
         copyright: "© 2024 Service Sathi. All rights reserved.",
         similarServices: "Similar Services",
         provider: "Service Provider",
+      },
+      mySubscriptions: {
+        title: "My Subscription",
+        loading: "Loading subscription...",
+        noSubscription: "You are not subscribed to any plan.",
+        email: "Email",
+        plan: "Plan",
+        pidx: "PIDX",
+        transactionId: "Transaction ID",
+        startDate: "Start Date",
+        endDate: "End Date",
+        status: "Status",
       },
     },
   },
@@ -274,6 +294,7 @@ const resources = {
       myProfilee: "मेरो प्रोफाइल",
       myBookings: "मेरो बुकिंगहरू",
       orderHistory: "अर्डर इतिहास",
+      mySubscription: "मेरो सदस्यताहरू",
       language: "भाषा",
 
       // About Us Section
@@ -508,6 +529,13 @@ const resources = {
         reviewSuccessful: "समीक्षा सफलतापूर्वक पेश गरियो!",
         reviewError: "समीक्षा पेश गर्न त्रुटि भएको छ।",
         reviewsFor: "समीक्षाहरू:",
+        alreadySubscribed: "तपाईंले पहिले नै योजना सदस्यता लिइसक्नुभएको छ",
+        loginRequired: "कृपया भुक्तानी प्रमाणित गर्न लगइन गर्नुहोस्",
+        loadingUserData: "कृपया तपाईंको खाता विवरण लोड हुँदैछ, पर्खनुहोस्...",
+        paymentVerificationFailed:
+          "भुक्तानी प्रमाणीकरण असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।",
+        paymentVerificationError:
+          "भुक्तानी प्रमाणित गर्ने क्रममा केही गडबड भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।",
       },
       footer: {
         serviceSathi: "सर्भिस साथी",
@@ -520,6 +548,18 @@ const resources = {
         copyright: "© २०२४ सर्भिस साथी। सबै अधिकार सुरक्षित।",
         similarServices: "यस्तै सेवाहरू",
         provider: "सेवा प्रदायक",
+      },
+      mySubscriptions: {
+        title: "मेरो सदस्यता",
+        loading: "सदस्यता लोड हुँदैछ...",
+        noSubscription: "तपाईं कुनै योजनामा सदस्यता लिनुभएको छैन।",
+        email: "इमेल",
+        plan: "योजना",
+        pidx: "PIDX",
+        transactionId: "लेनदेन आईडी",
+        startDate: "सुरु मिति",
+        endDate: "अन्त्य मिति",
+        status: "स्थिति",
       },
     },
   },

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const subscriptionSchema = new mongoose.Schema({
-  plan: { type: String, enum: ["12-month"], required: true },
+  plan: { type: String, enum: ["6-month", "12-month"], required: true },
   discount: { type: Number, required: true },
   users: [
     {
@@ -11,6 +11,7 @@ const subscriptionSchema = new mongoose.Schema({
       status: { type: String, enum: ["active", "expired"], default: "active" },
       nextInspection: { type: Date, default: null },
       pidx: { type: String, default: null },
+      transactionId: { type: String },
     },
   ],
 });

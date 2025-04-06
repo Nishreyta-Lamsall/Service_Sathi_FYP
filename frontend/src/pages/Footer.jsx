@@ -9,9 +9,9 @@ import { HashLink } from "react-router-hash-link";
 const Footer = () => {
   const { t } = useTranslation();
   return (
-    <div className="bg-[#1b1b1b] text-white py-8 px-4">
+    <div className="bg-[#1b1b1b] text-white py-8 px-9">
       {/* Container for all the contents */}
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-8 sm:space-y-0">
+      <div className="mx-10 flex flex-col sm:flex-row justify-between items-center space-y-8 sm:space-y-0">
         {/* Left Section */}
         <div className="text-center sm:text-left">
           <p className="text-3xl font-bold">Service Sathi</p>

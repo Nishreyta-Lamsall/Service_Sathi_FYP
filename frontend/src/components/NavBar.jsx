@@ -26,7 +26,7 @@ const NavBar = () => {
 
   return (
     <nav className="sticky top-0 z-20 bg-white shadow-md">
-      <div className="flex justify-between items-center h-20 px-6 sm:px-6 md:px-11">
+      <div className="flex justify-between items-center h-20 px-6 sm:px-6 md:px-11 ml-3">
         <Link to="/">
           <h1 className="text-xl sm:text-3xl font-bold text-black">
             ServiceSathi
@@ -116,6 +116,14 @@ const NavBar = () => {
                   >
                     {t("orderHistory")}
                   </p>
+                  {userData?.isSubscribed && (
+                    <p
+                      onClick={() => navigate("my-subscription")}
+                      className="hover:text-black transition-colors duration-300"
+                    >
+                      {t("mySubscription")}
+                    </p>
+                  )}
                   <p
                     className="hover:text-black transition-colors duration-300"
                     onClick={logout}

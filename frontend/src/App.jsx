@@ -16,6 +16,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import PaymentVerify from './pages/PaymentVerify';
 import { LanguageProvider } from './context/LanguageContext';
+import MySubscriptions from './pages/MySubscriptions';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/my-subscription" element={<MySubscriptions />} />
           <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/bookings/:serviceId" element={<Bookings />} />
           <Route

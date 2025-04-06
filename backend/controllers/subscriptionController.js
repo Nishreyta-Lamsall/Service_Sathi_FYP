@@ -6,8 +6,9 @@ export const createSubscription = async (req, res) => {
   try {
     const { plan } = req.body;
 
-    // Define plan details
+    // Define plan details for both 6-month and 12-month
     const planDetails = {
+      "6-month": { duration: 6, discount: 5 }, // Added 6-month plan
       "12-month": { duration: 12, discount: 10 },
     };
 
@@ -34,7 +35,7 @@ export const createSubscription = async (req, res) => {
       endDate,
       nextInspection,
       status: "active",
-      users: [],  // Empty initially, to be populated later
+      users: [], // Empty initially, to be populated later
     });
 
     await newSubscription.save();
