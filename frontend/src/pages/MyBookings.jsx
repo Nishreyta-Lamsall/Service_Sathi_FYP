@@ -179,7 +179,7 @@ const MyBookings = () => {
 
   return (
     <div className="flex flex-col min-h-screen p-6">
-      <div className="flex-1 mx-16">
+      <div className="flex-1 mr-8 ml-10">
         <p className="pb-4 mt-10 text-2xl font-semibold text-black border-b">
           {t("myBookingss.title")}
         </p>

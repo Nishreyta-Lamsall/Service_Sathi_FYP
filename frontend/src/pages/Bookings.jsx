@@ -209,8 +209,8 @@ const Bookings = () => {
 
   return (
     serviceInfo && (
-      <div className="ml-16 mr-16 mt-12 mb-16">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="mr-16 mt-12 mb-16">
+        <div className="flex flex-col sm:flex-row gap-4 ml-16">
           <div>
             <img
               className="w-96 h-72 object-cover rounded-lg"
@@ -299,7 +299,7 @@ const Bookings = () => {
           </button>
         </div>
 
-        <div className="reviews-section mt-8 mx-4 sm:mx-8 md:mx-12 lg:mx-16 xl:ml-[6.5rem]">
+        <div className="reviews-section mt-8 mx-4 sm:mx-8 md:mx-12 lg:mx-16">
           <h3 className="text-xl font-semibold text-gray-900">
             {t("toastMessage.reviewsFor")}{" "}
             {serviceProvider?.name || "Loading..."}

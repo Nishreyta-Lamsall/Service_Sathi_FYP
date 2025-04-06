@@ -14,58 +14,56 @@ const ContactUs = () => {
   });
 
   const { t } = useTranslation();
-  const [successMessage, setSuccessMessage] = useState(""); 
+  const [successMessage, setSuccessMessage] = useState("");
   const [rating, setRating] = useState("");
   const [message, setMessage] = useState("");
   const { backendUrl, token, userData } = useContext(AppContext);
-
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-    const handleRatingChange = (event) => {
-      setRating(event.target.value);
-    };
+  const handleRatingChange = (event) => {
+    setRating(event.target.value);
+  };
 
-    const handleMessageChange = (event) => {
-      setMessage(event.target.value);
-    };
+  const handleMessageChange = (event) => {
+    setMessage(event.target.value);
+  };
 
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSuccessMessage(""); 
-
-  try {
-    const response = await fetch("http://localhost:3000/api/admin/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (response.ok) {
-      setSuccessMessage(t("contactUs.successMessage"));
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: "",
-      });
-    } else {
-      setSuccessMessage(t("contactUs.errorMessage.failed")); 
-    }
-  } catch (error) {
-    setSuccessMessage(t("contactUs.errorMessage.error"));
-  }
-
-  setTimeout(() => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setSuccessMessage("");
-  }, 2000);
-};
+
+    try {
+      const response = await fetch("http://localhost:3000/api/admin/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSuccessMessage(t("contactUs.successMessage"));
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        setSuccessMessage(t("contactUs.errorMessage.failed"));
+      }
+    } catch (error) {
+      setSuccessMessage(t("contactUs.errorMessage.error"));
+    }
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2000);
+  };
 
   const handleSubmitTestimonial = async (event) => {
     event.preventDefault();
@@ -114,15 +112,15 @@ const handleSubmit = async (e) => {
           </h3>
           <ul className="mt-6 text-gray-600 space-y-3">
             <li className="flex items-center gap-2">
-              <span className="text-blue-600">&#128205;</span>
+              <span className="text-blue-600">📍</span>
               {t("contactUs.address")}
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-blue-600">&#128222;</span>
+              <span className="text-blue-600">📞</span>
               {t("contactUs.phone")}
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-blue-600">&#9993;</span>
+              <span className="text-blue-600">✉</span>
               {t("contactUs.email")}
             </li>
           </ul>
@@ -200,60 +198,65 @@ const handleSubmit = async (e) => {
             </p>
           )}
         </form>
-      </div>
-      <div
-        id="testimonial"
-        className="testimonial-container p-5 bg-gray-100 rounded-lg shadow-md mx-auto mt-16"
-      >
-        <h2 className="text-2xl font-semibold text-center mb-4">
-          {t("contactUs.submitTestimonial")}
-        </h2>
-        <form onSubmit={handleSubmitTestimonial} className="space-y-4">
-          <div>
-            <label
-              htmlFor="rating"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("contactUs.rating")}
-            </label>
-            <input
-              type="number"
-              id="rating"
-              min="1"
-              max="5"
-              value={rating}
-              onChange={handleRatingChange}
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
 
-          <div>
-            <label
-              htmlFor="message"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("contactUs.yourMessage")}
-            </label>
-            <textarea
-              id="message"
-              value={message}
-              onChange={handleMessageChange}
-              className="mt-1 p-2 w-full h-32 border border-gray-300 rounded-md"
-              placeholder={t("contactUs.placeholderMessage")}
-              required
-            />
-          </div>
+        {/* Horizontal Rule Separator */}
+        <hr className="col-span-full border-t-2 border-gray-300 my-8" />
 
-          <div className="text-center">
-            <button
-              type="submit"
-              className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
-            >
-              {t("contactUs.submitButton")}
-            </button>
-          </div>
-        </form>
+        {/* Testimonial Section */}
+        <div
+          id="testimonial"
+          className="col-span-full p-5 bg-gray-100 rounded-lg shadow-md"
+        >
+          <h2 className="text-2xl font-semibold text-center mb-4">
+            {t("contactUs.submitTestimonial")}
+          </h2>
+          <form onSubmit={handleSubmitTestimonial} className="space-y-4">
+            <div>
+              <label
+                htmlFor="rating"
+                className="block text-sm font-medium text-gray-700"
+              >
+                {t("contactUs.rating")}
+              </label>
+              <input
+                type="number"
+                id="rating"
+                min="1"
+                max="5"
+                value={rating}
+                onChange={handleRatingChange}
+                className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-700"
+              >
+                {t("contactUs.yourMessage")}
+              </label>
+              <textarea
+                id="message"
+                value={message}
+                onChange={handleMessageChange}
+                className="mt-1 p-2 w-full h-32 border border-gray-300 rounded-md"
+                placeholder={t("contactUs.placeholderMessage")}
+                required
+              />
+            </div>
+
+            <div className="text-center">
+              <button
+                type="submit"
+                className="mt-5 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300"
+              >
+                {t("contactUs.submitButton")}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

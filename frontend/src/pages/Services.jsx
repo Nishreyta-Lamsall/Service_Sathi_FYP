@@ -58,7 +58,7 @@ const Services = () => {
   ];
 
   return (
-    <div className="ml-10 mt-10">
+    <div className="ml-16 mt-10">
       <p className="text-gray-600">{t("service.discover")}</p>
 
       <div className="flex items-center gap-2 mt-4">

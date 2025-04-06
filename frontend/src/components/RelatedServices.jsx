@@ -32,7 +32,7 @@ const RelatedServices = ({ category, serviceId }) => {
   }, [Services, category, serviceId, currentLang]); // Add currentLang as dependency
 
   return (
-    <div className="flex flex-col gap-4 my-16 text-gray-900 mx-4 sm:mx-8 md:mx-12 lg:mx-16 xl:mx-20">
+    <div className="flex flex-col gap-4 my-16 text-gray-900 mx-4 sm:mx-8 md:mx-12 lg:mx-14 xl:mx-16">
       <h1 className="text-xl font-semibold">{t("footer.similarServices")}</h1>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-5 gap-y-8">
         {relServices.slice(0, 7).map((item, index) => (
