@@ -6,6 +6,7 @@ import { LanguageContext } from "../context/LanguageContext"; // Import the cont
 import dropdownIcon from "../assets/dropdown_icon.png";
 import { AppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -15,14 +16,25 @@ const NavBar = () => {
   const navigate = useNavigate();
   const { token, setToken, userData } = useContext(AppContext);
 
-  const logout = () => {
-    const confirmLogout = window.confirm(t("logout"));
-    if (confirmLogout) {
+const logout = () => {
+  Swal.fire({
+    title: t("logout"),
+    text: "Are you sure you want to log out?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Logout",
+    cancelButtonText: "Cancel",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+  }).then((result) => {
+    if (result.isConfirmed) {
       setToken(false);
       localStorage.removeItem("token");
       navigate("/");
     }
-  };
+  });
+};
+
 
   return (
     <nav className="sticky top-0 z-20 bg-white shadow-md">

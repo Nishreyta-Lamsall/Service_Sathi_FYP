@@ -22,12 +22,14 @@
     "khalti-checkout-web": "^2.2.0",
     "lucide-react": "^0.475.0",
     "react": "^18.3.1",
+    "react-datepicker": "^8.2.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.3",
     "react-router-hash-link": "^2.4.3",
     "react-toastify": "^11.0.3",
+    "sweetalert2": "^11.17.2",
     "swiper": "^11.2.4"
   },
   "devDependencies": {

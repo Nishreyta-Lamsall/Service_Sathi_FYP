@@ -43,6 +43,14 @@ const MySubscriptions = () => {
     (user) => user.userId === userData?._id
   );
 
+  // Function to always set a 12-month duration
+  const calculateEndDate = (startDate) => {
+    if (!startDate) return "N/A"; // Handle missing start date
+    const start = new Date(startDate);
+    start.setMonth(start.getMonth() + 12); // Always add 12 months
+    return start.toLocaleDateString();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
@@ -87,7 +95,11 @@ const MySubscriptions = () => {
                       {t("mySubscriptions.plan")}
                     </h3>
                     <p className="text-lg capitalize">
-                      {userSubscription.plan}
+                      (
+                      {userSubscription.plan === "6-month"
+                        ? "2000 sq.ft or less houses"
+                        : "2000 sq.ft and above houses"}
+                      )
                     </p>
                   </div>
 
@@ -121,7 +133,7 @@ const MySubscriptions = () => {
                       {t("mySubscriptions.endDate")}
                     </h3>
                     <p className="text-lg">
-                      {new Date(userDetails.endDate).toLocaleDateString()}
+                      {calculateEndDate(userDetails.startDate)}
                     </p>
                   </div>
 

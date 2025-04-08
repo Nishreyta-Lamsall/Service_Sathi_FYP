@@ -100,6 +100,15 @@ const resources = {
           A: "A",
           B: "B",
         },
+        subscriptionPlans: {
+          customPlan: "C",
+          customPlanDesc: "Custom Plan",
+          customDescription: "Create a plan tailored to your specific needs.",
+          customPrice: "Contact for Quote",
+          customDiscount: "Tailored discount based on your needs",
+          customServices: "Choose the services you want included",
+          contactUs: "Contact Us",
+        },
         services: {
           title: "Services Offered",
           description: "Find a variety of services under this category.",
@@ -383,6 +392,16 @@ const resources = {
           planB: "२००० वर्ग फिट र माथिका घरहरू",
           A: "ए",
           B: "बी",
+        },
+        subscriptionPlans: {
+          customPlan: "सी",
+          customPlanDesc: "अनुकूल योजना",
+          customDescription:
+            "तपाईंको विशिष्ट आवश्यकताहरू अनुसार योजना बनाउनुहोस्।",
+          customPrice: "उद्धरणको लागि सम्पर्क गर्नुहोस्",
+          customDiscount: "तपाईंको आवश्यकता अनुसार छुट",
+          customServices: "तपाईंले समावेश गर्न चाहनुभएको सेवाहरू छान्नुहोस्",
+          contactUs: "हामीलाई सम्पर्क गर्नुहोस्",
         },
         services: {
           title: "प्रदान गरिएका सेवाहरू",

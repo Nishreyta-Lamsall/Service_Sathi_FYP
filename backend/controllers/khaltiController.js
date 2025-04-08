@@ -15,7 +15,7 @@ export const initiateSubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "userId and orderName are required" });
     }
 
-    const plan = orderName.split(" ")[0]; // Extract "6-month" or "12-month" from "6-month Subscription"
+    const plan = orderName.split(" ")[0]; 
     if (!["6-month", "12-month"].includes(plan)) {
       return res
         .status(400)
@@ -53,14 +53,10 @@ export const initiateSubscriptionPayment = async (req, res) => {
       },
     });
 
-    // Store pidx and plan temporarily (could use a DB or in-memory store like Redis)
-    // For simplicity, we'll assume Khalti returns pidx in the response (it does in the payment_url)
     const pidx =
       response.data.pidx ||
       new URL(response.data.payment_url).searchParams.get("pidx");
     if (pidx) {
-      // Temporary storage (e.g., in-memory or DB)
-      // Here, we'll simulate with a simple object for demonstration; use a proper store in production
       global.paymentPlans = global.paymentPlans || {};
       global.paymentPlans[pidx] = { userId, plan };
     }
@@ -167,7 +163,7 @@ export const verifySubscriptionPayment = async (req, res) => {
 
     const startDate = new Date();
     const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + (plan === "6-month" ? 6 : 12));
+    endDate.setMonth(endDate.getMonth() + 12);
 
     let subscription = await subscriptionModel.findOne({ plan });
     if (!subscription) {
