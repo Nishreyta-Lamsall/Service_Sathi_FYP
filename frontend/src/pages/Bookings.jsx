@@ -20,31 +20,20 @@ const Bookings = () => {
   } = useContext(AppContext);
   const { t, i18n } = useTranslation();
 
-  // Dynamically determine current language
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
-  console.log(
-    "Current Language in Bookings:",
-    i18n.language,
-    "Using:",
-    currentLang
-  );
-
-  // Dynamically fetch translated days of week
-  const daysOfWeek = t("toastMessage.daysOfWeek", { returnObjects: true });
 
   const [serviceProvider, setServiceProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [serviceInfo, setServiceInfo] = useState(null);
-  const [serviceSlots, setServiceSlots] = useState([]);
-  const [slotIndex, setSlotIndex] = useState(0);
-  const [slotTime, setSlotTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState(""); // User-selected date
+  const [availableTimes, setAvailableTimes] = useState([]); // Available time slots for selected date
+  const [slotTime, setSlotTime] = useState(""); // Selected time slot
 
   const navigate = useNavigate();
 
   const fetchServiceInfo = async () => {
     const serviceInfo = Services.find((service) => service._id === serviceId);
     setServiceInfo(serviceInfo);
-    console.log("Service Info:", serviceInfo); // Debug service data
   };
 
   const fetchServiceProvider = async () => {
@@ -52,7 +41,6 @@ const Bookings = () => {
       const { data } = await axios.get(
         `${backendUrl}/api/service/service-provider/${serviceId}`
       );
-      console.log("Full API Response:", data);
       if (data) {
         setServiceProvider({ id: data._id, name: data.name });
       }
@@ -62,61 +50,61 @@ const Bookings = () => {
   };
 
   const fetchReviews = async () => {
+    if (!serviceProvider?.id) return;
     try {
-      if (!serviceProvider?.id) {
-        console.log("No service provider ID, skipping reviews fetch");
-        return;
-      }
       const { data } = await axios.get(
         `${backendUrl}/api/user/getreviews/${serviceProvider.id}`
       );
-      console.log("Reviews:", data);
       setReviews(data);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
   };
 
-  const getAvailableSlots = async () => {
-    if (!serviceInfo) return;
-    setServiceSlots([]);
+  // Generate available time slots for the selected date with 30-minute intervals
+  const getAvailableSlots = () => {
+    if (!serviceInfo || !selectedDate) {
+      setAvailableTimes([]);
+      return;
+    }
 
-    let today = new Date();
-    const startHour = 9;
-    const interval = 3;
+    const date = new Date(selectedDate);
+    const today = new Date(); // Current date and time
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
 
-    for (let i = 0; i < 7; i++) {
-      let currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + i);
+    const startHour = 9; // 9 AM
+    const endHour = 16; // 4 PM
+    const intervalMinutes = 30; // 30-minute intervals
+    let timeSlots = [];
 
-      let endTime = new Date(currentDate);
-      endTime.setHours(16, 0, 0, 0);
+    // Loop through the time range with 30-minute increments
+    for (let hour = startHour; hour <= endHour; hour++) {
+      for (let minutes = 0; minutes < 60; minutes += intervalMinutes) {
+        // Stop at 4 PM (16:00)
+        if (hour === endHour && minutes > 0) break;
 
-      let timeSlots = [];
+        const slotDate = new Date(date);
+        slotDate.setHours(hour, minutes, 0, 0);
 
-      if (i === 0 && today.getHours() >= 16) continue;
+        // If today, skip slots before the current time
+        if (isToday && slotDate <= today) continue;
 
-      for (let hour = startHour; hour <= 16; hour += interval) {
-        let slotDate = new Date(currentDate);
-        slotDate.setHours(hour, 0, 0, 0);
-
-        if (i === 0 && slotDate < today) continue;
-
-        let formattedTime = slotDate.toLocaleTimeString([], {
+        const formattedTime = slotDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
 
-        let day = slotDate.getDate();
-        let month = slotDate.getMonth() + 1;
-        let year = slotDate.getFullYear();
-
+        const day = slotDate.getDate();
+        const month = slotDate.getMonth() + 1;
+        const year = slotDate.getFullYear();
         const slotDateStr = `${day}/${month}/${year}`;
-        const slotTime = formattedTime;
 
         const isSlotAvailable =
           serviceInfo.slots_booked[slotDateStr] &&
-          serviceInfo.slots_booked[slotDateStr].includes(slotTime)
+          serviceInfo.slots_booked[slotDateStr].includes(formattedTime)
             ? false
             : true;
 
@@ -127,8 +115,8 @@ const Bookings = () => {
           });
         }
       }
-      setServiceSlots((prev) => [...prev, timeSlots]);
     }
+    setAvailableTimes(timeSlots);
   };
 
   const bookService = async () => {
@@ -136,12 +124,16 @@ const Bookings = () => {
       toast.warning(t("toastMessage.loginToBook"));
       return navigate("/login");
     }
+    if (!selectedDate || !slotTime) {
+      toast.warning(t("toastMessage.selectDateAndTime"));
+      return;
+    }
 
     try {
-      const date = serviceSlots[slotIndex][0].datetime;
-      let day = date.getDate();
-      let month = date.getMonth() + 1;
-      let year = date.getFullYear();
+      const date = new Date(selectedDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
       const slotDate = `${day}/${month}/${year}`;
 
       const { data } = await axios.post(
@@ -157,7 +149,6 @@ const Bookings = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -173,14 +164,11 @@ const Bookings = () => {
       );
       if (data.success) {
         toast.success(t("toastMessage.reviewDeleted"));
-        setReviews((prevReviews) =>
-          prevReviews.filter((review) => review._id !== reviewId)
-        );
+        setReviews((prev) => prev.filter((review) => review._id !== reviewId));
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error("Delete Review Error:", error);
       toast.error(t("toastMessage.reviewDeleteError"));
     }
   };
@@ -191,20 +179,14 @@ const Bookings = () => {
 
   useEffect(() => {
     getAvailableSlots();
-  }, [serviceInfo]);
-
-  useEffect(() => {
-    console.log("Service Slots:", serviceSlots);
-  }, [serviceSlots]);
+  }, [serviceInfo, selectedDate]);
 
   useEffect(() => {
     fetchServiceProvider();
   }, [serviceId]);
 
   useEffect(() => {
-    if (serviceProvider?.id) {
-      fetchReviews();
-    }
+    if (serviceProvider?.id) fetchReviews();
   }, [serviceProvider]);
 
   return (
@@ -232,7 +214,7 @@ const Bookings = () => {
                   {t("footer.provider")} {serviceProvider.name}
                 </p>
               ) : (
-                <p>Loading provider...</p> // Or a loading spinner
+                <p>Loading provider...</p>
               )}
             </div>
             <div>
@@ -255,42 +237,46 @@ const Bookings = () => {
         </div>
 
         {/* Booking Slots */}
-        <div className="sm:ml-96 sm:pl-4 mt-9 font-medium text-gray-700">
-          <p> {t("toastMessage.bookingSlots")}</p>
-          <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4 scrollbar-hidden">
-            {serviceSlots.length &&
-              serviceSlots.map((item, index) => (
-                <div
-                  onClick={() => setSlotIndex(index)}
-                  key={index}
-                  className={`text-center py-6 min-w-16 rounded-sm cursor-pointer ${
-                    slotIndex === index
-                      ? "bg-[#313131] text-white"
-                      : "border border-gray-200"
-                  }`}
-                >
-                  <p>{item[0] && daysOfWeek[item[0].datetime.getDay()]} </p>
-                  <p>{item[0] && item[0].datetime.getDate()}</p>
-                </div>
-              ))}
+        <div className="sm:ml-[28rem] sm:pl-4 mt-9 font-medium text-gray-700">
+          <p>{t("toastMessage.bookingSlots")}</p>
+          <div className="mt-4">
+            <label htmlFor="date-picker" className="mr-2">
+              {t("toastMessage.selectDate")}:
+            </label>
+            <input
+              type="date"
+              id="date-picker"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              min={new Date().toISOString().split("T")[0]} // Restrict to today or future
+              className="border border-gray-300 rounded p-2"
+            />
           </div>
 
-          <div className="flex items-center gap-10 w-full overflow-x-scroll mt-8 scrollbar-hidden">
-            {serviceSlots.length &&
-              serviceSlots[slotIndex].map((item, index) => (
-                <p
-                  onClick={() => setSlotTime(item.time)}
-                  className={`text-sm font-light flex-shrink-0 py-2 rounded-full cursor-pointer px-7 ${
-                    item.time === slotTime
-                      ? "bg-[#313131] text-white"
-                      : "text-gray-400 border border-gray-100"
-                  }`}
-                  key={index}
-                >
-                  {item.time.toLowerCase()}
+          {selectedDate && (
+            <div className="flex items-center gap-3 mt-4 overflow-x-scroll scrollbar-hidden">
+              {availableTimes.length > 0 ? (
+                availableTimes.map((item, index) => (
+                  <p
+                    key={index}
+                    onClick={() => setSlotTime(item.time)}
+                    className={`text-sm font-light flex-shrink-0 py-2 rounded-full cursor-pointer px-7 ${
+                      item.time === slotTime
+                        ? "bg-[#313131] text-white"
+                        : "text-gray-400 border border-gray-100"
+                    }`}
+                  >
+                    {item.time.toLowerCase()}
+                  </p>
+                ))
+              ) : (
+                <p className="text-gray-500">
+                  {t("toastMessage.noSlotsAvailable")}
                 </p>
-              ))}
-          </div>
+              )}
+            </div>
+          )}
+
           <button
             onClick={bookService}
             className="bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 pr-6 rounded-xl hover:scale-105 transition-all duration-300 py-3 px-16 my-6 mt-8"
@@ -304,7 +290,6 @@ const Bookings = () => {
             {t("toastMessage.reviewsFor")}{" "}
             {serviceProvider?.name || "Loading..."}
           </h3>
-          {/* Display Service Provider Name */}
           {reviews.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
               {reviews.map((review, index) => (
@@ -344,7 +329,6 @@ const Bookings = () => {
           )}
         </div>
 
-        {/* Related Services */}
         <RelatedServices
           serviceId={serviceId}
           category={serviceInfo.category[currentLang]}

@@ -392,8 +392,7 @@ const isUserSubscribedToPlan = (plan) => {
                     key={subscription._id}
                     className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-300"
                   >
-                    <p className="text-2xl font-semibold text-gray-900 mb-3">
-                      {t("home.subscriptionPlans.title2")}{" "}
+                    <p className="text-2xl font-semibold text-gray-900 mb-5">
                       {subscription.plan === "6-month"
                         ? t("home.hero.B")
                         : t("home.hero.A")}
@@ -465,47 +464,46 @@ const isUserSubscribedToPlan = (plan) => {
             </div>
 
             <div className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-300 max-w-xl mx-auto">
-              <p className="text-2xl font-semibold text-gray-900 mb-3">
-                Custom Subscription Plan
+              <p className="text-2xl font-semibold text-gray-900 mb-5">
+                {t("home.Plans.customSubscriptionPlan")}
               </p>
               <p className="text-gray-600 font-medium mb-3 bg-blue-50 inline-block px-3 py-1 rounded-full text-sm">
-                [Build Your Perfect Plan]
+                [{t("home.Plans.buildYourPerfectPlan")}]
               </p>
               <p className="text-gray-600 mb-4">
-                Mix and match services to create a subscription that fits your
-                exact needs and budget.
+                {t("home.Plans.mixAndMatchServices")}
               </p>
               <p className="text-2xl font-bold text-blue-700 mb-5">
-                Custom Pricing
+                {t("home.Plans.customPricing")}
               </p>
 
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-center gap-3">
                   <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                  Choose specific services you need
+                  {t("home.Plans.chooseSpecificServices")}
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircleIcon className="text-green-500 w-6 h-6 flex-shrink-0" />
                   <div>
                     <span className="text-lg font-medium text-gray-900">
-                      Flexible billing cycles
+                      {t("home.Plans.flexibleBillingCycles")}
                     </span>
                     <p className="text-gray-600">
-                      Monthly, quarterly, or annual payment options
+                      {t("home.Plans.billingOptions")}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                  Discounts for multiple services
+                  {t("home.Plans.discountsForMultipleServices")}
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                  Free initial consultation
+                  {t("home.Plans.freeInitialConsultation")}
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircleIcon className="text-green-500 w-5 h-5" />
-                  Easy plan adjustments
+                  {t("home.Plans.easyPlanAdjustments")}
                 </li>
               </ul>
 
@@ -513,7 +511,7 @@ const isUserSubscribedToPlan = (plan) => {
                 to="/contact"
                 className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
-                Propose Your Plan
+                {t("home.Plans.proposeYourPlan")}
               </Link>
             </div>
           </div>
