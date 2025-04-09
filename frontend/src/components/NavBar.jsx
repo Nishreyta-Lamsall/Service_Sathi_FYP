@@ -19,11 +19,11 @@ const NavBar = () => {
 const logout = () => {
   Swal.fire({
     title: t("logout"),
-    text: "Are you sure you want to log out?",
+    text: t("logout_confirmation"),
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: "Yes, Logout",
-    cancelButtonText: "Cancel",
+    confirmButtonText: t("yes_logout"),
+    cancelButtonText: t("cancel"),
     confirmButtonColor: "#d33",
     cancelButtonColor: "#3085d6",
   }).then((result) => {
@@ -34,7 +34,6 @@ const logout = () => {
     }
   });
 };
-
 
   return (
     <nav className="sticky top-0 z-20 bg-white shadow-md">

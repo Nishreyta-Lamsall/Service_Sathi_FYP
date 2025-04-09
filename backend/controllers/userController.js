@@ -7,7 +7,7 @@ import bookingModel from "../models/bookingModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import twilio from 'twilio'
+import twilio from "twilio";
 import serviceProviderModel from "../models/serviceProviderModel.js";
 
 const transporter = nodemailer.createTransport({
@@ -67,78 +67,107 @@ const registerUser = async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Verify Your Email",
-      html: `<p>Click the link below to verify your email:</p><a href="${verificationLink}">Verify Email by clicking on this link.</a>`,
+      subject: "Welcome to ServiceSathi - Verify Your Email",
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: 'Helvetica Neue', Arial, sans-serif;
+              background-color: #f0f2f5;
+              margin: 0;
+              padding: 0;
+              line-height: 1.6;
+            }
+            .container {
+              max-width: 600px;
+              margin: 30px auto;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              padding: 40px 20px;
+              text-align: center;
+            }
+            .header img {
+              max-width: 120px;
+              margin-bottom: 15px;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: 600;
+            }
+            .content {
+              padding: 30px;
+              text-align: center;
+              color: #333333;
+            }
+            .content p {
+              font-size: 16px;
+              margin: 0 0 20px;
+            }
+            .button {
+              display: inline-block;
+              padding: 14px 30px;
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 25px;
+              font-size: 16px;
+              font-weight: 600;
+              transition: transform 0.2s ease;
+            }
+            .button:hover {
+              transform: scale(1.05);
+              background: linear-gradient(135deg, #0056b3, #0099cc);
+            }
+            .footer {
+              background-color: #f8f9fa;
+              text-align: center;
+              font-size: 12px;
+              color: #6c757d;
+              padding: 20px;
+            }
+            .footer a {
+              color: #007bff;
+              text-decoration: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome, ${name}!</h1>
+            </div>
+            <div class="content">
+              <p>We're thrilled to have you join ServiceSathi!</p>
+              <p>To get started, please verify your email address by clicking the button below:</p>
+              <a href="${verificationLink}" class="button">Verify Your Email</a>
+            </div>
+            <div class="footer">
+              <p>If you didn’t sign up, feel free to ignore this email.</p>
+              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
     };
 
-    transporter.sendMail(mailOptions).catch((err) => {
-      console.error("Email sending failed:", err);
-    });
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
-
-const verifyUser = async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    const user = await userModel.findOne({ verificationToken: token });
-
-    if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid or expired token" });
-    }
-
-    user.isVerified = true;
-    user.verificationToken = null;
-    await user.save();
-
-    // Redirect to the frontend login page
-    return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error during verification" });
-  }
-};
-
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      return res.json({ success: false, message: "User doesn't exist" });
-    }
-
-    if (!user.isVerified) {
-      return res.json({
-        success: false,
-        message: "Please verify your email before logging in.",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (isMatch) {
-      // Set the token expiration to 30 days
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "30d", // Token will expire in 30 days
-      });
-      res.json({ success: true, token });
-    } else {
-      res.json({ success: false, message: "Invalid Credentials!" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: error.message });
-  }
-};
-
 
 const resendVerification = async (req, res) => {
   try {
@@ -171,10 +200,101 @@ const resendVerification = async (req, res) => {
     const verificationLink = `http://localhost:3000/api/user/verify/${verificationToken}`;
 
     const mailOptions = {
-      from: process.env.EMAIL,
+      from: process.env.EMAIL_USER,
       to: email,
-      subject: "Resend Verification Email",
-      html: `<p>Click the link below to verify your email:</p><a href="${verificationLink}">Verify Email by clicking on this link.</a>`,
+      subject: "ServiceSathi - Resend Email Verification",
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: 'Helvetica Neue', Arial, sans-serif;
+              background-color: #f0f2f5;
+              margin: 0;
+              padding: 0;
+              line-height: 1.6;
+            }
+            .container {
+              max-width: 600px;
+              margin: 30px auto;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              padding: 40px 20px;
+              text-align: center;
+            }
+            .header img {
+              max-width: 120px;
+              margin-bottom: 15px;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: 600;
+            }
+            .content {
+              padding: 30px;
+              text-align: center;
+              color: #333333;
+            }
+            .content p {
+              font-size: 16px;
+              margin: 0 0 20px;
+            }
+            .button {
+              display: inline-block;
+              padding: 14px 30px;
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 25px;
+              font-size: 16px;
+              font-weight: 600;
+              transition: transform 0.2s ease;
+            }
+            .button:hover {
+              transform: scale(1.05);
+              background: linear-gradient(135deg, #0056b3, #0099cc);
+            }
+            .footer {
+              background-color: #f8f9fa;
+              text-align: center;
+              font-size: 12px;
+              color: #6c757d;
+              padding: 20px;
+            }
+            .footer a {
+              color: #007bff;
+              text-decoration: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Email Verification</h1>
+            </div>
+            <div class="content">
+              <p>You’ve requested a new verification link for ServiceSathi.</p>
+              <p>Please click the button below to verify your email:</p>
+              <a href="${verificationLink}" class="button">Verify Now</a>
+           �n
+            <div class="footer">
+              <p>If you didn’t request this, please ignore this email.</p>
+              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -209,21 +329,103 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordExpires = resetTokenExpires;
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Point to frontend route
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: "Password Reset Request",
-      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. The link expires in 1 hour.</p>`,
+      subject: "ServiceSathi - Reset Your Password",
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: 'Helvetica Neue', Arial, sans-serif;
+              background-color: #f0f2f5;
+              margin: 0;
+              padding: 0;
+              line-height: 1.6;
+            }
+            .container {
+              max-width: 600px;
+              margin: 30px auto;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              padding: 40px 20px;
+              text-align: center;
+            }
+            .header img {
+              max-width: 120px;
+              margin-bottom: 15px;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: 600;
+            }
+            .content {
+              padding: 30px;
+              text-align: center;
+              color: #333333;
+            }
+            .content p {
+              font-size: 16px;
+              margin: 0 0 20px;
+            }
+            .button {
+              display: inline-block;
+              padding: 14px 30px;
+              background: linear-gradient(135deg, #007bff, #00c4ff);
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 25px;
+              font-size: 16px;
+              font-weight: 600;
+              transition: transform 0.2s ease;
+            }
+            .button:hover {
+              transform: scale(1.05);
+              background: linear-gradient(135deg, #0056b3, #0099cc);
+            }
+            .footer {
+              background-color: #f8f9fa;
+              text-align: center;
+              font-size: 12px;
+              color: #6c757d;
+              padding: 20px;
+            }
+            .footer a {
+              color: #007bff;
+              text-decoration: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Reset Your Password</h1>
+            </div>
+            <div class="content">
+              <p>We received a request to reset your ServiceSathi password.</p>
+              <p>Click the button below to reset it (link expires in 1 hour):</p>
+              <a href="${resetLink}" class="button">Reset Password</a>
+            </div>
+            <div class="footer">
+              <p>If you didn’t request this, please ignore this email.</p>
+              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -239,7 +441,63 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Backend: Verify the reset token
+// Remaining functions (unchanged since they don’t involve email UI)
+const verifyUser = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const user = await userModel.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error during verification" });
+  }
+};
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "User doesn't exist" });
+    }
+
+    if (!user.isVerified) {
+      return res.json({
+        success: false,
+        message: "Please verify your email before logging in.",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
+      res.json({ success: true, token });
+    } else {
+      res.json({ success: false, message: "Invalid Credentials!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 const verifyResetToken = async (req, res) => {
   const { resetToken } = req.params;
 
@@ -256,7 +514,6 @@ const verifyResetToken = async (req, res) => {
       });
     }
 
-    // If the token is valid, return a success response
     return res.json({
       success: true,
       message: "Token is valid, you can now reset your password",
@@ -269,7 +526,7 @@ const verifyResetToken = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const { resetToken } = req.params;
-  const { newPassword } = req.body; 
+  const { newPassword } = req.body;
 
   try {
     const user = await userModel.findOne({
@@ -283,17 +540,13 @@ const resetPassword = async (req, res) => {
         .json({ success: false, message: "Invalid or expired token" });
     }
 
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the user's password and clear the reset token
     user.password = hashedPassword;
-    user.resetPasswordToken = undefined; // Clear the reset token
-    user.resetPasswordExpires = undefined; // Clear the expiration time
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
 
-    await user.save(); // Save the updated user
+    await user.save();
 
-    // Respond with a success message after resetting the password
     res.json({
       success: true,
       message: "Password reset successful",
@@ -304,7 +557,6 @@ const resetPassword = async (req, res) => {
   }
 };
 
-//API to get user profile data
 const getProfile = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -326,7 +578,6 @@ const updateProfile = async (req, res) => {
       return res.json({ success: false, message: "Data missing" });
     }
 
-    // Update user profile
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       {
@@ -340,15 +591,10 @@ const updateProfile = async (req, res) => {
     );
 
     if (imageFile) {
-      // Construct the full image URL
       const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
         imageFile.filename
       }`;
-
-      // Update the image in the user model
       await userModel.findByIdAndUpdate(userId, { image: imageUrl });
-
-      // Update the userData in all related bookings
       await bookingModel.updateMany(
         { userId },
         { $set: { userData: { ...updatedUser.toObject(), image: imageUrl } } }
@@ -377,7 +623,6 @@ const bookService = async (req, res) => {
 
     let slots_booked = serviceData.slots_booked;
 
-    // Checking for slot availability
     if (slots_booked[slotDate]) {
       if (slots_booked[slotDate].includes(slotTime)) {
         return res.json({
@@ -394,7 +639,6 @@ const bookService = async (req, res) => {
 
     const userData = await userModel.findById(userId).select("-password");
 
-    // Check if the user has provided a phone number, dob and address
     if (!userData.phone || userData.phone === "0000000000") {
       return res.json({
         success: false,
@@ -403,7 +647,6 @@ const bookService = async (req, res) => {
       });
     }
 
-    // Check if the user has provided a dob
     if (!userData.dob) {
       return res.json({
         success: false,
@@ -412,7 +655,6 @@ const bookService = async (req, res) => {
       });
     }
 
-    // Check if address line1 or line2 are empty
     if (
       !userData.address ||
       !userData.address.line1.trim() ||
@@ -425,7 +667,7 @@ const bookService = async (req, res) => {
       });
     }
 
-    const userPhone = userData.phone; // User's phone number
+    const userPhone = userData.phone;
 
     delete serviceData.slots_booked;
 
@@ -443,10 +685,8 @@ const bookService = async (req, res) => {
     const newBooking = new bookingModel(bookingData);
     await newBooking.save();
 
-    // Save new Slots Data in serviceData
     await serviceModel.findByIdAndUpdate(serviceId, { slots_booked });
 
-    // Fetch service provider details
     const serviceProvider = await serviceProviderModel.findOne({
       "services.serviceId": serviceId,
     });
@@ -458,7 +698,6 @@ const bookService = async (req, res) => {
       });
     }
 
-    // Send a message to the service provider
     const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. The user's phone number is ${userPhone}. Please be available.`;
 
     const phoneNumber = serviceProvider.phone_number.startsWith("+977")
@@ -468,7 +707,7 @@ const bookService = async (req, res) => {
     await client.messages.create({
       body: message,
       from: TWILIO_PHONE_NUMBER,
-      to: phoneNumber, // Service provider's phone number
+      to: phoneNumber,
     });
 
     res.json({
@@ -481,7 +720,6 @@ const bookService = async (req, res) => {
   }
 };
 
-//Api to get user appointments for my-bookings page
 const listService = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -571,7 +809,7 @@ export const subscribeUser = async (req, res) => {
     }
 
     if (user.isSubscribed) {
-      return res.status(400).json({ message: "User is already subscribed" }); 
+      return res.status(400).json({ message: "User is already subscribed" });
     }
 
     const subscription = await subscriptionModel.findById(subscriptionId);
@@ -582,9 +820,9 @@ export const subscribeUser = async (req, res) => {
     const startDate = new Date();
     const endDate = new Date();
     if (plan === "6-month") {
-      endDate.setMonth(startDate.getMonth() + 6); 
+      endDate.setMonth(startDate.getMonth() + 6);
     } else if (plan === "12-month") {
-      endDate.setMonth(startDate.getMonth() + 12); 
+      endDate.setMonth(startDate.getMonth() + 12);
     } else {
       throw new Error("Invalid plan type");
     }
@@ -598,9 +836,9 @@ export const subscribeUser = async (req, res) => {
 
     await subscription.save();
 
-    user.isSubscribed = true; 
+    user.isSubscribed = true;
     user.subscription = subscription._id;
-    user.subscriptionPlan = plan; 
+    user.subscriptionPlan = plan;
     await user.save();
 
     return res.status(200).json({
@@ -612,7 +850,7 @@ export const subscribeUser = async (req, res) => {
     console.error("Error subscribing user:", error);
     return res
       .status(500)
-      .json({ message: error.message || "Error subscribing user" }); 
+      .json({ message: error.message || "Error subscribing user" });
   }
 };
 
@@ -628,5 +866,5 @@ export {
   resendVerification,
   forgotPassword,
   verifyResetToken,
-  resetPassword
+  resetPassword,
 };

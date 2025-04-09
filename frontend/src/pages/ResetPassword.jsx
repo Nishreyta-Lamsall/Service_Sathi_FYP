@@ -44,7 +44,7 @@ const ResetPassword = () => {
     if (resetToken) {
       verifyToken();
     } else {
-      toast.error("No reset token provided");
+      toast.error(t("noToken"));
       navigate("/forgot-password");
     }
   }, [resetToken, backendUrl, navigate]);
@@ -53,12 +53,12 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (!tokenValid) {
-      toast.error("Token is not valid");
+      toast.error(t("tokenNotValid"));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("passMismatch"));
       return;
     }
 
@@ -69,13 +69,13 @@ const ResetPassword = () => {
         { newPassword: password }
       );
       if (response.data.success) {
-        toast.success("Password reset successful");
+        toast.success(t("resetSuccess"));
         navigate("/login");
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("resetError"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ const ResetPassword = () => {
   if (isLoadingToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-lg text-gray-700">Verifying token...</p>
+        <p className="text-lg text-gray-700">{t("tokenVerify")}</p>
       </div>
     );
   }
@@ -93,7 +93,7 @@ const ResetPassword = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <p className="text-lg text-gray-700">
-          Invalid or expired token. Redirecting...
+          {t("tokenInvalid")}
         </p>
       </div>
     );
@@ -104,7 +104,7 @@ const ResetPassword = () => {
       <div className="max-w-md w-full bg-white shadow-md rounded-lg p-6">
         {" "}
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Reset Password</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t("resetTitle")}</h2>
         </div>
         <form onSubmit={handleResetPassword} className="mt-8 space-y-6">
           <div>
@@ -112,7 +112,7 @@ const ResetPassword = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              New Password
+              {t("NewPass")}
             </label>
             <input
               id="password"
@@ -129,7 +129,7 @@ const ResetPassword = () => {
               htmlFor="confirmPassword"
               className="block text-sm font-medium text-gray-700"
             >
-              Confirm Password
+              {t("ConfirmPass")}
             </label>
             <input
               id="confirmPassword"
@@ -147,7 +147,7 @@ const ResetPassword = () => {
               disabled={loading}
               className="flex justify-center w-full px-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2 pr-6 rounded-xl hover:scale-105 transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? "Resetting..." : "Reset Password"}
+              {loading ? (t("resetBtnLoad")) : (t("resetBtn"))}
             </button>
           </div>
         </form>
