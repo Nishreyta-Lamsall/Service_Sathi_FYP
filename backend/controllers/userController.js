@@ -154,7 +154,7 @@ const registerUser = async (req, res) => {
             </div>
             <div class="footer">
               <p>If you didn’t sign up, feel free to ignore this email.</p>
-              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} Service Sathi. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -289,7 +289,7 @@ const resendVerification = async (req, res) => {
            �n
             <div class="footer">
               <p>If you didn’t request this, please ignore this email.</p>
-              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} Service Sathi. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -420,7 +420,7 @@ const forgotPassword = async (req, res) => {
             </div>
             <div class="footer">
               <p>If you didn’t request this, please ignore this email.</p>
-              <p>© ${new Date().getFullYear()} <a href="https://servicesathi.com">ServiceSathi</a>. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} ServiceSathi. All rights reserved.</p>
             </div>
           </div>
         </body>
