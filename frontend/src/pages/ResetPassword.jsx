@@ -9,7 +9,7 @@ const ResetPassword = () => {
   const { backendUrl } = useContext(AppContext);
   const { resetToken } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation(); // Added for translations
+  const { t } = useTranslation();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,7 +29,7 @@ const ResetPassword = () => {
         if (response.data.success) {
           setTokenValid(true);
         } else {
-          toast.error(response.data.message);
+          toast.error(t("invalidToken")); 
           navigate("/forgot-password");
         }
       } catch (error) {
@@ -47,7 +47,7 @@ const ResetPassword = () => {
       toast.error(t("noToken"));
       navigate("/forgot-password");
     }
-  }, [resetToken, backendUrl, navigate]);
+  }, [resetToken, backendUrl, navigate, t]);
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -72,7 +72,7 @@ const ResetPassword = () => {
         toast.success(t("resetSuccess"));
         navigate("/login");
       } else {
-        toast.error(response.data.message);
+        toast.error(t("resetFailed")); 
       }
     } catch (error) {
       toast.error(t("resetError"));
@@ -92,19 +92,18 @@ const ResetPassword = () => {
   if (!tokenValid) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-lg text-gray-700">
-          {t("tokenInvalid")}
-        </p>
+        <p className="text-lg text-gray-700">{t("tokenInvalid")}</p>
       </div>
     );
   }
 
   return (
-       <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white shadow-md rounded-lg p-6">
-        {" "}
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">{t("resetTitle")}</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            {t("resetTitle")}
+          </h2>
         </div>
         <form onSubmit={handleResetPassword} className="mt-8 space-y-6">
           <div>
@@ -147,7 +146,7 @@ const ResetPassword = () => {
               disabled={loading}
               className="flex justify-center w-full px-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2 pr-6 rounded-xl hover:scale-105 transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? (t("resetBtnLoad")) : (t("resetBtn"))}
+              {loading ? t("resetBtnLoad") : t("resetBtn")}
             </button>
           </div>
         </form>

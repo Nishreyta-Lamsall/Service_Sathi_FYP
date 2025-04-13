@@ -29,16 +29,16 @@ const MyProfile = () => {
       );
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success(t("profileUpdateSuccess"));
         await loadUserProfileData();
         setIsEdit(false);
         setImage(false);
       } else {
-        toast.error(data.message);
+        toast.error(t("profileUpdateFailed"));
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(t("profileUpdateError"));
     }
   };
 

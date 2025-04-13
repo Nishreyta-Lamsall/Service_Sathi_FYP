@@ -119,39 +119,47 @@ const Bookings = () => {
     setAvailableTimes(timeSlots);
   };
 
-  const bookService = async () => {
-    if (!token) {
-      toast.warning(t("toastMessage.loginToBook"));
-      return navigate("/login");
-    }
-    if (!selectedDate || !slotTime) {
-      toast.warning(t("toastMessage.selectDateAndTime"));
-      return;
-    }
+const bookService = async () => {
+  if (!token) {
+    toast.warning(t("toastMessage.loginToBook"));
+    return navigate("/login");
+  }
+  if (!selectedDate || !slotTime) {
+    toast.warning(t("toastMessage.selectDateAndTime"));
+    return;
+  }
+  if (!serviceInfo.available) {
+    toast.error(t("serviceNotAvailable")); // New translation key
+    return;
+  }
+  if (!userData?.phone || !userData?.address) {
+    toast.error(t("enterContactDetails")); // New translation key
+    return;
+  }
 
-    try {
-      const date = new Date(selectedDate);
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const slotDate = `${day}/${month}/${year}`;
+  try {
+    const date = new Date(selectedDate);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const slotDate = `${day}/${month}/${year}`;
 
-      const { data } = await axios.post(
-        `${backendUrl}/api/user/book-service`,
-        { serviceId, slotDate, slotTime },
-        { headers: { token } }
-      );
-      if (data.success) {
-        toast.success(data.message);
-        getServicesData();
-        navigate("/my-bookings");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
+    const { data } = await axios.post(
+      `${backendUrl}/api/user/book-service`,
+      { serviceId, slotDate, slotTime },
+      { headers: { token } }
+    );
+    if (data.success) {
+      toast.success(t("serviceBookSuccess"));
+      getServicesData();
+      navigate("/my-bookings");
+    } else {
+      toast.error(t("serviceBookFailed"));
     }
-  };
+  } catch (error) {
+    toast.error(t("serviceBookError"));
+  }
+};
 
   const deleteReview = async (reviewId) => {
     try {
@@ -166,7 +174,7 @@ const Bookings = () => {
         toast.success(t("toastMessage.reviewDeleted"));
         setReviews((prev) => prev.filter((review) => review._id !== reviewId));
       } else {
-        toast.error(data.message);
+        toast.error(t("reviewDeleteFailed"));
       }
     } catch (error) {
       toast.error(t("toastMessage.reviewDeleteError"));

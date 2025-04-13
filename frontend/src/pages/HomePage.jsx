@@ -84,14 +84,13 @@ const HomePage = () => {
 
 const verifyPayment = async (pidx) => {
   if (!token) {
-    toast.error("Please log in to verify payment");
+    toast.error(t("loginPayment"));
     navigate("/login");
     return;
   }
 
   if (!userData || !userData._id) {
     console.error("User data not available yet:", userData);
-    toast.error("User data is loading, please wait...");
     return;
   }
 
@@ -105,12 +104,11 @@ const verifyPayment = async (pidx) => {
     );
     console.log("Verification response:", data);
     if (data.success) {
-      toast.success(data.message);
+      toast.success(t("paymentVerifySuccess"));
       await subscribeUser(); 
     } else {
     }
   } catch (error) {
-    console.error("Verification error:", error.response?.data || error.message);
   } finally {
     setIsVerifying(false);
   }
@@ -128,7 +126,7 @@ useEffect(() => {
 
 const handleChoosePlan = async (subscription) => {
   if (!token) {
-    toast.error("You must be logged in to subscribe to a plan.");
+    toast.error(t("loginToSubscribe"));
     navigate("/login");
     return;
   }
@@ -165,7 +163,7 @@ const handleChoosePlan = async (subscription) => {
     }
   } catch (error) {
     console.error("Payment error:", error);
-    toast.error("Error initiating payment");
+    toast.error(t("paymentInitiateFailed"));
   }
 };
 

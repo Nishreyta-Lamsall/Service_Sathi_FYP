@@ -14,7 +14,6 @@ import { ToastContainer, toast } from "react-toastify";
 import OrderHistory from './pages/OrderHistory';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import PaymentVerify from './pages/PaymentVerify';
 import { LanguageProvider } from './context/LanguageContext';
 import MySubscriptions from './pages/MySubscriptions';
 
@@ -41,10 +40,6 @@ const App = () => {
           <Route path="/my-subscription" element={<MySubscriptions />} />
           <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/bookings/:serviceId" element={<Bookings />} />
-          <Route
-            path="/subscription-payment-verify"
-            element={<PaymentVerify />}
-          />
         </Routes>
         <Footer />
       </LanguageProvider>

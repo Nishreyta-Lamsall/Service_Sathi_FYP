@@ -83,7 +83,7 @@ const MyBookings = () => {
           [reviewData.bookingId]: true,
         }));
       } else {
-        toast.error(response.data.message);
+        toast.error(("reviewSubmitFailed"));
       }
     } catch (error) {
       toast.error(t("toastMessage.reviewError"));
@@ -139,7 +139,7 @@ const MyBookings = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(t("failedToLoadBookings"));
     }
   };
 
@@ -151,14 +151,14 @@ const MyBookings = () => {
         { headers: { token } }
       );
       if (data.success) {
-        toast.success(data.message);
+        toast.success(t("bookingCancelSuccess"));
         getUserBookings();
       } else {
-        toast.error(data.message);
+        toast.error(t("bookingCancelFailed"));
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(t("bookingCancelError"));
     }
   };
 

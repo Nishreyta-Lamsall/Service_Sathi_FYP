@@ -21,10 +21,10 @@ const ForgotPassword = () => {
       if (data.success) {
         toast.success(t("success"));
       } else {
-        toast.error(data.message);
+        toast.error(t("passwordResetFailed"));
       }
     } catch (error) {
-      toast.error(t("error"));
+      toast.error(t("passwordResetError"));
     } finally {
       setLoading(false);
     }
