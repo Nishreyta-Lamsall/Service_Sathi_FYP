@@ -13,7 +13,6 @@ import { useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CheckCircle as CheckCircleIcon } from "lucide-react";
-import { HashLink } from "react-router-hash-link";
 
 const HomePage = () => {
   const { t, i18n } = useTranslation();
@@ -392,14 +391,14 @@ const isUserSubscribedToPlan = (plan) => {
                   >
                     <p className="text-2xl font-semibold text-gray-900 mb-5">
                       {subscription.plan === "6-month"
-                        ? t("home.hero.B")
-                        : t("home.hero.A")}
+                        ? t("home.hero.A")
+                        : t("home.hero.B")}
                     </p>
                     <p className="text-gray-600 font-medium mb-3 bg-blue-50 inline-block px-3 py-1 rounded-full text-sm">
                       [
                       {subscription.plan === "6-month"
-                        ? t("home.hero.planB")
-                        : t("home.hero.planA")}
+                        ? t("home.hero.planA")
+                        : t("home.hero.planB")}
                       ]
                     </p>
                     <p className="text-gray-600 mb-4">
@@ -435,8 +434,8 @@ const isUserSubscribedToPlan = (plan) => {
                       <li className="flex items-center gap-3">
                         <CheckCircleIcon className="text-green-500 w-5 h-5" />
                         {subscription.plan === "6-month"
-                          ? t("home.hero.planB")
-                          : t("home.hero.planA")}
+                          ? t("home.hero.planA")
+                          : t("home.hero.planB")}
                       </li>
                     </ul>
 
