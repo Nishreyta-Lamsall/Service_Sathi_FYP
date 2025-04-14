@@ -1,6 +1,7 @@
 import axios from "axios";
 import userModel from "../models/userModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
+import bookingModel from "../models/bookingModel.js"; 
 
 const khaltiSecretKey = process.env.KHALTI_SECRET_KEY;
 const khaltiInitiateUrl = "https://dev.khalti.com/api/v2/epayment/initiate/";
@@ -107,6 +108,7 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
+    // Check if payment is already verified
     const existingSubscription = await subscriptionModel.findOne({
       "users.pidx": pidx,
     });
@@ -116,6 +118,7 @@ export const verifySubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "Payment already verified" });
     }
 
+    // Verify payment with Khalti
     const verificationResponse = await axios.post(
       khaltiLookupUrl,
       { pidx },
@@ -143,6 +146,7 @@ export const verifySubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
+    // Check for existing active subscription
     if (user.isSubscribed && user.subscription) {
       const existingSub = await subscriptionModel.findById(user.subscription);
       if (
@@ -152,19 +156,19 @@ export const verifySubscriptionPayment = async (req, res) => {
             u.userId.toString() === userId.toString() && u.status === "active"
         )
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "You already have an active subscription.",
-          });
+        return res.status(400).json({
+          success: false,
+          message: "You already have an active subscription.",
+        });
       }
     }
 
+    // Calculate subscription dates
     const startDate = new Date();
     const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 12);
+    endDate.setMonth(endDate.getMonth() + (plan === "6-month" ? 6 : 12));
 
+    // Find or create subscription
     let subscription = await subscriptionModel.findOne({ plan });
     if (!subscription) {
       subscription = new subscriptionModel({
@@ -174,6 +178,7 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
+    // Update subscription with user data
     const userIndex = subscription.users.findIndex(
       (u) => u.userId.toString() === userId.toString()
     );
@@ -194,10 +199,25 @@ export const verifySubscriptionPayment = async (req, res) => {
     await subscription.save();
     console.log("Subscription updated:", subscription);
 
+    // Update user model
     user.isSubscribed = true;
     user.subscription = subscription._id;
+    user.subscriptionPlan = plan; // Optional: store plan for reference
     await user.save();
     console.log("User updated:", user);
+
+    // Update userData in active bookings
+    const updatedUserData = {
+      ...user.toObject(),
+      isSubscribed: true,
+      subscription: subscription._id,
+      subscriptionPlan: plan,
+    };
+    await bookingModel.updateMany(
+      { userId, cancelled: false, isCompleted: false },
+      { $set: { userData: updatedUserData } }
+    );
+    console.log("Active bookings updated for user:", userId);
 
     // Clean up temporary storage
     if (global.paymentPlans?.[pidx]) {
@@ -206,7 +226,7 @@ export const verifySubscriptionPayment = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Subscription activated successfully!",
+      message: "Subscription activated successfully and bookings updated!",
     });
   } catch (error) {
     console.error("Verification error:", error.response?.data || error.message);

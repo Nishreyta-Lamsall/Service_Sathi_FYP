@@ -257,18 +257,20 @@ const MyBookings = () => {
                         </span>
                         {currencySymbol}
                         {item.amount}
-                        {discountedPrice && item.amount <= 2000 && (
-                          <div className="mt-1 text-sm text-gray-500">
-                            <span className="line-through text-blue-800">
-                              {currencySymbol}
-                              {item.amount}
-                            </span>
-                            <span className="ml-2 font-medium text-gray-600">
-                              {currencySymbol}
-                              {discountedPrice.toFixed(2)}
-                            </span>
-                          </div>
-                        )}
+                        {user?.isSubscribed ? (
+                          discountedPrice && item.amount <= 2000 ? (
+                            <div className="mt-1 text-sm text-gray-500">
+                              <span className="line-through text-blue-800">
+                                {currencySymbol}
+                                {item.amount}
+                              </span>
+                              <span className="ml-2 font-medium text-gray-600">
+                                {currencySymbol}
+                                {discountedPrice.toFixed(2)}
+                              </span>
+                            </div>
+                          ) : null
+                        ) : null}
                       </p>
 
                       <p className="mt-1 text-sm">
