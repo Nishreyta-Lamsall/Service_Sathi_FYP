@@ -43,12 +43,40 @@ const MySubscriptions = () => {
     (user) => user.userId === userData?._id
   );
 
+  // Function to calculate inspection dates (4, 8, 12 months)
+  const calculateInspectionDates = (startDate) => {
+    if (!startDate) return [];
+    const dates = [];
+    const intervals = [4, 8, 12]; // Three inspections
+    intervals.forEach((month) => {
+      const date = new Date(startDate);
+      date.setMonth(date.getMonth() + month);
+      dates.push(date.toLocaleDateString());
+    });
+    return dates;
+  };
+
   // Function to always set a 12-month duration
   const calculateEndDate = (startDate) => {
-    if (!startDate) return "N/A"; // Handle missing start date
+    if (!startDate) return "N/A";
     const start = new Date(startDate);
-    start.setMonth(start.getMonth() + 12); // Always add 12 months
+    start.setMonth(start.getMonth() + 12);
     return start.toLocaleDateString();
+  };
+
+  // Generate confirmation message
+  const getConfirmationMessage = () => {
+    if (!userSubscription || !userDetails) return null;
+
+    const inspectionDates = calculateInspectionDates(userDetails.startDate);
+    const houseSize =
+      userSubscription.plan === "12-month"
+        ? t("home.hero.B")
+        : t("home.hero.A");
+
+    return `${t("inspections")} ${houseSize}. ${t(
+      "inspectionDates"
+    )} ${inspectionDates.join(", ")}.`;
   };
 
   return (
@@ -72,6 +100,13 @@ const MySubscriptions = () => {
             </div>
           ) : userData?.isSubscribed && userSubscription && userDetails ? (
             <div className="space-y-8">
+              {/* Confirmation Message */}
+              <div className="border border-green-200 bg-green-50 rounded-lg p-6 text-center">
+                <p className="text-lg text-green-800 font-medium">
+                  {getConfirmationMessage()}
+                </p>
+              </div>
+
               {/* User Info Card */}
               <div className="border border-gray-200 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-6">

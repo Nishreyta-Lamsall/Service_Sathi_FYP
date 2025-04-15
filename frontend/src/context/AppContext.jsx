@@ -33,11 +33,10 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setServices(data.Services);
       } else {
-        toast.error(data.message);
+        console.log(data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     }
   };
 
@@ -50,11 +49,9 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setUserData(data.userData);
       } else {
-        toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     }
   };
 
@@ -79,12 +76,10 @@ const AppContextProvider = (props) => {
           subscription: data.subscription,
           subscriptionPlan: plan,
         });
-        toast.success(data.message); // Show success message
         return data; // Return the data for further use if needed
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || error.message); // Show error message from backend
     }
   };
 

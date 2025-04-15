@@ -800,6 +800,131 @@ const postContact = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID format" });
+    }
+
+    const user = await userModel.findById(userId).select("name email phone");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      name: user.name || "Unknown User",
+      email: user.email || "N/A",
+      phone: user.phone || "N/A",
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// POST /api/admin/get-users
+const getUsers = async (req, res) => {
+  try {
+    const { userIds } = req.body;
+
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or empty userIds array" });
+    }
+
+    // Validate all userIds
+    const invalidIds = userIds.filter(
+      (id) => !mongoose.Types.ObjectId.isValid(id)
+    );
+    if (invalidIds.length > 0) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `Invalid user IDs: ${invalidIds.join(", ")}`,
+        });
+    }
+
+    const users = await userModel
+      .find({ _id: { $in: userIds } })
+      .select("name email phone");
+
+    const userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = {
+        name: user.name || "Unknown User",
+        email: user.email || "N/A",
+        phone: user.phone || "N/A",
+      };
+      return map;
+    }, {});
+
+    res.json({ success: true, users: userMap });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// GET /api/admin/all-users
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.find().select("name email phone");
+
+    const userList = users.map((user) => ({
+      userId: user._id.toString(),
+      name: user.name || "Unknown User",
+      email: user.email || "N/A",
+      phone: user.phone || "N/A",
+    }));
+
+    res.json({ success: true, users: userList });
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// DELETE /api/admin/delete-user/:userId
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID format" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    await userModel.findByIdAndDelete(userId);
+
+    await subscriptionModel.updateMany(
+      { "users.userId": userId },
+      { $pull: { users: { userId } } }
+    );
+
+    res.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 export {
   addService,
@@ -821,5 +946,9 @@ export {
   getcontact,
   postContact,
   markWorkflowAsRead,
-  sendWorkflow
+  sendWorkflow,
+  getUserById,
+  getUsers,
+  getAllUsers,
+  deleteUser,
 };

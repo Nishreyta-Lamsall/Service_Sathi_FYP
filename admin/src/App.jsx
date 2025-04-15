@@ -15,6 +15,8 @@ import EditService from "./pages/Admin/EditService";
 import EditProvider from "./pages/Admin/EditProvider";
 import Contact from "./pages/Admin/Contact";
 import Testimonials from "./pages/Admin/Testimonial";
+import SubscribedUsers from "./pages/Admin/SubscribedUsers";
+import AllUsers from "./pages/Admin/AllUsers";
 
 const App = () => {
   const { aToken } = useContext(AdminContext);
@@ -45,6 +47,8 @@ const App = () => {
             <Route path="/edit-provider/:id" element={<EditProvider />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/testimonial" element={<Testimonials />} />
+            <Route path="/subscribed-users" element={<SubscribedUsers />} />
+            <Route path="/all-users" element={<AllUsers />} />
           </Routes>
         </div>
       </div>

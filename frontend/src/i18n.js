@@ -66,6 +66,8 @@ const resources = {
       serviceBookFailed:
         "Please enter your number and address correctly before booking",
       serviceBookError: "An error occurred while booking service",
+      inspections: "You've successfully taken the subscription for",
+      inspectionDates: "Your scheduled free inspections are on these dates:",
 
       // About Us Section
       hero: {
@@ -415,6 +417,10 @@ const resources = {
       serviceBookFailed:
         "कृपया बुक गर्नु अघि आफ्नो नम्बर र ठेगाना सही रूपमा प्रविष्ट गर्नुहोस्",
       serviceBookError: "सेवा बुक गर्ने क्रममा त्रुटि भयो",
+      inspections: "तपाईंले सफलतापूर्वक सदस्यता लिइसक्नु भएको छ:",
+      inspectionDates:
+        "तपाईंका तालिकाबद्ध निःशुल्क निरीक्षणहरू यी मितिहरूमा छन्:",
+
       // About Us Section
       hero: {
         title: "हाम्रो बारेमा",

@@ -143,6 +143,42 @@ const Sidebar = () => {
             <p className="text-sm font-medium">User testimonials</p>
           </NavLink>
           <hr />
+          <NavLink
+            to="/subscribed-users"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+                isActive
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <img
+              src={assets.subscribed_users}
+              alt="Services List"
+              className="w-5"
+            />
+            <p className="text-sm font-medium">Subscribed Users</p>
+          </NavLink>
+          <hr />
+          <NavLink
+            to="/all-users"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+                isActive
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <img
+              src={assets.user_icon}
+              alt="Services List"
+              className="w-5"
+            />
+            <p className="text-sm font-medium">All Users</p>
+          </NavLink>
+          <hr />
         </ul>
       )}
     </div>

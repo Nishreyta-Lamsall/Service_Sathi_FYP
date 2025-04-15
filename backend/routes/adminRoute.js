@@ -20,6 +20,10 @@ import {
   postContact,
   sendWorkflow,
   markWorkflowAsRead,
+  getUserById,
+  getUsers,
+  deleteUser,
+  getAllUsers,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -87,5 +91,9 @@ adminRouter.put(
   authAdmin,
   markWorkflowAsRead
 );
+adminRouter.get("/get-user/:userId", authAdmin, getUserById);
+adminRouter.post("/get-users", authAdmin, getUsers);
+adminRouter.get("/all-users", authAdmin, getAllUsers);
+adminRouter.delete("/delete-user/:userId", authAdmin, deleteUser);
 
 export default adminRouter;
