@@ -291,6 +291,8 @@ const resources = {
         noOrder: "No orders found in history.",
         milestoneButton: "View Milestone Details",
         milestoneDetails: "Milestone Details",
+        payOnline: "Pay Online",
+        paymentStatus: "Payment Status:",
       },
       toastMessage: {
         loginToBook: "Login to book a service",
@@ -328,6 +330,7 @@ const resources = {
           "Payment verification failed. Please try again.",
         paymentVerificationError:
           "Something went wrong while verifying your payment. Please try again later.",
+        paymentVerified: "Your payment has been verified.",
       },
       footer: {
         serviceSathi: "Service Sathi",
@@ -645,6 +648,8 @@ const resources = {
         noOrder: "इतिहासमा कुनै अर्डर भेटिएन।",
         milestoneButton: "माइलस्टोन विवरण हेर्नुहोस्",
         milestoneDetails: "माइलस्टोन विवरण",
+        payOnline: "अनलाइन भुक्तानी गर्नुहोस्",
+        paymentStatus: "भुक्तानी स्थिति:",
       },
       toastMessage: {
         loginToBook: "लगइन गरेर सेवा बुक गर्नुहोस्",
@@ -682,6 +687,7 @@ const resources = {
           "भुक्तानी प्रमाणीकरण असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।",
         paymentVerificationError:
           "भुक्तानी प्रमाणित गर्ने क्रममा केही गडबड भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।",
+        paymentVerified: "तपाईंको भुक्तानी प्रमाणित गरिएको छ।",
       },
       footer: {
         serviceSathi: "सर्भिस साथी",

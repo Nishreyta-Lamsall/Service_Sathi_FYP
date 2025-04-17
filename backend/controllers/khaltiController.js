@@ -1,12 +1,25 @@
 import axios from "axios";
 import userModel from "../models/userModel.js";
 import subscriptionModel from "../models/subscriptionModel.js";
-import bookingModel from "../models/bookingModel.js"; 
+import bookingModel from "../models/bookingModel.js";
 
 const khaltiSecretKey = process.env.KHALTI_SECRET_KEY;
-const khaltiInitiateUrl = "https://dev.khalti.com/api/v2/epayment/initiate/";
-const khaltiLookupUrl = "https://dev.khalti.com/api/v2/epayment/lookup/";
 
+// Environment variable validation
+const {
+  KHALTI_SECRET_KEY,
+  KHALTI_API_BASE_URL = "https://dev.khalti.com",
+  APP_BASE_URL = "http://localhost:5173",
+} = process.env;
+
+if (!KHALTI_SECRET_KEY) {
+  throw new Error("KHALTI_SECRET_KEY is not configured");
+}
+
+const khaltiInitiateUrl = `${KHALTI_API_BASE_URL}/api/v2/epayment/initiate/`;
+const khaltiLookupUrl = `${KHALTI_API_BASE_URL}/api/v2/epayment/lookup/`;
+
+// Initiate Subscription Payment
 export const initiateSubscriptionPayment = async (req, res) => {
   try {
     const { userId, amount, orderId, orderName } = req.body;
@@ -16,7 +29,7 @@ export const initiateSubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "userId and orderName are required" });
     }
 
-    const plan = orderName.split(" ")[0]; 
+    const plan = orderName.split(" ")[0];
     if (!["6-month", "12-month"].includes(plan)) {
       return res
         .status(400)
@@ -234,6 +247,239 @@ export const verifySubscriptionPayment = async (req, res) => {
       success: false,
       message: "Payment verification failed",
       error: error.message,
+    });
+  }
+};
+
+// Initiate Booking Payment
+export const initiateBookingPayment = async (req, res) => {
+  try {
+    const { userId, bookingId, amount } = req.body;
+    console.log("Initiate booking payment request:", {
+      userId,
+      bookingId,
+      amount,
+    });
+    if (!userId || !bookingId || !amount) {
+      console.log("Missing fields:", { userId, bookingId, amount });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "userId, bookingId, and amount are required",
+        });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      console.log("User not found:", userId);
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    if (!user.phone) {
+      console.log("User phone missing:", userId);
+      return res
+        .status(400)
+        .json({ success: false, message: "User phone number is required" });
+    }
+
+    const booking = await bookingModel.findById(bookingId);
+    if (!booking) {
+      console.log("Booking not found:", bookingId);
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+    if (booking.userId.toString() !== userId) {
+      console.log("Booking user mismatch:", {
+        bookingUserId: booking.userId,
+        userId,
+      });
+      return res
+        .status(403)
+        .json({ success: false, message: "Booking does not belong to user" });
+    }
+    if (booking.paymentStatus === "Completed") {
+      console.log("Payment already completed:", bookingId);
+      return res
+        .status(400)
+        .json({ success: false, message: "Booking payment already completed" });
+    }
+
+    // Validate amount with discount for subscribed users
+    let expectedAmount = booking.amount;
+    if (user.isSubscribed) {
+      const discount = 0.1; // 10% discount
+      expectedAmount = booking.amount - booking.amount * discount;
+    }
+    if (expectedAmount !== amount) {
+      console.log("Amount mismatch:", {
+        expectedAmount,
+        requestAmount: amount,
+      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Amount does not match expected booking amount",
+        });
+    }
+
+    if (!APP_BASE_URL) {
+      throw new Error("APP_BASE_URL is not defined");
+    }
+
+    const paymentData = {
+      return_url: `${APP_BASE_URL}/my-bookings`,
+      website_url: APP_BASE_URL,
+      amount: amount * 100, // Convert NPR to paisa for Khalti
+      purchase_order_id: `BOOKING-${bookingId}-${Date.now()}`,
+      purchase_order_name: `Booking for ${
+        booking.serviceData?.name || "Service"
+      }`,
+      customer_info: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      },
+    };
+    console.log("Payment data for Khalti:", paymentData);
+
+    const response = await axios.post(khaltiInitiateUrl, paymentData, {
+      headers: {
+        Authorization: `Key ${KHALTI_SECRET_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Khalti response:", response.data);
+
+    const pidx =
+      response.data.pidx ||
+      new URL(response.data.payment_url).searchParams.get("pidx");
+    if (!pidx) {
+      throw new Error("Failed to retrieve pidx from Khalti response");
+    }
+
+    global.paymentPlans = global.paymentPlans || {};
+    global.paymentPlans[pidx] = { userId, bookingId };
+
+    booking.pidx = pidx;
+    booking.paymentStatus = "Pending";
+    await booking.save();
+
+    res.json({ success: true, payment_url: response.data.payment_url });
+  } catch (error) {
+    console.error("Error initiating booking payment:", {
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data,
+    });
+    res.status(500).json({
+      success: false,
+      message: "Failed to initiate booking payment",
+      error: error.response?.data?.detail || error.message,
+    });
+  }
+};
+
+// Verify Booking Payment
+export const verifyBookingPayment = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const { pidx } = req.query;
+
+    console.log("Verifying booking payment:", { userId, pidx });
+
+    if (!userId || !pidx) {
+      console.log("Missing fields:", { userId, pidx });
+      return res
+        .status(400)
+        .json({ success: false, message: "userId and pidx are required" });
+    }
+
+    const storedData = global.paymentPlans?.[pidx];
+    if (!storedData || !storedData.bookingId) {
+      console.log("Payment intent not found:", pidx);
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Payment intent not found or invalid",
+        });
+    }
+    if (storedData.userId !== userId) {
+      console.log("User ID mismatch:", {
+        storedUserId: storedData.userId,
+        userId,
+      });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "User ID does not match payment initiator",
+        });
+    }
+
+    const booking = await bookingModel.findById(storedData.bookingId);
+    if (!booking) {
+      console.log("Booking not found:", storedData.bookingId);
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+    if (booking.paymentStatus === "Completed") {
+      console.log("Payment already verified:", booking._id);
+      return res
+        .status(400)
+        .json({ success: false, message: "Booking payment already verified" });
+    }
+
+    const verificationResponse = await axios.post(
+      khaltiLookupUrl,
+      { pidx },
+      {
+        headers: {
+          Authorization: `Key ${KHALTI_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Khalti response:", verificationResponse.data);
+
+    if (verificationResponse.data.status !== "Completed") {
+      booking.paymentStatus = "Failed";
+      await booking.save();
+      console.log("Payment not completed:", verificationResponse.data.status);
+      return res.status(400).json({
+        success: false,
+        message: `Payment not completed. Status: ${verificationResponse.data.status}`,
+      });
+    }
+
+    booking.paymentStatus = "Completed";
+    booking.transactionId = verificationResponse.data.transaction_id;
+    await booking.save();
+    console.log("Booking updated:", booking);
+
+    if (global.paymentPlans?.[pidx]) {
+      delete global.paymentPlans[pidx];
+    }
+
+    res.json({
+      success: true,
+      message: "Booking payment verified successfully!",
+    });
+  } catch (error) {
+    console.error("Booking verification error:", {
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data,
+    });
+    res.status(500).json({
+      success: false,
+      message: "Booking payment verification failed",
+      error: error.response?.data?.detail || error.message,
     });
   }
 };

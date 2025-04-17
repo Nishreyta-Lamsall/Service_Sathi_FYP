@@ -1,4 +1,3 @@
-// Booking.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
@@ -14,7 +13,7 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
     slotDate: { type: String, required: true },
-    orderStatus: {type:String, default:"Booked"},
+    orderStatus: { type: String, default: "Booked" },
     slotTime: { type: String, required: true },
     userData: { type: Object, required: true },
     serviceData: { type: Object, required: true },
@@ -22,6 +21,13 @@ const bookingSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now },
     cancelled: { type: Boolean, default: false },
     isCompleted: { type: Boolean, default: false },
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Completed", "Failed"],
+      default: "Pending",
+    },
+    pidx: { type: String }, // Khalti payment index
+    transactionId: { type: String }, // Khalti transaction ID
     workflowMessage: {
       content: String,
       sentAt: Date,

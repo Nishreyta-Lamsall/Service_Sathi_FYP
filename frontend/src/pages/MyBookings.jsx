@@ -3,6 +3,7 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import {useLocation, useNavigate} from "react-router-dom"
 
 const MyBookings = () => {
   const { backendUrl, token, getServicesData, currencySymbol } =
@@ -11,9 +12,10 @@ const MyBookings = () => {
   const [serviceProviders, setServiceProviders] = useState({});
   const [reviewSubmitted, setReviewSubmitted] = useState({});
   const [showWorkflow, setShowWorkflow] = useState(null);
-
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const months = [
     " ",
@@ -35,22 +37,21 @@ const MyBookings = () => {
     rating: 1,
     comment: "",
     serviceProviderId: "",
-    bookingId: "", // Added to track the booking being reviewed
+    bookingId: "",
   });
 
   const getDisplayValue = (field) => {
     if (typeof field === "string") {
-      // Map English strings to translations if in Nepali mode
       if (currentLang === "np") {
         const translations = {
           "Leak Repairs": "लिक मर्मत",
           "Plumbing Services": "प्लम्बिंग सेवाहरू",
         };
-        return translations[field] || field; // Use translation or fallback to English
+        return translations[field] || field;
       }
-      return field; 
+      return field;
     }
-    return field?.[currentLang] || "Unknown"; 
+    return field?.[currentLang] || "Unknown";
   };
 
   const handleReviewChange = (e) => {
@@ -83,7 +84,7 @@ const MyBookings = () => {
           [reviewData.bookingId]: true,
         }));
       } else {
-        toast.error(("reviewSubmitFailed"));
+        toast.error(t("toastMessage.reviewSubmitFailed"));
       }
     } catch (error) {
       toast.error(t("toastMessage.reviewError"));
@@ -113,25 +114,27 @@ const MyBookings = () => {
   };
 
   const getDiscountedPrice = (originalPrice, isSubscribed) => {
+    console.log("Calculating discounted price:", {
+      originalPrice,
+      isSubscribed,
+    });
     let discount = 0;
-
-    console.log("Original Price:", originalPrice);
-    console.log("Is Subscribed:", isSubscribed);
-
     if (isSubscribed) {
       discount = 0.1; // 10% discount for subscribed users
     }
-
     const discountedPrice = originalPrice - originalPrice * discount;
-
-    console.log("Discounted Price:", discountedPrice);
-
+    console.log(
+      "Discounted price:",
+      discountedPrice,
+      "Discount applied:",
+      discount
+    );
     return discountedPrice;
   };
 
   const getUserBookings = async () => {
     try {
-      const { data } = await axios.get(backendUrl + "/api/user/bookings", {
+      const { data } = await axios.get(`${backendUrl}/api/user/bookings`, {
         headers: { token },
       });
       if (data.success) {
@@ -146,7 +149,7 @@ const MyBookings = () => {
   const cancelBooking = async (bookingId) => {
     try {
       const { data } = await axios.post(
-        backendUrl + "/api/user/cancel-booking",
+        `${backendUrl}/api/user/cancel-booking`,
         { bookingId },
         { headers: { token } }
       );
@@ -162,7 +165,95 @@ const MyBookings = () => {
     }
   };
 
+  const initiateBookingPayment = async (booking) => {
+    try {
+      console.log("Initiating payment for booking:", booking._id);
+      console.log("Backend URL:", backendUrl);
+      console.log("User data:", booking.userData);
+      console.log("Token:", token);
+      console.log("Booking amount:", booking.amount);
+      const user = booking.userData;
+      if (!user?._id || !booking._id || !token) {
+        throw new Error("Missing required fields: userId, bookingId, or token");
+      }
+      const amount = user?.isSubscribed
+        ? getDiscountedPrice(booking.amount, user.isSubscribed)
+        : booking.amount;
+      console.log(
+        "Calculated amount:",
+        amount,
+        "Subscribed:",
+        user.isSubscribed
+      );
+      if (!amount || amount <= 0) {
+        throw new Error("Invalid amount: " + amount);
+      }
+
+      const payload = {
+        userId: user._id,
+        bookingId: booking._id,
+        amount: amount,
+        orderId: `BOOKING-${booking._id}-${Date.now()}`,
+        orderName: `Booking Payment for ${booking.serviceData.name[currentLang]}`,
+      };
+      console.log("Request payload:", payload);
+
+      const response = await axios.post(
+        `${backendUrl}/api/subscription/initiate-booking-payment`,
+        payload,
+        { headers: { token } }
+      );
+
+      console.log("Payment initiation response:", response.data);
+      if (response.data.success && response.data.payment_url) {
+        window.location.href = response.data.payment_url;
+      } else {
+        toast.error(t("toastMessage.paymentInitiationFailed"));
+      }
+    } catch (error) {
+      console.error("Error initiating payment:", {
+        message: error.message,
+        response: error.response
+          ? {
+              status: error.response.status,
+              data: error.response.data,
+              headers: error.response.headers,
+            }
+          : null,
+        error: error.toJSON ? error.toJSON() : error,
+      });
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          t("toastMessage.paymentInitiationError")
+      );
+    }
+  };
+
+  const verifyBookingPayment = async (pidx, userId) => {
+    try {
+      console.log("Verifying booking payment:", { pidx, userId });
+      const response = await axios.post(
+        `${backendUrl}/api/subscription/verify-booking-payment?pidx=${pidx}`,
+        { userId },
+        { headers: { token } }
+      );
+
+      console.log("Verification response:", response.data);
+      if (response.data.success) {
+        toast.success(t("toastMessage.paymentVerified"));
+        getUserBookings();
+      } else {
+        toast.error(t("toastMessage.paymentVerificationFailed"));
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error.response?.data || error);
+      toast.error(t("toastMessage.paymentVerificationError"));
+    }
+  };
+
   useEffect(() => {
+    console.log("Backend URL in MyBookings:", backendUrl);
     if (token) {
       getUserBookings();
       getServicesData();
@@ -176,6 +267,17 @@ const MyBookings = () => {
       }
     });
   }, [bookings, serviceProviders]);
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const pidx = query.get("pidx");
+    const userId = bookings[0]?.userData?._id;
+
+    if (pidx && userId) {
+      verifyBookingPayment(pidx, userId);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, bookings]);
 
   return (
     <div className="flex flex-col min-h-screen p-6">
@@ -239,7 +341,22 @@ const MyBookings = () => {
                           {item.orderStatus}
                         </span>
                       </p>
-
+                      <p className="mt-2 text-sm">
+                        <span className="font-medium text-gray-800">
+                          {t("myBookingss.paymentStatus")}{" "}
+                        </span>
+                        <span
+                          className={`font-semibold ${
+                            item.paymentStatus === "Pending"
+                              ? "text-yellow-600"
+                              : item.paymentStatus === "Completed"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {item.paymentStatus}
+                        </span>
+                      </p>
                       <p className="mt-2 text-sm">
                         <span className="font-medium text-gray-800">
                           {t("myBookingss.serviceProvider")}{" "}
@@ -250,7 +367,6 @@ const MyBookings = () => {
                             : "Loading..."}
                         </span>
                       </p>
-
                       <p className="mt-1 text-sm">
                         <span className="font-medium text-gray-800">
                           {t("myBookingss.amount")}{" "}
@@ -272,7 +388,6 @@ const MyBookings = () => {
                           ) : null
                         ) : null}
                       </p>
-
                       <p className="mt-1 text-sm">
                         <span className="font-medium text-gray-800">
                           {t("myBookingss.dateTime")}{" "}
@@ -290,12 +405,22 @@ const MyBookings = () => {
                           {t("myBookingss.milestoneButton")}
                         </button>
                       )}
-                      <button
-                        onClick={() => cancelBooking(item._id)}
-                        className="text-sm font-medium text-red-600 border border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300"
-                      >
-                        {t("myBookingss.cancelBooking")}
-                      </button>
+                      {item.paymentStatus !== "Completed" && (
+                        <button
+                          onClick={() => initiateBookingPayment(item)}
+                          className="text-sm font-medium text-green-600 border border-green-600 px-4 py-1.5 rounded-lg hover:bg-green-600 hover:text-white transition-all duration-300"
+                        >
+                          {t("myBookingss.payOnline")}
+                        </button>
+                      )}
+                      {item.paymentStatus !== "Completed" && (
+                        <button
+                          onClick={() => cancelBooking(item._id)}
+                          className="text-sm font-medium text-red-600 border border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300"
+                        >
+                          {t("myBookingss.cancelBooking")}
+                        </button>
+                      )}
                     </div>
 
                     {showWorkflow?._id === item._id && (
@@ -373,7 +498,6 @@ const MyBookings = () => {
                             Completed
                           </span>
                         </p>
-
                         <p className="mt-2 text-sm">
                           <span className="font-medium text-gray-800">
                             {t("myBookingss.serviceProvider")}{" "}
@@ -385,7 +509,6 @@ const MyBookings = () => {
                           </span>
                         </p>
                       </div>
-
                       <div className="ml-auto mt-4 sm:mt-0">
                         <button
                           onClick={() => {
@@ -393,7 +516,7 @@ const MyBookings = () => {
                               rating: 1,
                               comment: "",
                               serviceProviderId: serviceProvider?.id || "",
-                              bookingId: item._id, // Set the bookingId
+                              bookingId: item._id,
                             });
                             setReviewModalOpen(true);
                           }}
