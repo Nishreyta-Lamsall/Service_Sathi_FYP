@@ -20,116 +20,87 @@ const AuthForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Simulated user data (stored in localStorage)
-  const getRegisteredUsers = () => {
-    const users = localStorage.getItem("registeredUsers");
-    return users ? JSON.parse(users) : {};
-  };
-
-  const addRegisteredUser = (email) => {
-    const users = getRegisteredUsers();
-    users[email] = { isVerified: false }; // New users are not verified by default
-    localStorage.setItem("registeredUsers", JSON.stringify(users));
-  };
-
-  const markUserVerified = (email) => {
-    const users = getRegisteredUsers();
-    if (users[email]) {
-      users[email].isVerified = true;
-      localStorage.setItem("registeredUsers", JSON.stringify(users));
-    }
-  };
-
-  // Redirect to home if token exists, but not on /login
   useEffect(() => {
     if (token && location.pathname !== "/login") {
       navigate("/");
     }
   }, [token, navigate, location.pathname]);
 
-  // Handle verification redirect
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("verified") === "true" && email) {
-      markUserVerified(email); // Mark user as verified
-      setState("Login");
-      toast.success(t("authForm.emailVerifiedSuccess"));
+const onSubmitHandler = async (event) => {
+  event.preventDefault();
+  setLoading(true);
+
+  const normalizedEmail = email.toLowerCase();
+
+  const getErrorTranslation = (message) => {
+    switch (message) {
+      case "User already exists!":
+        return t("authForm.userExists");
+      case "Enter a strong password":
+        return t("authForm.enterStrongPass");
+      case "Please verify your email before logging in.":
+        return t("authForm.notVerified");
+      case "Invalid Credentials!":
+        return t("authForm.incorrectCredentials");
+      default:
+        return t("authForm.serverError");
     }
-  }, [location, t, email]);
+  };
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-
-    // Simulated checks for registration and verification
-    const registeredUsers = getRegisteredUsers();
-
+  try {
     if (state === "Sign Up") {
-      // Check if user already exists
-      if (registeredUsers[email]) {
-        toast.error(t("authForm.userExists"));
+      // Check password match
+      if (password !== confirmPassword) {
+        toast.error(t("authForm.passwordsDoNotMatch"));
         setLoading(false);
         return;
       }
 
-      try {
-        const { data } = await axios.post(backendUrl + "/api/user/register", {
-          name,
-          password,
-          email,
-          confirmPassword,
-        });
-        if (data.success) {
-          addRegisteredUser(email); // Add to simulated registered users
-          toast.success(t("authForm.userRegistered"));
-          setName("");
-          setEmail("");
-          setPassword("");
-          setConfirmPassword("");
-          setState("Login");
-        } else {
-          toast.error(t("authForm.userExists")); 
-        }
-      } catch (error) {
-        toast.error(t("authForm.userExists")); 
+      const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+        name,
+        password,
+        email: normalizedEmail,
+        confirmPassword,
+      });
+
+      if (data?.success) {
+        toast.success(t("authForm.userRegistered"));
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setState("Login");
+      } else {
+        toast.error(getErrorTranslation(data?.message));
       }
     } else {
-      // Login logic
-      // Check if user exists
-      if (!registeredUsers[email]) {
-        toast.error(t("authForm.incorrectCredentials"));
-        setLoading(false);
-        return;
-      }
+      const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+        password,
+        email: normalizedEmail,
+      });
 
-      // Check if user is verified
-      if (registeredUsers[email].isVerified !== true) {
-        toast.error(t("authForm.notVerified"));
-        setLoading(false);
-        return;
-      }
-
-      // Proceed with login if verified
-      try {
-        const { data } = await axios.post(backendUrl + "/api/user/login", {
-          password,
-          email,
-        });
-        if (data.success) {
-          localStorage.setItem("token", data.token);
-          setToken(data.token);
-          toast.success(t("authForm.loginSuccess")); 
-          navigate("/");
-        } else {
-          toast.error(t("authForm.incorrectCredentials"));
-        }
-      } catch (error) {
-        toast.error(t("authForm.incorrectCredentials"));
+      if (data?.success) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        toast.success(t("authForm.loginSuccess"));
+        setEmail("");
+        setPassword("");
+        navigate("/");
+      } else if (data?.user?.isVerified === false) {
+        toast.error(
+          getErrorTranslation("Please verify your email before logging in.")
+        );
+      } else {
+        toast.error(getErrorTranslation(data?.message));
       }
     }
-
+  } catch (error) {
+    const errorMessage = getErrorTranslation(error.response?.data?.message);
+    toast.error(errorMessage);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   const resendVerificationEmail = async () => {
     try {

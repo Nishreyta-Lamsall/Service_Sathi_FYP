@@ -260,6 +260,9 @@ const resources = {
         userExists: "User already exixts.",
         incorrectCredentials: "Incorrect Credentials.",
         notVerified: "User not verified.",
+        passwordsDoNotMatch: "Passwords do not match",
+        emailRequired: "Please enter an email address",
+        enterStrongPass: "Enter Strong Password.",
       },
       myProfile: {
         contactInformation: "CONTACT INFORMATION",
@@ -620,6 +623,9 @@ const resources = {
         userExists: "प्रयोगकर्ता पहिल्यै अस्तित्वमा छ।",
         incorrectCredentials: "गलत प्रमाणहरू।",
         notVerified: "प्रयोगकर्ता प्रमाणित गरिएको छैन।",
+        passwordsDoNotMatch: "पासवर्डहरू मेल खाँदैनन्",
+        emailRequired: "कृपया इमेल ठेगाना प्रविष्ट गर्नुहोस्",
+        enterStrongPass: "बलियो पासवर्ड प्रविष्ट गर्नुहोस्।",
       },
       myProfile: {
         contactInformation: "सम्पर्क जानकारी",
