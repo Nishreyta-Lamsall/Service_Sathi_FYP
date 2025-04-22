@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import {useLocation, useNavigate} from "react-router-dom"
+import {Link, useLocation, useNavigate} from "react-router-dom"
 
 const MyBookings = () => {
   const { backendUrl, token, getServicesData, currencySymbol } =
@@ -532,7 +532,6 @@ const MyBookings = () => {
           </div>
         )}
       </div>
-
       {isReviewModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-xl w-1/3">
@@ -586,6 +585,14 @@ const MyBookings = () => {
           </div>
         </div>
       )}
+      <div className="ml-12 mt-10 flex justify-center">
+        <Link
+          to="/order-history"
+          className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 md:px-8 py-3 md:py-4 w-[160px] md:w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap text-sm md:text-base"
+        >
+          View Order History
+        </Link>
+      </div>
     </div>
   );
 };

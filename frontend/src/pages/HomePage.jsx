@@ -213,8 +213,8 @@ const isUserSubscribedToPlan = (plan) => {
         {Services.length === 0 ? (
           <p className="text-center text-gray-500 mt-10">Loading services...</p>
         ) : categories.length > 0 ? (
-          <div className="mt-10 ml-16 flex flex-col lg:flex-row lg:flex-wrap lg:items-start lg:justify-start lg:space-x-64 lg:space-y-0 space-y-12">
-            <div className="flex flex-col lg:flex-row lg:gap-x-56 space-y-12 lg:space-y-0 lg:mb-20">
+          <div className="mt-10 ml-16 flex flex-col lg:flex-row lg:flex-wrap lg:items-start lg:justify-start lg:space-x-64 lg:space-y-0 space-y-10">
+            <div className="flex flex-col lg:flex-row lg:gap-x-28 space-y-12 lg:space-y-0 lg:mb-20">
               {categories.slice(0, 3).map((item, index) => (
                 <div
                   onClick={() =>
@@ -232,7 +232,7 @@ const isUserSubscribedToPlan = (plan) => {
                     )
                   }
                   key={index}
-                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
+                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 min-w-[390px] min-h-[202px] border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
                 >
                   <div className="flex flex-col items-start">
                     <img
@@ -253,7 +253,7 @@ const isUserSubscribedToPlan = (plan) => {
                 </div>
               ))}
             </div>
-            <div className="flex flex-col lg:flex-row lg:gap-x-56 lg:mt-[-40px] space-y-12 lg:space-y-0">
+            <div className="flex flex-col lg:flex-row lg:gap-x-28 lg:mt-[-40px] space-y-12 lg:space-y-0">
               {categories.slice(3, 5).map((item, index) => (
                 <div
                   onClick={() =>
@@ -271,7 +271,7 @@ const isUserSubscribedToPlan = (plan) => {
                     )
                   }
                   key={index + 3}
-                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 w-80 border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
+                  className="block bg-[#f5f5f9] shadow-lg rounded-2xl p-6 min-w-[390px] min-h-[202px] border border-gray-200 hover:shadow-xl hover:translate-y-[-10px] transition-all duration-500 cursor-pointer"
                 >
                   <div className="flex flex-col items-start">
                     <img

@@ -635,6 +635,7 @@ const sendWorkflow = async (req, res) => {
   try {
     const { bookingId, workflowMessage } = req.body;
 
+    // Validate input
     if (!bookingId || !workflowMessage) {
       return res
         .status(400)
@@ -644,6 +645,7 @@ const sendWorkflow = async (req, res) => {
         });
     }
 
+    // Find the booking
     const booking = await bookingModel.findById(bookingId);
     if (!booking) {
       return res
@@ -659,16 +661,80 @@ const sendWorkflow = async (req, res) => {
     };
     await booking.save();
 
+    // Fetch service data for service name
+    const servicesData = await serviceModel.findById(booking.serviceId);
+    if (!servicesData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Service not found" });
+    }
+
+    // Fetch user data for SMS
+    const userData = await userModel.findById(booking.userId);
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Prepare SMS message for user
+    const messageForUser = `A milestone has been sent to your booking page for service ${servicesData.name} on this date ${booking.slotDate}.`;
+
+    // Format user's phone number
+    const phoneNumberForUser = userData.phone.startsWith("+977")
+      ? userData.phone
+      : `+977${userData.phone}`;
+
+    // Send SMS to user
+    try {
+      await client.messages.create({
+        body: messageForUser,
+        from: TWILIO_PHONE_NUMBER,
+        to: phoneNumberForUser,
+      });
+    } catch (twilioError) {
+      console.error("Failed to send SMS to user:", twilioError.message);
+      // Continue despite Twilio failure to avoid crashing
+    }
+
+    // Optionally notify service provider
+    const serviceProvider = await serviceProviderModel.findOne({
+      "services.serviceId": booking.serviceId,
+    });
+
+    if (serviceProvider) {
+      const messageForProvider = `A milestone has been sent to the booking page for service ${servicesData.name} on this date ${booking.slotDate}.`;
+
+      const phoneNumberForProvider = serviceProvider.phone_number.startsWith(
+        "+977"
+      )
+        ? serviceProvider.phone_number
+        : `+977${serviceProvider.phone_number}`;
+
+      try {
+        await client.messages.create({
+          body: messageForProvider,
+          from: TWILIO_PHONE_NUMBER,
+          to: phoneNumberForProvider,
+        });
+      } catch (twilioError) {
+        console.error("Failed to send SMS to provider:", twilioError.message);
+        // Continue despite Twilio failure
+      }
+    }
+
     return res.status(200).json({
       success: true,
-      message: "Workflow message saved successfully",
+      message: "Workflow message saved and notifications sent successfully",
       booking,
     });
   } catch (error) {
-    console.error("Error sending workflow:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+    console.error("Error sending workflow or notifications:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 

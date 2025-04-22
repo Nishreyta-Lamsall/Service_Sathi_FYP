@@ -257,6 +257,9 @@ const resources = {
         errorOccurred: "Error occurred. Please try again!",
         emailVerifiedSuccess: "User verified, please login",
         loginSuccess: "You have successfully been logged in.",
+        userExists: "User already exixts.",
+        incorrectCredentials: "Incorrect Credentials.",
+        notVerified: "User not verified.",
       },
       myProfile: {
         contactInformation: "CONTACT INFORMATION",
@@ -614,6 +617,9 @@ const resources = {
         errorOccurred: "त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्!",
         emailVerifiedSuccess: "प्रयोगकर्ता प्रमाणित भयो, कृपया लगइन गर्नुहोस्",
         loginSuccess: "तपाईं सफलतापूर्वक लगइन हुनुभयो।",
+        userExists: "प्रयोगकर्ता पहिल्यै अस्तित्वमा छ।",
+        incorrectCredentials: "गलत प्रमाणहरू।",
+        notVerified: "प्रयोगकर्ता प्रमाणित गरिएको छैन।",
       },
       myProfile: {
         contactInformation: "सम्पर्क जानकारी",

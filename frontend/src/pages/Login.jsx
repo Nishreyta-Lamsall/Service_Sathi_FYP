@@ -20,6 +20,26 @@ const AuthForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Simulated user data (stored in localStorage)
+  const getRegisteredUsers = () => {
+    const users = localStorage.getItem("registeredUsers");
+    return users ? JSON.parse(users) : {};
+  };
+
+  const addRegisteredUser = (email) => {
+    const users = getRegisteredUsers();
+    users[email] = { isVerified: false }; // New users are not verified by default
+    localStorage.setItem("registeredUsers", JSON.stringify(users));
+  };
+
+  const markUserVerified = (email) => {
+    const users = getRegisteredUsers();
+    if (users[email]) {
+      users[email].isVerified = true;
+      localStorage.setItem("registeredUsers", JSON.stringify(users));
+    }
+  };
+
   // Redirect to home if token exists, but not on /login
   useEffect(() => {
     if (token && location.pathname !== "/login") {
@@ -30,17 +50,29 @@ const AuthForm = () => {
   // Handle verification redirect
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    if (queryParams.get("verified") === "true") {
+    if (queryParams.get("verified") === "true" && email) {
+      markUserVerified(email); // Mark user as verified
       setState("Login");
       toast.success(t("authForm.emailVerifiedSuccess"));
     }
-  }, [location, t]);
+  }, [location, t, email]);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    try {
-      if (state === "Sign Up") {
+    // Simulated checks for registration and verification
+    const registeredUsers = getRegisteredUsers();
+
+    if (state === "Sign Up") {
+      // Check if user already exists
+      if (registeredUsers[email]) {
+        toast.error(t("authForm.userExists"));
+        setLoading(false);
+        return;
+      }
+
+      try {
         const { data } = await axios.post(backendUrl + "/api/user/register", {
           name,
           password,
@@ -48,6 +80,7 @@ const AuthForm = () => {
           confirmPassword,
         });
         if (data.success) {
+          addRegisteredUser(email); // Add to simulated registered users
           toast.success(t("authForm.userRegistered"));
           setName("");
           setEmail("");
@@ -55,9 +88,29 @@ const AuthForm = () => {
           setConfirmPassword("");
           setState("Login");
         } else {
-          toast.error(t("registerFailed"));
+          toast.error(t("authForm.userExists")); 
         }
-      } else {
+      } catch (error) {
+        toast.error(t("authForm.userExists")); 
+      }
+    } else {
+      // Login logic
+      // Check if user exists
+      if (!registeredUsers[email]) {
+        toast.error(t("authForm.incorrectCredentials"));
+        setLoading(false);
+        return;
+      }
+
+      // Check if user is verified
+      if (registeredUsers[email].isVerified !== true) {
+        toast.error(t("authForm.notVerified"));
+        setLoading(false);
+        return;
+      }
+
+      // Proceed with login if verified
+      try {
         const { data } = await axios.post(backendUrl + "/api/user/login", {
           password,
           email,
@@ -66,28 +119,25 @@ const AuthForm = () => {
           localStorage.setItem("token", data.token);
           setToken(data.token);
           toast.success(t("authForm.loginSuccess")); 
-          navigate("/"); 
+          navigate("/");
         } else {
-          toast.error(t("loginFailed"));
+          toast.error(t("authForm.incorrectCredentials"));
         }
+      } catch (error) {
+        toast.error(t("authForm.incorrectCredentials"));
       }
-    } catch (error) {
-      toast.error(t("authError"));
     }
+
+    setLoading(false);
   };
 
   const resendVerificationEmail = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        backendUrl + "/api/user/resend-verification",
-        { email }
-      );
+      await axios.post(backendUrl + "/api/user/resend-verification", { email });
       toast.success(t("authForm.verificationEmailSent"));
     } catch (error) {
-      toast.error(
-        t("authForm.failedToResendEmail")
-      );
+      toast.error(t("authForm.failedToResendEmail"));
     } finally {
       setLoading(false);
     }
@@ -212,6 +262,7 @@ const AuthForm = () => {
               <button
                 type="submit"
                 className="flex justify-center w-full px-4 bg-[#242424] hover:bg-white hover:text-black border-black border-2 text-white pl-6 py-2 pr-6 rounded-xl hover:scale-105 transition-all duration-300"
+                disabled={loading}
               >
                 {state === "Sign Up"
                   ? t("authForm.signUp")

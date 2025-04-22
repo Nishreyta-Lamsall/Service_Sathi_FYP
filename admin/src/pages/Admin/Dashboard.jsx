@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import { assets } from "../../assets/assets";
+  import { Link } from "react-router-dom";
 import {
   Tooltip,
   Legend,
@@ -41,7 +42,6 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Admin Dashboard
         </h1>
-
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Services Card */}
@@ -114,7 +114,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Charts Section */}
         <div className="mb-8">
           {/* Users Pie Chart */}
@@ -146,7 +145,6 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
         </div>
-
         {/* Recent Bookings Table */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -223,6 +221,37 @@ const Dashboard = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Dashboard Navigation
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Link
+              to="/add-service"
+              className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 py-3 hover:scale-105 transition-all duration-300 flex items-center justify-center text-sm rounded-lg"
+            >
+              Add Service
+            </Link>
+            <Link
+              to="/add-provider"
+              className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 py-3 hover:scale-105 transition-all duration-300 flex items-center justify-center text-sm rounded-lg"
+            >
+              Add Provider
+            </Link>
+            <Link
+              to="/service-list"
+              className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 py-3 hover:scale-105 transition-all duration-300 flex items-center justify-center text-sm rounded-lg"
+            >
+              Service List
+            </Link>
+            <Link
+              to="/provider-list"
+              className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 py-3 hover:scale-105 transition-all duration-300 flex items-center justify-center text-sm rounded-lg"
+            >
+              Provider List
+            </Link>
           </div>
         </div>
       </div>
