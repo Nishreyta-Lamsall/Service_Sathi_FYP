@@ -588,7 +588,7 @@ const MyBookings = () => {
       <div className="ml-12 mt-10 flex justify-center">
         <Link
           to="/order-history"
-          className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 md:px-8 py-3 md:py-4 w-[160px] md:w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap text-sm md:text-base"
+          className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 md:px-2 py-3 md:py-2 md:pl-9 w-[160px] md:w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap text-sm md:text-base rounded-lg"
         >
           View Order History
         </Link>

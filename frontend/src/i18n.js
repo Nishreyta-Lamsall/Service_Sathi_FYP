@@ -151,6 +151,7 @@ const resources = {
           planB: "2000 sq.ft and above houses",
           A: "Small Home Plan",
           B: "Large Home Plan",
+          noCategories: "No Categories Available",
         },
         Plans: {
           customSubscriptionPlan: "Custom Subscription Plan",
@@ -197,6 +198,7 @@ const resources = {
         searchPlaceholder: "Search services...",
         searchButton: "Search",
         filters: "Filters",
+        noServices: "No Services Available",
         services: {
           houseCleaning: "House Cleaning Services",
           electrical: "Electrical Services",
@@ -337,6 +339,7 @@ const resources = {
         paymentVerificationError:
           "Something went wrong while verifying your payment. Please try again later.",
         paymentVerified: "Your payment has been verified.",
+        proposePlan: "Propose your plan through the contact form.",
       },
       footer: {
         serviceSathi: "Service Sathi",
@@ -512,6 +515,7 @@ const resources = {
           planB: "२००० वर्ग फिट र माथिका घरहरू",
           A: "सानो घर योजना",
           B: " ठूलो घर योजना",
+          noCategories: "वर्गहरू उपलब्ध छैनन्",
         },
         Plans: {
           customSubscriptionPlan: "अनुकूल सदस्यता योजना",
@@ -559,6 +563,7 @@ const resources = {
         searchPlaceholder: "सेवा खोज्नुहोस्...",
         searchButton: "खोज्नुहोस्",
         filters: "फिल्टरहरू",
+        noServices: "सेवाहरू उपलब्ध छैनन्",
         services: {
           houseCleaning: "घर सफाई सेवा",
           electrical: "विद्युत सेवा",
@@ -700,6 +705,7 @@ const resources = {
         paymentVerificationError:
           "भुक्तानी प्रमाणित गर्ने क्रममा केही गडबड भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।",
         paymentVerified: "तपाईंको भुक्तानी प्रमाणित गरिएको छ।",
+        proposePlan: "संपर्क फाराम मार्फत तपाईंको योजना प्रस्ताव गर्नुहोस्।",
       },
       footer: {
         serviceSathi: "सर्भिस साथी",

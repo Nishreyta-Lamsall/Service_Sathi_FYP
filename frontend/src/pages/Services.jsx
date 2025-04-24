@@ -115,45 +115,53 @@ const Services = () => {
           ))}
         </div>
 
-        <div className="w-full max-w-[calc(100%-4rem)] mr-[2rem] ml-[3rem] grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 pt-5 gap-y-8 px-3 sm:px-0 mb-16">
-          {filterService.map((item, index) => (
-            <div
-              onClick={() => navigate(`/bookings/${item._id}`)}
-              className="border border-blue-200 overflow-hidden cursor-pointer rounded-md hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
-              key={index}
-            >
-              <img
-                className="w-full h-40 object-cover bg-blue-50"
-                src={item.image}
-                alt={item.name[currentLang]}
-              />
-              <div className="p-4">
+        <div className="w-full max-w-[calc(100%-4rem)] mr-[2rem] ml-[3rem] pt-5 px-3 sm:px-0 mb-16">
+          {filterService.length > 0 ? (
+            <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 gap-y-8">
+              {filterService.map((item, index) => (
                 <div
-                  className={`flex items-center gap-2 text-sm text-center ${
-                    item.available ? "text-blue-500" : "text-red-500"
-                  }`}
+                  onClick={() => navigate(`/bookings/${item._id}`)}
+                  className="border border-blue-200 overflow-hidden cursor-pointer rounded-md hover:translate-y-[-10px] transition-all duration-500 mr-[2rem]"
+                  key={index}
                 >
-                  <p
-                    className={`w-2 h-2 rounded-full ${
-                      item.available ? "bg-blue-500" : "bg-red-500"
-                    }`}
-                  ></p>
-                  <p>
-                    {item.available
-                      ? t("service.availability.available")
-                      : t("service.availability.notAvailable")}
-                  </p>
-                </div>
+                  <img
+                    className="w-full h-40 object-cover bg-blue-50"
+                    src={item.image}
+                    alt={item.name[currentLang]}
+                  />
+                  <div className="p-4">
+                    <div
+                      className={`flex items-center gap-2 text-sm text-center ${
+                        item.available ? "text-blue-500" : "text-red-500"
+                      }`}
+                    >
+                      <p
+                        className={`w-2 h-2 rounded-full ${
+                          item.available ? "bg-blue-500" : "bg-red-500"
+                        }`}
+                      ></p>
+                      <p>
+                        {item.available
+                          ? t("service.availability.available")
+                          : t("service.availability.notAvailable")}
+                      </p>
+                    </div>
 
-                <p className="text-gray-900 text-base font-medium">
-                  {item.name[currentLang]}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {item.category[currentLang]}
-                </p>
-              </div>
+                    <p className="text-gray-900 text-base font-medium">
+                      {item.name[currentLang]}
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      {item.category[currentLang]}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <p className="text-gray-600 text-center text-lg mb-48">
+              {t("service.noServices")}
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -85,13 +85,14 @@ const AllBookings = () => {
 
       <div className="shadow-lg rounded-lg overflow-hidden border border-gray-200 bg-white text-sm">
         {/* Table Header */}
-        <div className="hidden sm:grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_1fr_0.5fr_0.3fr_0.7fr] text-center bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-medium text-gray-700 uppercase tracking-wider">
+        <div className="hidden sm:grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_0.5fr_1fr_0.5fr_0.3fr_0.7fr] text-center bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-medium text-gray-700 uppercase tracking-wider">
           <p className="py-4 px-3 border-r">S.N.</p>
           <p className="py-4 px-3 border-r">User</p>
           <p className="py-4 px-3 border-r max-sm:hidden">Age</p>
           <p className="py-4 px-3 border-r">Email</p>
           <p className="py-4 px-3 border-r">Service Name</p>
           <p className="py-4 px-3 border-r">Date & Time</p>
+          <p className="py-4 px-3 border-r">Payment Status</p>
           <p className="py-4 px-3 border-r">Status</p>
           <p className="py-4 px-3 border-r">Price</p>
           <p className="py-4 px-3 border-r">Cancel</p>
@@ -103,7 +104,7 @@ const AllBookings = () => {
           {bookings.map((item, index) => (
             <div
               key={index}
-              className="grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_1fr_0.5fr_0.4fr_0.7fr] text-center border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+              className="grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_0.5fr_1fr_0.5fr_0.4fr_0.7fr] text-center border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
             >
               <p className="py-4 px-3 border-r text-gray-600">{index + 1}</p>
               <p className="py-4 px-3 border-r text-gray-800 font-medium">
@@ -122,6 +123,21 @@ const AllBookings = () => {
               </p>
               <p className="py-4 px-3 border-r text-gray-600">
                 {slotDateFormat(item.slotDate)}, {item.slotTime}
+              </p>
+
+              {/* Payment Status Column */}
+              <p
+                className={`py-4 px-3 border-r font-medium ${
+                  item.paymentStatus === "Completed"
+                    ? "text-green-600"
+                    : item.paymentStatus === "Pending"
+                    ? "text-yellow-600"
+                    : item.paymentStatus === "Failed"
+                    ? "text-red-600"
+                    : "text-gray-600"
+                }`}
+              >
+                {item.paymentStatus || "N/A"}
               </p>
 
               {/* Status Column */}

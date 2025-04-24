@@ -3,6 +3,7 @@ import { AdminContext } from "../../context/AdminContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2"; 
 
 const ServicesList = () => {
   const { services, aToken, getAllServices, changeAvailability, backendUrl } =
@@ -39,23 +40,34 @@ const ServicesList = () => {
   };
 
   const handleDelete = async (serviceId) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) {
-      return;
-    }
-    try {
-      const { data } = await axios.delete(
-        `${backendUrl}/api/admin/delete-service/${serviceId}`,
-        { headers: { aToken } }
-      );
-      if (data.success) {
-        toast.success("Service deleted successfully!");
-        getAllServices();
-      } else {
-        toast.error(data.message);
+    Swal.fire({
+      title: "Delete Service",
+      text: "Are you sure you want to delete this service? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${backendUrl}/api/admin/delete-service/${serviceId}`, {
+            headers: { aToken },
+          })
+          .then(({ data }) => {
+            if (data.success) {
+              toast.success("Service deleted successfully!");
+              getAllServices();
+            } else {
+              toast.error(data.message);
+            }
+          })
+          .catch((error) => {
+            toast.error("Failed to delete service. Please try again.");
+          });
       }
-    } catch (error) {
-      toast.error("Failed to delete service. Please try again.");
-    }
+    });
   };
 
   return (

@@ -34,6 +34,13 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [isVerifying, setIsVerifying] = useState(false);
 
+   const handleClick = () => {
+     toast.info(t("toastMessage.proposePlan"));
+     setTimeout(() => {
+       navigate("/contact");
+     }, 1500); 
+   };
+
   useEffect(() => {
     if (Services && Services.length > 0) {
       const uniqueCategories = [];
@@ -295,7 +302,7 @@ const isUserSubscribedToPlan = (plan) => {
           </div>
         ) : (
           <p className="text-center text-gray-500 mt-10">
-            No categories available
+            {t("home.hero.noCategories")}
           </p>
         )}
       </div>
@@ -504,12 +511,12 @@ const isUserSubscribedToPlan = (plan) => {
                 </li>
               </ul>
 
-              <Link
-                to="/contact"
+              <button
+                onClick={handleClick}
                 className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 {t("home.Plans.proposeYourPlan")}
-              </Link>
+              </button>
             </div>
           </div>
         </div>
