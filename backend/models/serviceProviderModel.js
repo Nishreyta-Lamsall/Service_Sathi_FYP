@@ -7,7 +7,14 @@ const serviceProviderSchema = new mongoose.Schema(
     image: { type: String, required: true },
     available: { type: Boolean, default: true },
     category: { type: String, required: true },
-    phone_number: { type: String, required: true },
+    phone_number: {
+      type: String,
+      required: true,
+      match: [
+        /^(97|98)[0-9]{7,8}$/,
+        "Phone number must be a valid Nepali number (e.g., 9812345678)",
+      ],
+    },
     citizenship_number: { type: String, required: true, unique: true },
     experience: { type: String, required: true },
     address: { type: Object, default: { line1: "", line2: "" } },
@@ -15,12 +22,12 @@ const serviceProviderSchema = new mongoose.Schema(
       {
         serviceId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Service", 
+          ref: "Service",
           required: true,
         },
         serviceName: {
           type: String,
-          required: true, 
+          required: true,
         },
       },
     ],

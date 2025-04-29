@@ -7,8 +7,8 @@ const serviceSchema = new mongoose.Schema(
       np: { type: String, required: true },
     },
     category: {
-      en: { type: String, required: true }, 
-      np: { type: String, required: true }, 
+      en: { type: String, required: true },
+      np: { type: String, required: true },
     },
     about: {
       en: { type: String, required: true },
@@ -16,7 +16,15 @@ const serviceSchema = new mongoose.Schema(
     },
     image: { type: String, required: true },
     available: { type: Boolean, default: true },
-    price: {type: Number, required: true },
+    price: {
+      type: String,
+      required: true,
+      set: (value) => parseFloat(value).toFixed(2),
+      validate: {
+        validator: (value) => /^[0-9]+(\.[0-9]{2})?$/.test(value),
+        message: "Price must be a number with exactly 2 decimal places",
+      },
+    },
     slots_booked: { type: Object, default: {} },
     serviceProvider: {
       type: mongoose.Schema.Types.ObjectId,

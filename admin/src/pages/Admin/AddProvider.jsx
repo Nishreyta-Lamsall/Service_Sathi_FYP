@@ -29,7 +29,7 @@ const AddProvider = () => {
         );
         if (data.success) {
           setServices(data.services);
-          console.log("Fetched services:", data.services); // Debug
+          console.log("Fetched services:", data.services);
         } else {
           toast.error(data.message);
         }
@@ -50,13 +50,19 @@ const AddProvider = () => {
         {
           serviceId: selectedService._id,
           serviceName: selectedService.name.en,
-        }, // Use .en
+        },
       ]);
     } else {
       setSelectedServices((prev) =>
         prev.filter((service) => service.serviceId !== value)
       );
     }
+  };
+
+  const validatePhoneNumber = (phone) => {
+    // Accept 9-10 digit Nepali numbers starting with 97 or 98
+    const regex = /^(97|98)[0-9]{7,8}$/;
+    return regex.test(phone);
   };
 
   const onSubmitHandler = async (event) => {
@@ -67,12 +73,18 @@ const AddProvider = () => {
         return toast.error("Image not selected");
       }
 
+      if (!validatePhoneNumber(number)) {
+        return toast.error(
+          "Please enter a valid Nepali phone number (e.g., 9812345678)"
+        );
+      }
+
       const formData = new FormData();
       formData.append("image", providerImg);
       formData.append("name", name);
       formData.append("email", email);
       formData.append("category", category);
-      formData.append("phone_number", JSON.stringify(number));
+      formData.append("phone_number", number); // Store as plain string
       formData.append("citizenship_number", citizen);
       formData.append("experience", experience);
       formData.append(
@@ -186,7 +198,7 @@ const AddProvider = () => {
             <input
               onChange={(e) => setNumber(e.target.value)}
               value={number}
-              placeholder="Phone No."
+              placeholder="9812345678"
               type="text"
               required
               className="w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
@@ -249,7 +261,7 @@ const AddProvider = () => {
                   )}
                   className="w-4 h-4"
                 />
-                <label>{service.name.en}</label> {/* Use English name */}
+                <label>{service.name.en}</label>
               </div>
             ))}
           </div>

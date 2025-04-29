@@ -7,7 +7,7 @@ const SubscribedUsers = () => {
   const { backendUrl, aToken } = useContext(AdminContext);
   const [subscribedUsers, setSubscribedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchSubscribedUsers = async () => {
       if (!aToken) {
@@ -45,30 +45,34 @@ const SubscribedUsers = () => {
                   { headers: { aToken } }
                 );
                 console.log(`User ${user.userId} response:`, userResponse.data);
-                usersWithDetails.push({
-                  userId: user.userId,
-                  name: userResponse.data.success
-                    ? userResponse.data.name
-                    : "Unknown User",
-                  subscriptionPlan: subscription.plan || "Unknown Plan",
-                  startDate: user.startDate,
-                });
+
+                // Only include users that exist (success: true)
+                if (userResponse.data.success) {
+                  usersWithDetails.push({
+                    userId: user.userId,
+                    name: userResponse.data.name || "N/A",
+                    phone: userResponse.data.phone || "N/A", // Add phone number
+                    subscriptionPlan: subscription.plan || "Unknown Plan",
+                    startDate: user.startDate,
+                  });
+                } else {
+                  console.log(`User ${user.userId} not found in database`);
+                }
               } catch (userError) {
                 console.error(
                   `Error fetching user ${user.userId}:`,
                   userError.response?.data || userError.message
                 );
-                usersWithDetails.push({
-                  userId: user.userId,
-                  name: "Unknown User",
-                  subscriptionPlan: subscription.plan || "Unknown Plan",
-                  startDate: user.startDate,
-                });
+                // Skip users that fail to fetch (no "Unknown User" placeholder)
               }
             }
           }
           console.log("Final usersWithDetails:", usersWithDetails);
           setSubscribedUsers(usersWithDetails);
+
+          if (usersWithDetails.length === 0) {
+            toast.error("No valid subscribed users found");
+          }
         } else {
           toast.error("No subscriptions found");
         }
@@ -136,6 +140,9 @@ const SubscribedUsers = () => {
                           Name
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Phone
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Plan
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -158,6 +165,9 @@ const SubscribedUsers = () => {
                                   {user.name}
                                 </span>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                              {user.phone}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               {houseSize}

@@ -92,7 +92,7 @@ const ServicesList = () => {
                 {item.category?.en || "Uncategorized"} 
               </p>
               <p className="text-sm text-gray-600">
-                Price: {item.price?.en || "N/A"}
+                Price: {item.price || "N/A"}
               </p>
               <p className="text-sm font-medium text-indigo-600 mt-2">
                 Provider: {serviceProviders[item._id] || "Loading..."}

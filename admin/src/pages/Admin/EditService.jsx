@@ -4,7 +4,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { AdminContext } from "../../context/AdminContext";
 
-// Category mapping for bilingual support
 const categoryMapping = {
   "House Cleaning Services": {
     en: "House Cleaning Services",
@@ -27,7 +26,7 @@ const EditService = () => {
   const [price, setPrice] = useState("");
   const [aboutEn, setAboutEn] = useState("");
   const [aboutNp, setAboutNp] = useState("");
-  const [category, setCategory] = useState("House Cleaning Services"); // English key for dropdown
+  const [category, setCategory] = useState("House Cleaning Services");
   const [available, setAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -37,12 +36,11 @@ const EditService = () => {
       if (data) {
         setNameEn(data.name.en);
         setNameNp(data.name.np);
-        setPrice(data.price); // Single price
+        setPrice(data.price); // Price is a string like "2300.00"
         setAboutEn(data.about.en);
         setAboutNp(data.about.np);
         setAvailable(data.available);
         setServiceImg(data.image);
-        // Find the category key based on English value
         const selectedCategory = Object.keys(categoryMapping).find(
           (key) => categoryMapping[key].en === data.category.en
         );
@@ -56,12 +54,24 @@ const EditService = () => {
     setServiceImg(e.target.files[0]);
   };
 
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+      setPrice(value);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const selectedCategory = categoryMapping[category];
+      const formattedPrice = parseFloat(price || 0).toFixed(2);
+      if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
+        throw new Error("Price must have exactly 2 decimal places");
+      }
+
       const formData = new FormData();
       formData.append("nameEn", nameEn);
       formData.append("nameNp", nameNp);
@@ -69,7 +79,7 @@ const EditService = () => {
       formData.append("categoryNp", selectedCategory.np);
       formData.append("aboutEn", aboutEn);
       formData.append("aboutNp", aboutNp);
-      formData.append("price", Number(price)); // Single price
+      formData.append("price", formattedPrice);
       formData.append("available", available);
       if (serviceImg instanceof File) {
         formData.append("image", serviceImg);
@@ -88,7 +98,7 @@ const EditService = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error updating service");
+      toast.error(error.message || "Error updating service");
     } finally {
       setLoading(false);
     }
@@ -103,7 +113,6 @@ const EditService = () => {
         Edit Service
       </h2>
 
-      {/* Upload Section */}
       <div className="flex flex-col items-center space-y-4">
         <label htmlFor="service-img" className="cursor-pointer">
           <img
@@ -127,9 +136,7 @@ const EditService = () => {
         <p className="text-gray-600">Upload service image (optional)</p>
       </div>
 
-      {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Left Column */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
@@ -176,17 +183,16 @@ const EditService = () => {
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
               Price
             </label>
             <input
-              type="number"
+              type="text"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="Enter price"
+              onChange={handlePriceChange}
+              placeholder="Enter price (e.g., 2300.00)"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
@@ -231,7 +237,6 @@ const EditService = () => {
         </div>
       </div>
 
-      {/* Submit Button */}
       <div className="text-center">
         <button
           className={`w-full py-3 rounded-md font-medium transition ${

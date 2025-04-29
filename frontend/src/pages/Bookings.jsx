@@ -26,8 +26,8 @@ const Bookings = () => {
   const [reviews, setReviews] = useState([]);
   const [serviceInfo, setServiceInfo] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
-  const [availableTimes, setAvailableTimes] = useState([]); 
-  const [slotTime, setSlotTime] = useState(""); 
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [slotTime, setSlotTime] = useState("");
 
   const navigate = useNavigate();
 
@@ -56,9 +56,7 @@ const Bookings = () => {
         `${backendUrl}/api/user/getreviews/${serviceProvider.id}`
       );
       setReviews(data);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
+    } catch (error) {}
   };
 
   const getAvailableSlots = () => {
@@ -68,15 +66,15 @@ const Bookings = () => {
     }
 
     const date = new Date(selectedDate);
-    const today = new Date(); 
+    const today = new Date();
     const isToday =
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear();
 
-    const startHour = 9; 
-    const endHour = 16; 
-    const intervalMinutes = 30; 
+    const startHour = 9;
+    const endHour = 16;
+    const intervalMinutes = 30;
     let timeSlots = [];
 
     for (let hour = startHour; hour <= endHour; hour++) {
@@ -115,47 +113,47 @@ const Bookings = () => {
     setAvailableTimes(timeSlots);
   };
 
-const bookService = async () => {
-  if (!token) {
-    toast.warning(t("toastMessage.loginToBook"));
-    return navigate("/login");
-  }
-  if (!selectedDate || !slotTime) {
-    toast.warning(t("toastMessage.selectDateAndTime"));
-    return;
-  }
-  if (!serviceInfo.available) {
-    toast.error(t("serviceNotAvailable")); 
-    return;
-  }
-  if (!userData?.phone || !userData?.address) {
-    toast.error(t("enterContactDetails")); 
-    return;
-  }
-
-  try {
-    const date = new Date(selectedDate);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const slotDate = `${day}/${month}/${year}`;
-
-    const { data } = await axios.post(
-      `${backendUrl}/api/user/book-service`,
-      { serviceId, slotDate, slotTime },
-      { headers: { token } }
-    );
-    if (data.success) {
-      toast.success(t("serviceBookSuccess"));
-      getServicesData();
-      navigate("/my-bookings");
-    } else {
-      toast.error(t("serviceBookFailed"));
+  const bookService = async () => {
+    if (!token) {
+      toast.warning(t("toastMessage.loginToBook"));
+      return navigate("/login");
     }
-  } catch (error) {
-    toast.error(t("serviceBookError"));
-  }
-};
+    if (!selectedDate || !slotTime) {
+      toast.warning(t("toastMessage.selectDateAndTime"));
+      return;
+    }
+    if (!serviceInfo.available) {
+      toast.error(t("serviceNotAvailable"));
+      return;
+    }
+    if (!userData?.phone || !userData?.address) {
+      toast.error(t("enterContactDetails"));
+      return;
+    }
+
+    try {
+      const date = new Date(selectedDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const slotDate = `${day}/${month}/${year}`;
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/book-service`,
+        { serviceId, slotDate, slotTime },
+        { headers: { token } }
+      );
+      if (data.success) {
+        toast.success(t("serviceBookSuccess"));
+        getServicesData();
+        navigate("/my-bookings");
+      } else {
+        toast.error(t("serviceBookFailed"));
+      }
+    } catch (error) {
+      toast.error(t("serviceBookError"));
+    }
+  };
 
   const deleteReview = async (reviewId) => {
     try {
@@ -234,13 +232,12 @@ const bookService = async () => {
               {t("toastMessage.fee")}{" "}
               <span className="text-gray-600">
                 {currencySymbol}
-                {serviceInfo.price.en}
+                {serviceInfo.price}
               </span>
             </p>
           </div>
         </div>
 
-        {/* Booking Slots */}
         <div className="sm:ml-[28rem] sm:pl-4 mt-9 font-medium text-gray-700">
           <p>{t("toastMessage.bookingSlots")}</p>
           <div className="mt-4">
@@ -252,7 +249,7 @@ const bookService = async () => {
               id="date-picker"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]} 
+              min={new Date().toISOString().split("T")[0]}
               className="border border-gray-300 rounded p-2"
             />
           </div>

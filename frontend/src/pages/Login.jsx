@@ -26,81 +26,80 @@ const AuthForm = () => {
     }
   }, [token, navigate, location.pathname]);
 
-const onSubmitHandler = async (event) => {
-  event.preventDefault();
-  setLoading(true);
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+    setLoading(true);
 
-  const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase();
 
-  const getErrorTranslation = (message) => {
-    switch (message) {
-      case "User already exists!":
-        return t("authForm.userExists");
-      case "Enter a strong password":
-        return t("authForm.enterStrongPass");
-      case "Please verify your email before logging in.":
-        return t("authForm.notVerified");
-      case "Invalid Credentials!":
-        return t("authForm.incorrectCredentials");
-      default:
-        return t("authForm.serverError");
+    const getErrorTranslation = (message) => {
+      switch (message) {
+        case "User already exists!":
+          return t("authForm.userExists");
+        case "Enter a strong password":
+          return t("authForm.enterStrongPass");
+        case "Please verify your email before logging in.":
+          return t("authForm.notVerified");
+        case "Invalid Credentials!":
+          return t("authForm.incorrectCredentials");
+        default:
+          return t("authForm.serverError");
+      }
+    };
+
+    try {
+      if (state === "Sign Up") {
+        if (password !== confirmPassword) {
+          toast.error(t("authForm.passwordsDoNotMatch"));
+          setLoading(false);
+          return;
+        }
+
+        const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+          name,
+          password,
+          email: normalizedEmail,
+          confirmPassword,
+        });
+
+        if (data?.success) {
+          toast.success(t("authForm.userRegistered"));
+          setName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          setState("Login");
+        } else {
+          toast.error(getErrorTranslation(data?.message));
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+          password,
+          email: normalizedEmail,
+        });
+
+        if (data?.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          toast.success(t("authForm.loginSuccess"));
+          setEmail("");
+          setPassword("");
+          navigate("/");
+        } else if (data?.user?.isVerified === false) {
+          toast.error(
+            getErrorTranslation("Please verify your email before logging in.")
+          );
+        } else {
+          toast.error(getErrorTranslation(data?.message));
+        }
+      }
+    } catch (error) {
+      const errorMessage = getErrorTranslation(error.response?.data?.message);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
-
-  try {
-    if (state === "Sign Up") {
-      // Check password match
-      if (password !== confirmPassword) {
-        toast.error(t("authForm.passwordsDoNotMatch"));
-        setLoading(false);
-        return;
-      }
-
-      const { data } = await axios.post(`${backendUrl}/api/user/register`, {
-        name,
-        password,
-        email: normalizedEmail,
-        confirmPassword,
-      });
-
-      if (data?.success) {
-        toast.success(t("authForm.userRegistered"));
-        setName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setState("Login");
-      } else {
-        toast.error(getErrorTranslation(data?.message));
-      }
-    } else {
-      const { data } = await axios.post(`${backendUrl}/api/user/login`, {
-        password,
-        email: normalizedEmail,
-      });
-
-      if (data?.success) {
-        localStorage.setItem("token", data.token);
-        setToken(data.token);
-        toast.success(t("authForm.loginSuccess"));
-        setEmail("");
-        setPassword("");
-        navigate("/");
-      } else if (data?.user?.isVerified === false) {
-        toast.error(
-          getErrorTranslation("Please verify your email before logging in.")
-        );
-      } else {
-        toast.error(getErrorTranslation(data?.message));
-      }
-    }
-  } catch (error) {
-    const errorMessage = getErrorTranslation(error.response?.data?.message);
-    toast.error(errorMessage);
-  } finally {
-    setLoading(false);
-  }
-};
 
   const resendVerificationEmail = async () => {
     try {
@@ -129,7 +128,6 @@ const onSubmitHandler = async (event) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full bg-white shadow-xl rounded-lg overflow-hidden flex">
-        {/* Welcome Section */}
         <div className="hidden md:flex flex-1 bg-[#242424] text-white flex-col items-center justify-center p-8">
           <h1 className="text-5xl font-bold text-center">
             {t("authForm.welcome")} <br />
@@ -139,7 +137,6 @@ const onSubmitHandler = async (event) => {
           </h1>
         </div>
 
-        {/* Form Section */}
         <div className="flex-1 p-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">

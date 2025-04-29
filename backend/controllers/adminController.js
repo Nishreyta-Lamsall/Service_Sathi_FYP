@@ -14,7 +14,9 @@ const addService = async (req, res) => {
       req.body;
     const imageFile = req.file;
 
-    // Checking for all required fields
+    console.log("Add service request body:", req.body);
+
+    // Validate required fields
     if (
       !nameEn ||
       !nameNp ||
@@ -24,11 +26,24 @@ const addService = async (req, res) => {
       !aboutNp ||
       !price
     ) {
-      return res.json({ success: false, message: "Missing details" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing details" });
     }
 
     if (!imageFile) {
-      return res.status(400).json({ error: "Image file is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Image file is required" });
+    }
+
+    // Validate and format price
+    const formattedPrice = parseFloat(price).toFixed(2);
+    if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be a number with exactly 2 decimal places",
+      });
     }
 
     // Check if service with the same name (English or Nepali) already exists
@@ -51,17 +66,23 @@ const addService = async (req, res) => {
       name: { en: nameEn, np: nameNp },
       category: { en: categoryEn, np: categoryNp },
       about: { en: aboutEn, np: aboutNp },
-      price: Number(price), // Single price as a number
+      price: formattedPrice, // Store as string
       image: imageUrl,
     };
 
     const newService = new serviceModel(serviceData);
     await newService.save();
 
-    res.json({ success: true, message: "Service Added Successfully" });
+    console.log("Service successfully added:", newService);
+
+    res.json({
+      success: true,
+      message: "Service Added Successfully",
+      data: newService,
+    });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error adding service:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -83,14 +104,12 @@ const updateService = async (req, res) => {
     console.log("Received serviceId:", serviceId);
     console.log("Update request body:", req.body);
 
-    // Validate serviceId format
     if (!mongoose.Types.ObjectId.isValid(serviceId)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid service ID format" });
     }
 
-    // Fetch the existing service from the database
     const service = await serviceModel.findById(serviceId);
 
     if (!service) {
@@ -99,7 +118,6 @@ const updateService = async (req, res) => {
         .json({ success: false, message: "Service not found" });
     }
 
-    // Handle image upload if a new image is provided
     let imageUrl = service.image;
     if (imageFile) {
       imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
@@ -107,18 +125,29 @@ const updateService = async (req, res) => {
       }`;
     }
 
-    // Update service fields (only update provided fields, preserve others)
+
+    let formattedPrice = service.price; 
+    if (price !== undefined) {
+      formattedPrice = parseFloat(price).toFixed(2);
+      if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
+        return res.status(400).json({
+          success: false,
+          message: "Price must be a number with exactly 2 decimal places",
+        });
+      }
+    }
+
     service.name.en = nameEn || service.name.en;
     service.name.np = nameNp || service.name.np;
     service.category.en = categoryEn || service.category.en;
     service.category.np = categoryNp || service.category.np;
     service.about.en = aboutEn || service.about.en;
     service.about.np = aboutNp || service.about.np;
-    service.price = price !== undefined ? Number(price) : service.price;
+    service.price = formattedPrice;
     service.available = available !== undefined ? available : service.available;
     service.image = imageUrl;
 
-    // Optional: Check for uniqueness if name fields are updated
+    // Check for uniqueness if name fields are updated
     if (nameEn || nameNp) {
       const existingService = await serviceModel.findOne({
         $and: [
@@ -155,6 +184,8 @@ const updateService = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export default updateService;
 
 const deleteService = async (req, res) => {
   try {
@@ -471,8 +502,7 @@ const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
 const bookingCancel = async (req, res) => {
   try {
     const { bookingId } = req.body;
-    const BookingId = "booking-id";
-    const bookingData = await bookingModel.findById(BookingId);
+    const bookingData = await bookingModel.findById(bookingId);
 
     if (!bookingData) {
       return res.json({ success: false, message: "Booking not found!" });
@@ -593,18 +623,43 @@ const updateStatus = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    const messageForUser = `Hello ${userData.name}, your service is ${orderStatus}.`;
+    // Fetch the service data to get the service name
+    const serviceData = await serviceModel.findById(booking.serviceId);
+    if (!serviceData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Service not found" });
+    }
 
+    // Prepare SMS message with service name
+    const messageForUser = `Hello ${userData.name}, your booking for ${serviceData.name} is ${orderStatus}.`;
+
+    // Format user's phone number
     const phoneNumberForUser = userData.phone.startsWith("+977")
       ? userData.phone
       : `+977${userData.phone}`;
 
     // Send SMS using Twilio
-    await client.messages.create({
-      body: messageForUser,
-      from: TWILIO_PHONE_NUMBER,
-      to: phoneNumberForUser,
-    });
+    try {
+      console.log("Sending SMS to user:", phoneNumberForUser); // Debug
+      const userMessage = await client.messages.create({
+        body: messageForUser,
+        from: TWILIO_PHONE_NUMBER,
+        to: phoneNumberForUser,
+      });
+      console.log(
+        "SMS sent to user:",
+        phoneNumberForUser,
+        "SID:",
+        userMessage.sid
+      );
+    } catch (twilioError) {
+      console.error("Failed to send SMS to user:", {
+        message: twilioError.message,
+        code: twilioError.code,
+        status: twilioError.status,
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -622,15 +677,14 @@ const updateStatus = async (req, res) => {
 const sendWorkflow = async (req, res) => {
   try {
     const { bookingId, workflowMessage } = req.body;
+    console.log("sendWorkflow called for booking:", bookingId); // Debug
 
     // Validate input
     if (!bookingId || !workflowMessage) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Missing bookingId or workflowMessage",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Missing bookingId or workflowMessage",
+      });
     }
 
     // Find the booking
@@ -675,49 +729,34 @@ const sendWorkflow = async (req, res) => {
 
     // Send SMS to user
     try {
-      await client.messages.create({
+      console.log("Sending SMS to user:", phoneNumberForUser); // Debug
+      const userMessage = await client.messages.create({
         body: messageForUser,
         from: TWILIO_PHONE_NUMBER,
         to: phoneNumberForUser,
       });
+      console.log(
+        "SMS sent to user:",
+        phoneNumberForUser,
+        "SID:",
+        userMessage.sid
+      );
     } catch (twilioError) {
-      console.error("Failed to send SMS to user:", twilioError.message);
-      // Continue despite Twilio failure to avoid crashing
-    }
-
-    // Optionally notify service provider
-    const serviceProvider = await serviceProviderModel.findOne({
-      "services.serviceId": booking.serviceId,
-    });
-
-    if (serviceProvider) {
-      const messageForProvider = `A milestone has been sent to the booking page for service ${servicesData.name} on this date ${booking.slotDate}.`;
-
-      const phoneNumberForProvider = serviceProvider.phone_number.startsWith(
-        "+977"
-      )
-        ? serviceProvider.phone_number
-        : `+977${serviceProvider.phone_number}`;
-
-      try {
-        await client.messages.create({
-          body: messageForProvider,
-          from: TWILIO_PHONE_NUMBER,
-          to: phoneNumberForProvider,
-        });
-      } catch (twilioError) {
-        console.error("Failed to send SMS to provider:", twilioError.message);
-        // Continue despite Twilio failure
-      }
+      console.error("Failed to send SMS to user:", {
+        message: twilioError.message,
+        code: twilioError.code,
+        status: twilioError.status,
+      });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Workflow message saved and notifications sent successfully",
+      message:
+        "Workflow message saved and notification sent to user successfully",
       booking,
     });
   } catch (error) {
-    console.error("Error sending workflow or notifications:", error);
+    console.error("Error sending workflow or notification:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

@@ -175,11 +175,15 @@ const AllBookings = () => {
                 )}
               </div>
 
+              {/* Price Column */}
               <p className="py-4 px-2 border-r text-gray-700 font-medium truncate">
                 {currency}
-                {item.serviceData.price.en}
+                {item.serviceData.price
+                  ? parseFloat(item.serviceData.price).toFixed(2)
+                  : "N/A"}
               </p>
 
+              {/* Cancel Column */}
               {item.cancelled ? (
                 <p className="py-4 px-2 text-red-500 text-sm font-medium">
                   Cancelled

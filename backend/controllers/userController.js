@@ -613,32 +613,47 @@ const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
 const bookService = async (req, res) => {
   try {
     const { userId, serviceId, slotDate, slotTime } = req.body;
+    console.log("Booking attempt:", { userId, serviceId, slotDate, slotTime });
 
     const serviceData = await serviceModel.findById(serviceId);
+    if (!serviceData) {
+      console.log("Service not found:", serviceId);
+      return res.json({ success: false, message: "Service not found" });
+    }
 
     if (!serviceData.available) {
+      console.log("Service not available:", serviceId);
       return res.json({ success: false, message: "Service not available" });
     }
 
-    let slots_booked = serviceData.slots_booked;
-
-    if (slots_booked[slotDate]) {
-      if (slots_booked[slotDate].includes(slotTime)) {
-        return res.json({
-          success: false,
-          message: "Service already booked.",
-        });
-      } else {
-        slots_booked[slotDate].push(slotTime);
-      }
+    // Validate price
+    let amount;
+    if (
+      typeof serviceData.price === "string" &&
+      !isNaN(parseFloat(serviceData.price))
+    ) {
+      amount = parseFloat(serviceData.price);
+    } else if (typeof serviceData.price === "number") {
+      amount = serviceData.price;
     } else {
-      slots_booked[slotDate] = [];
-      slots_booked[slotDate].push(slotTime);
+      console.log("Invalid price for service:", serviceData.price);
+      return res.json({
+        success: false,
+        message: "Service price not configured",
+      });
+    }
+
+    let slots_booked = serviceData.slots_booked;
+    if (slots_booked[slotDate]?.includes(slotTime)) {
+      console.log("Slot already booked:", { slotDate, slotTime });
+      return res.json({ success: false, message: "Service already booked." });
     }
 
     const userData = await userModel.findById(userId).select("-password");
+    console.log("User data:", userData);
 
     if (!userData.phone || userData.phone === "0000000000") {
+      console.log("Invalid phone:", userData.phone);
       return res.json({
         success: false,
         message:
@@ -646,19 +661,12 @@ const bookService = async (req, res) => {
       });
     }
 
-    if (!userData.dob) {
-      return res.json({
-        success: false,
-        message:
-          "Please provide a valid date of birth in your profile before booking.",
-      });
-    }
-
     if (
       !userData.address ||
-      !userData.address.line1.trim() ||
-      !userData.address.line2.trim()
+      !userData.address.line1?.trim() ||
+      !userData.address.line2?.trim()
     ) {
+      console.log("Incomplete address:", userData.address);
       return res.json({
         success: false,
         message:
@@ -666,16 +674,15 @@ const bookService = async (req, res) => {
       });
     }
 
-    const userPhone = userData.phone;
-
-    delete serviceData.slots_booked;
+    slots_booked[slotDate] = slots_booked[slotDate] || [];
+    slots_booked[slotDate].push(slotTime);
 
     const bookingData = {
       userId,
       serviceId,
       userData,
       serviceData,
-      amount: serviceData.price.en,
+      amount,
       slotTime,
       slotDate,
       date: Date.now(),
@@ -683,38 +690,64 @@ const bookService = async (req, res) => {
 
     const newBooking = new bookingModel(bookingData);
     await newBooking.save();
-
     await serviceModel.findByIdAndUpdate(serviceId, { slots_booked });
 
     const serviceProvider = await serviceProviderModel.findOne({
       "services.serviceId": serviceId,
     });
-
     if (!serviceProvider) {
+      console.log("Service provider not found for service:", serviceId);
       return res.json({
         success: false,
         message: "Service Provider not found",
       });
     }
 
-    const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. The user's phone number is ${userPhone}. Please be available.`;
+    const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. The user's phone number is ${userData.phone}. Please be available.`;
 
-    const phoneNumber = serviceProvider.phone_number.startsWith("+977")
-      ? serviceProvider.phone_number
-      : `+977${serviceProvider.phone_number}`;
+    // Format phone number for Twilio
+    let phoneNumber = serviceProvider.phone_number;
+    // Remove any JSON-stringified quotes
+    if (phoneNumber.startsWith('"') && phoneNumber.endsWith('"')) {
+      phoneNumber = phoneNumber.slice(1, -1);
+    }
+    // Add +977 prefix if not present
+    if (!phoneNumber.startsWith("+977")) {
+      phoneNumber = `+977${phoneNumber}`;
+    }
 
-    await client.messages.create({
-      body: message,
-      from: TWILIO_PHONE_NUMBER,
-      to: phoneNumber,
-    });
+    // Validate phone number
+    if (!/^\+977(97|98)[0-9]{7,8}$/.test(phoneNumber)) {
+      console.error("Invalid service provider phone number:", phoneNumber);
+    } else {
+      try {
+        console.log("Attempting to send Twilio SMS to:", phoneNumber);
+        const twilioMessage = await client.messages.create({
+          body: message,
+          from: TWILIO_PHONE_NUMBER,
+          to: phoneNumber,
+        });
+        console.log(
+          "Twilio SMS sent to:",
+          phoneNumber,
+          "SID:",
+          twilioMessage.sid
+        );
+      } catch (twilioError) {
+        console.error("Twilio error:", {
+          message: twilioError.message,
+          code: twilioError.code,
+          status: twilioError.status,
+        });
+      }
+    }
 
     res.json({
       success: true,
       message: "Service Booked and service provider notified",
     });
   } catch (error) {
-    console.log(error);
+    console.error("Booking error:", error);
     res.json({ success: false, message: error.message });
   }
 };

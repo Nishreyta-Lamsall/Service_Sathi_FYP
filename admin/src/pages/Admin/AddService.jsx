@@ -4,7 +4,6 @@ import { AdminContext } from "../../context/AdminContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-// Predefined category mapping
 const categoryMapping = {
   "House Cleaning Services": {
     en: "House Cleaning Services",
@@ -29,70 +28,95 @@ const categoryMapping = {
 };
 
 const AddService = () => {
-  const [serviceImg, setServiceImg] = useState(false);
-  const [nameEn, setNameEn] = useState(""); // English name
-  const [nameNp, setNameNp] = useState(""); // Nepali name
-  const [price, setPrice] = useState(""); // Single price
-  const [aboutEn, setAboutEn] = useState(""); // English about
-  const [aboutNp, setAboutNp] = useState(""); // Nepali about
-  const [category, setCategory] = useState("House Cleaning Services"); // Single category value
+  const [serviceImg, setServiceImg] = useState(null);
+  const [nameEn, setNameEn] = useState("");
+  const [nameNp, setNameNp] = useState("");
+  const [price, setPrice] = useState("");
+  const [aboutEn, setAboutEn] = useState("");
+  const [aboutNp, setAboutNp] = useState("");
+  const [category, setCategory] = useState("House Cleaning Services");
   const [loading, setLoading] = useState(false);
 
   const { backendUrl, aToken } = useContext(AdminContext);
+
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    // Allow empty input or valid numbers with up to 2 decimal places
+    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+      setPrice(value);
+    }
+  };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
     if (!serviceImg) {
-      return toast.error("Image not selected");
+      return toast.error("Please select an image");
+    }
+
+    if (!aToken) {
+      return toast.error("Authentication token is missing");
     }
 
     setLoading(true);
 
     try {
-      const selectedCategory = categoryMapping[category]; // Get the mapped category
+      const selectedCategory = categoryMapping[category];
+      if (!selectedCategory) {
+        throw new Error("Invalid category selected");
+      }
+
+      // Format price to ensure 2 decimal places
+      const formattedPrice = parseFloat(price || 0).toFixed(2);
+      if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
+        throw new Error("Price must have exactly 2 decimal places");
+      }
 
       const formData = new FormData();
-      formData.append("nameEn", nameEn); // English name
-      formData.append("nameNp", nameNp); // Nepali name
+      formData.append("nameEn", nameEn.trim());
+      formData.append("nameNp", nameNp.trim());
       formData.append("image", serviceImg);
-      formData.append("price", Number(price)); // Single price
-      formData.append("aboutEn", aboutEn); // English about
-      formData.append("aboutNp", aboutNp); // Nepali about
-      formData.append("categoryEn", selectedCategory.en); // English category
-      formData.append("categoryNp", selectedCategory.np); // Nepali category
+      formData.append("price", formattedPrice);
+      formData.append("aboutEn", aboutEn.trim());
+      formData.append("aboutNp", aboutNp.trim());
+      formData.append("categoryEn", selectedCategory.en);
+      formData.append("categoryNp", selectedCategory.np);
+
+      // Log the form data for debugging
+      for (let [key, value] of formData.entries()) {
+        console.log(`FormData: ${key} =`, value);
+      }
 
       const { data } = await axios.post(
-        backendUrl + "/api/admin/add-service",
+        `${backendUrl}/api/admin/add-service`,
         formData,
-        { headers: { aToken } }
+        {
+          headers: {
+            aToken,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (data.success) {
         toast.success(data.message);
-        setServiceImg(false);
+        setServiceImg(null);
         setNameEn("");
         setNameNp("");
         setPrice("");
         setAboutEn("");
         setAboutNp("");
-        setCategory("House Cleaning Services"); // Reset to default
+        setCategory("House Cleaning Services");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      if (error.response) {
-        toast.error(
-          error.response.data?.message ||
-            "Something went wrong. Please try again."
-        );
-      } else if (error.request) {
-        toast.error(
-          "No response from the server. Please check your internet connection."
-        );
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Error adding service";
+      toast.error(errorMessage);
+      console.error("Submission error:", error);
     } finally {
       setLoading(false);
     }
@@ -107,14 +131,13 @@ const AddService = () => {
         Add Service
       </h2>
 
-      {/* Upload Section */}
       <div className="flex flex-col items-center space-y-4">
         <label htmlFor="service-img" className="cursor-pointer">
           <img
             src={
               serviceImg ? URL.createObjectURL(serviceImg) : assets.upload_area
             }
-            alt=""
+            alt="Service"
             className="w-32 h-32 object-cover border-2 border-dashed border-gray-300 rounded-md p-2 hover:border-blue-500 transition"
           />
         </label>
@@ -122,14 +145,13 @@ const AddService = () => {
           onChange={(e) => setServiceImg(e.target.files[0])}
           type="file"
           id="service-img"
+          accept="image/*"
           hidden
         />
         <p className="text-gray-600">Upload service image</p>
       </div>
 
-      {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Left Column */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
@@ -169,24 +191,23 @@ const AddService = () => {
             >
               {Object.keys(categoryMapping).map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat} {/* Displays English name in dropdown */}
+                  {cat}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
               Price
             </label>
             <input
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={handlePriceChange}
               value={price}
-              type="number"
-              placeholder="Enter price"
+              type="text"
+              placeholder="Enter price (e.g., 2300.00)"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
@@ -220,11 +241,10 @@ const AddService = () => {
         </div>
       </div>
 
-      {/* Submit Button */}
       <div className="text-center">
         <button
           className={`w-full py-3 rounded-md font-medium transition ${
-            loading ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white "
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-black text-white"
           }`}
           disabled={loading}
         >
