@@ -9,7 +9,6 @@ const changeAvailability = async (req,res) => {
         await serviceModel.findByIdAndUpdate(serviceId, {available: !serviceData.available})
         res.json({success:true, message:'Availability Changed'})
     } catch (error) {
-      console.log(error);
       res.json({ success: false, message: error.message });
     }
 }
@@ -20,7 +19,6 @@ const serviceList = async (req,res) => {
 
         res.json({success:true,Services})
     } catch (error) {
-      console.log(error);
       res.json({ success: false, message: error.message });
 }
 }
@@ -28,7 +26,6 @@ const serviceList = async (req,res) => {
 const getServiceProviderByService = async (req, res) => {
   try {
     const { serviceId } = req.params;
-    console.log("Service ID received:", serviceId);
 
     const objectId = new mongoose.Types.ObjectId(serviceId);
 
@@ -42,7 +39,6 @@ const getServiceProviderByService = async (req, res) => {
 
     res.json(provider);
   } catch (error) {
-    console.error("Error fetching service provider:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -7,9 +7,6 @@ const addReview = async (req, res) => {
     const { serviceProviderId } = req.params;
     const userId = req.body.userId; 
 
-    console.log("Adding review for service provider:", serviceProviderId);
-    console.log("User ID:", userId);
-
     const serviceProvider = await serviceProviderModel.findById(
       serviceProviderId
     );
@@ -34,12 +31,10 @@ const addReview = async (req, res) => {
       review: newReview,
     });
   } catch (error) {
-    console.error("Error adding review:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// Get all reviews (regardless of service provider)
 const getAllReviews = async (req, res) => {
   try {
     const reviews = await reviewModel.find().populate("user", "name").populate("serviceProvider", "name");
@@ -49,7 +44,6 @@ const getAllReviews = async (req, res) => {
   }
 };
 
-// Get all reviews for a specific service provider
 const getReviewsByServiceProvider = async (req, res) => {
   try {
     const { serviceProviderId } = req.params;
@@ -69,13 +63,8 @@ const deleteReview = async (req, res) => {
     const { reviewId } = req.params;
     const userId = req.body.userId; 
 
-    console.log("Deleting Review:", reviewId);
-    console.log("UserID from request:", userId);
-
     const review = await reviewModel.findById(reviewId);
     if (!review) return res.status(404).json({ success: false, message: "Review not found" });
-
-    console.log("Review Owner ID:", review.user.toString());
 
     if (review.user.toString() !== userId.toString()) {
       return res.status(403).json({ success: false, message: "Not authorized to delete this review" });

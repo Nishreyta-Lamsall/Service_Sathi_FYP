@@ -33,10 +33,8 @@ const AppContextProvider = (props) => {
       if (data.success) {
         setServices(data.Services);
       } else {
-        console.log(data.message);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -51,11 +49,9 @@ const AppContextProvider = (props) => {
       } else {
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
-  // Function to subscribe user to a plan
   const subscribeUser = async (userId, subscriptionId, plan) => {
     try {
       const { data } = await axios.post(
@@ -69,17 +65,15 @@ const AppContextProvider = (props) => {
         }
       );
       if (data.message) {
-        // Update user data with the new subscription info
         setUserData({
           ...userData,
           isSubscribed: true,
           subscription: data.subscription,
           subscriptionPlan: plan,
         });
-        return data; // Return the data for further use if needed
+        return data; 
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

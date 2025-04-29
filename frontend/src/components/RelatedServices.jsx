@@ -9,12 +9,6 @@ const RelatedServices = ({ category, serviceId }) => {
   const { t, i18n } = useTranslation();
 
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
-  console.log(
-    "Current Language in RelatedServices:",
-    i18n.language,
-    "Using:",
-    currentLang
-  );
 
   const [relServices, setRelServices] = useState([]);
 
@@ -25,7 +19,6 @@ const RelatedServices = ({ category, serviceId }) => {
           service.category[currentLang] === category &&
           service._id !== serviceId
       );
-      console.log("Filtered Related Services:", ServicesData); 
       setRelServices(ServicesData);
     }
   }, [Services, category, serviceId, currentLang]); 

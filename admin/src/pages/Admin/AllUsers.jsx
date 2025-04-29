@@ -8,7 +8,6 @@ const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all users
   const fetchAllUsers = async () => {
     if (!aToken) {
       toast.error("Admin not authenticated");
@@ -17,11 +16,9 @@ const AllUsers = () => {
     }
 
     try {
-      console.log("Fetching all users with aToken:", aToken);
       const response = await axios.get(`${backendUrl}/api/admin/all-users`, {
         headers: { aToken },
       });
-      console.log("All users response:", response.data);
 
       if (response.data.success) {
         setUsers(response.data.users || []);
@@ -29,7 +26,6 @@ const AllUsers = () => {
         toast.error(response.data.message || "Failed to fetch users");
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
       toast.error(error.response?.data?.message || "Error fetching users");
     } finally {
       setLoading(false);
@@ -61,12 +57,11 @@ const AllUsers = () => {
 
       if (response.data.success) {
         toast.success(response.data.message || "User deleted successfully");
-        await fetchAllUsers(); // Refresh the user list
+        fetchAllUsers(); 
       } else {
         toast.error(response.data.message || "Failed to delete user");
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
       toast.error(error.response?.data?.message || "Error deleting user");
     } finally {
       setLoading(false);
@@ -76,14 +71,12 @@ const AllUsers = () => {
   return (
     <div className="h-[97vh] p-8 overflow-y-auto bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Header */}
         <div className="bg-black text-white py-6 px-6 sm:px-8 text-center">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
             All Users
           </h1>
         </div>
 
-        {/* Content */}
         <div className="p-6 sm:p-8">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -92,7 +85,6 @@ const AllUsers = () => {
             </div>
           ) : users.length > 0 ? (
             <div className="space-y-8">
-              {/* Users Table */}
               <div className="border border-gray-200 rounded-lg p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">
                   User List

@@ -29,7 +29,6 @@ const AddProvider = () => {
         );
         if (data.success) {
           setServices(data.services);
-          console.log("Fetched services:", data.services);
         } else {
           toast.error(data.message);
         }
@@ -60,7 +59,6 @@ const AddProvider = () => {
   };
 
   const validatePhoneNumber = (phone) => {
-    // Accept 9-10 digit Nepali numbers starting with 97 or 98
     const regex = /^(97|98)[0-9]{7,8}$/;
     return regex.test(phone);
   };
@@ -84,7 +82,7 @@ const AddProvider = () => {
       formData.append("name", name);
       formData.append("email", email);
       formData.append("category", category);
-      formData.append("phone_number", number); // Store as plain string
+      formData.append("phone_number", number);
       formData.append("citizenship_number", citizen);
       formData.append("experience", experience);
       formData.append(
@@ -128,7 +126,6 @@ const AddProvider = () => {
           Add Service Provider
         </h2>
 
-        {/* Upload Section */}
         <div className="flex flex-col items-center space-y-4">
           <label htmlFor="service-img" className="cursor-pointer">
             <img
@@ -150,7 +147,6 @@ const AddProvider = () => {
           <p className="text-gray-600">Upload Provider Picture</p>
         </div>
 
-        {/* Input Fields (Two-Column Layout) */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
@@ -206,7 +202,6 @@ const AddProvider = () => {
           </div>
         </div>
 
-        {/* Category & Citizenship */}
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
@@ -243,7 +238,6 @@ const AddProvider = () => {
           </div>
         </div>
 
-        {/* Services */}
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Services
@@ -267,7 +261,6 @@ const AddProvider = () => {
           </div>
         </div>
 
-        {/* Address */}
         <div>
           <label className="block text-sm font-medium text-gray-600">
             Address
@@ -290,7 +283,6 @@ const AddProvider = () => {
           />
         </div>
 
-        {/* Submit Button */}
         <div className="text-center">
           <button
             type="submit"

@@ -14,21 +14,13 @@ const Services = () => {
   const { Services } = useContext(AppContext);
 
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
-  console.log("Current Language:", i18n.language, "Using:", currentLang);
 
   const applyFilter = () => {
-    console.log("Services Data:", Services);
     let filtered = category
       ? Services.filter((service) => {
           const serviceCategorySlug = (service.category.en || "")
             .toLowerCase()
-            .replace(/\s+/g, "-"); 
-          console.log(
-            "Comparing category:",
-            category,
-            "with",
-            serviceCategorySlug
-          );
+            .replace(/\s+/g, "-");
           return serviceCategorySlug === category;
         })
       : Services;
@@ -40,7 +32,6 @@ const Services = () => {
       });
     }
 
-    console.log("Filtered Services:", filtered);
     setFilterService(filtered);
   };
 

@@ -26,14 +26,11 @@ const App = () => {
       <ToastContainer />
       <NavBar />
 
-      {/* Sidebar + Main Content Layout */}
       <div className="flex h-screen">
-        {/* Sidebar (Fixed Width & No Shrinking) */}
         <div className="w-56 flex-shrink-0">
           <Sidebar />
         </div>
 
-        {/* Main Content (Takes Remaining Space) */}
         <div className="flex-grow p-5">
           <Routes>
             <Route path="/" element={<Dashboard />} />

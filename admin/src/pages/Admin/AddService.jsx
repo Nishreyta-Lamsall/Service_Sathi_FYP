@@ -41,7 +41,6 @@ const AddService = () => {
 
   const handlePriceChange = (e) => {
     const value = e.target.value;
-    // Allow empty input or valid numbers with up to 2 decimal places
     if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
       setPrice(value);
     }
@@ -66,7 +65,6 @@ const AddService = () => {
         throw new Error("Invalid category selected");
       }
 
-      // Format price to ensure 2 decimal places
       const formattedPrice = parseFloat(price || 0).toFixed(2);
       if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
         throw new Error("Price must have exactly 2 decimal places");
@@ -81,11 +79,6 @@ const AddService = () => {
       formData.append("aboutNp", aboutNp.trim());
       formData.append("categoryEn", selectedCategory.en);
       formData.append("categoryNp", selectedCategory.np);
-
-      // Log the form data for debugging
-      for (let [key, value] of formData.entries()) {
-        console.log(`FormData: ${key} =`, value);
-      }
 
       const { data } = await axios.post(
         `${backendUrl}/api/admin/add-service`,
@@ -116,7 +109,6 @@ const AddService = () => {
         error.message ||
         "Error adding service";
       toast.error(errorMessage);
-      console.error("Submission error:", error);
     } finally {
       setLoading(false);
     }

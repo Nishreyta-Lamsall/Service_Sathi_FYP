@@ -4,12 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hide scrollbar for Webkit browsers */
 ::-webkit-scrollbar {
     display: none;
 }
 
-/* Apply the Outfit font everywhere */
 * {
     font-family: 'Outfit', sans-serif;
 }

@@ -27,7 +27,6 @@ const MySubscriptions = () => {
           setSubscriptions(response.data);
         }
       } catch (error) {
-        console.error("Error fetching subscriptions:", error);
       } finally {
         setLoading(false);
       }
@@ -43,11 +42,10 @@ const MySubscriptions = () => {
     (user) => user.userId === userData?._id
   );
 
-  // Function to calculate inspection dates (4, 8, 12 months)
   const calculateInspectionDates = (startDate) => {
     if (!startDate) return [];
     const dates = [];
-    const intervals = [4, 8, 12]; // Three inspections
+    const intervals = [4, 8, 12]; 
     intervals.forEach((month) => {
       const date = new Date(startDate);
       date.setMonth(date.getMonth() + month);
@@ -56,7 +54,6 @@ const MySubscriptions = () => {
     return dates;
   };
 
-  // Function to always set a 12-month duration
   const calculateEndDate = (startDate) => {
     if (!startDate) return "N/A";
     const start = new Date(startDate);
@@ -64,7 +61,6 @@ const MySubscriptions = () => {
     return start.toLocaleDateString();
   };
 
-  // Generate confirmation message
   const getConfirmationMessage = () => {
     if (!userSubscription || !userDetails) return null;
 
@@ -82,14 +78,12 @@ const MySubscriptions = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Header */}
         <div className="bg-black text-white py-6 px-6 sm:px-8 text-center">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
             {t("mySubscriptions.title")}
           </h1>
         </div>
 
-        {/* Content */}
         <div className="p-6 sm:p-8">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -100,14 +94,12 @@ const MySubscriptions = () => {
             </div>
           ) : userData?.isSubscribed && userSubscription && userDetails ? (
             <div className="space-y-8">
-              {/* Confirmation Message */}
               <div className="border border-green-200 bg-green-50 rounded-lg p-6 text-center">
                 <p className="text-lg text-green-800 font-medium">
                   {getConfirmationMessage()}
                 </p>
               </div>
 
-              {/* User Info Card */}
               <div className="border border-gray-200 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-3 h-3 bg-black rounded-full"></div>
@@ -116,7 +108,6 @@ const MySubscriptions = () => {
                   </h2>
                 </div>
 
-                {/* Subscription Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-1">
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">

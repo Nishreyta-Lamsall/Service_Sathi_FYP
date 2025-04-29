@@ -16,7 +16,6 @@ const ServicesList = () => {
       getAllServices();
       fetchServiceProviders();
     }
-    console.log("Services data:", services); 
   }, [aToken]);
 
   const fetchServiceProviders = async () => {
@@ -30,10 +29,6 @@ const ServicesList = () => {
           providers[service._id] = data.name;
         }
       } catch (error) {
-        console.error(
-          `Error fetching provider for ${service.name?.en || "unknown"}:`,
-          error
-        );
       }
     }
     setServiceProviders(providers);

@@ -9,12 +9,9 @@
 
 .scrollbar-hidden {
     -ms-overflow-style: none;
-    /* Hides scrollbar for IE and Edge */
     scrollbar-width: none;
-    /* Hides scrollbar for Firefox */
 }
 
-/* Apply the Outfit font everywhere */
 * {
     font-family: 'Poppins', sans-serif;
 }

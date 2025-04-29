@@ -74,10 +74,6 @@ export const initiateSubscriptionPayment = async (req, res) => {
 
     res.json({ success: true, payment_url: response.data.payment_url });
   } catch (error) {
-    console.error(
-      "Error initiating payment:",
-      error.response?.data || error.message
-    );
     res.status(500).json({
       success: false,
       message: "Failed to initiate payment",
@@ -91,10 +87,7 @@ export const verifySubscriptionPayment = async (req, res) => {
     const { userId } = req.body;
     const { pidx } = req.query;
 
-    console.log("Verifying payment:", { userId, pidx });
-
     if (!userId || !pidx) {
-      console.log("Missing fields:", { userId, pidx });
       return res.status(400).json({
         success: false,
         message: "userId and pidx are required",
@@ -136,7 +129,6 @@ export const verifySubscriptionPayment = async (req, res) => {
         },
       }
     );
-    console.log("Khalti response:", verificationResponse.data);
 
     if (verificationResponse.data.status !== "Completed") {
       return res.status(400).json({
@@ -182,7 +174,6 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
-    // Update subscription with user data
     const userIndex = subscription.users.findIndex(
       (u) => u.userId.toString() === userId.toString()
     );
@@ -201,14 +192,11 @@ export const verifySubscriptionPayment = async (req, res) => {
     }
 
     await subscription.save();
-    console.log("Subscription updated:", subscription);
 
-    // Update user model
     user.isSubscribed = true;
     user.subscription = subscription._id;
-    user.subscriptionPlan = plan; 
+    user.subscriptionPlan = plan;
     await user.save();
-    console.log("User updated:", user);
 
     const updatedUserData = {
       ...user.toObject(),
@@ -220,7 +208,6 @@ export const verifySubscriptionPayment = async (req, res) => {
       { userId, cancelled: false, isCompleted: false },
       { $set: { userData: updatedUserData } }
     );
-    console.log("Active bookings updated for user:", userId);
 
     if (global.paymentPlans?.[pidx]) {
       delete global.paymentPlans[pidx];
@@ -231,7 +218,6 @@ export const verifySubscriptionPayment = async (req, res) => {
       message: "Subscription activated successfully and bookings updated!",
     });
   } catch (error) {
-    console.error("Verification error:", error.response?.data || error.message);
     res.status(500).json({
       success: false,
       message: "Payment verification failed",
@@ -240,34 +226,23 @@ export const verifySubscriptionPayment = async (req, res) => {
   }
 };
 
-// Initiate Booking Payment
 export const initiateBookingPayment = async (req, res) => {
   try {
     const { userId, bookingId, amount } = req.body;
-    console.log("Initiate booking payment request:", {
-      userId,
-      bookingId,
-      amount,
-    });
     if (!userId || !bookingId || !amount) {
-      console.log("Missing fields:", { userId, bookingId, amount });
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "userId, bookingId, and amount are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "userId, bookingId, and amount are required",
+      });
     }
 
     const user = await userModel.findById(userId);
     if (!user) {
-      console.log("User not found:", userId);
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
     if (!user.phone) {
-      console.log("User phone missing:", userId);
       return res
         .status(400)
         .json({ success: false, message: "User phone number is required" });
@@ -275,44 +250,31 @@ export const initiateBookingPayment = async (req, res) => {
 
     const booking = await bookingModel.findById(bookingId);
     if (!booking) {
-      console.log("Booking not found:", bookingId);
       return res
         .status(404)
         .json({ success: false, message: "Booking not found" });
     }
     if (booking.userId.toString() !== userId) {
-      console.log("Booking user mismatch:", {
-        bookingUserId: booking.userId,
-        userId,
-      });
       return res
         .status(403)
         .json({ success: false, message: "Booking does not belong to user" });
     }
     if (booking.paymentStatus === "Completed") {
-      console.log("Payment already completed:", bookingId);
       return res
         .status(400)
         .json({ success: false, message: "Booking payment already completed" });
     }
 
-    // Validate amount with discount for subscribed users
     let expectedAmount = booking.amount;
     if (user.isSubscribed) {
-      const discount = 0.1; // 10% discount
+      const discount = 0.1;
       expectedAmount = booking.amount - booking.amount * discount;
     }
     if (expectedAmount !== amount) {
-      console.log("Amount mismatch:", {
-        expectedAmount,
-        requestAmount: amount,
+      return res.status(400).json({
+        success: false,
+        message: "Amount does not match expected booking amount",
       });
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Amount does not match expected booking amount",
-        });
     }
 
     if (!APP_BASE_URL) {
@@ -322,7 +284,7 @@ export const initiateBookingPayment = async (req, res) => {
     const paymentData = {
       return_url: `${APP_BASE_URL}/my-bookings`,
       website_url: APP_BASE_URL,
-      amount: amount * 100, // Convert NPR to paisa for Khalti
+      amount: amount * 100,
       purchase_order_id: `BOOKING-${bookingId}-${Date.now()}`,
       purchase_order_name: `Booking for ${
         booking.serviceData?.name || "Service"
@@ -333,7 +295,6 @@ export const initiateBookingPayment = async (req, res) => {
         phone: user.phone,
       },
     };
-    console.log("Payment data for Khalti:", paymentData);
 
     const response = await axios.post(khaltiInitiateUrl, paymentData, {
       headers: {
@@ -341,7 +302,6 @@ export const initiateBookingPayment = async (req, res) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Khalti response:", response.data);
 
     const pidx =
       response.data.pidx ||
@@ -359,11 +319,6 @@ export const initiateBookingPayment = async (req, res) => {
 
     res.json({ success: true, payment_url: response.data.payment_url });
   } catch (error) {
-    console.error("Error initiating booking payment:", {
-      message: error.message,
-      stack: error.stack,
-      response: error.response?.data,
-    });
     res.status(500).json({
       success: false,
       message: "Failed to initiate booking payment",
@@ -372,16 +327,12 @@ export const initiateBookingPayment = async (req, res) => {
   }
 };
 
-// Verify Booking Payment
 export const verifyBookingPayment = async (req, res) => {
   try {
     const { userId } = req.body;
     const { pidx } = req.query;
 
-    console.log("Verifying booking payment:", { userId, pidx });
-
     if (!userId || !pidx) {
-      console.log("Missing fields:", { userId, pidx });
       return res
         .status(400)
         .json({ success: false, message: "userId and pidx are required" });
@@ -389,36 +340,25 @@ export const verifyBookingPayment = async (req, res) => {
 
     const storedData = global.paymentPlans?.[pidx];
     if (!storedData || !storedData.bookingId) {
-      console.log("Payment intent not found:", pidx);
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Payment intent not found or invalid",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Payment intent not found or invalid",
+      });
     }
     if (storedData.userId !== userId) {
-      console.log("User ID mismatch:", {
-        storedUserId: storedData.userId,
-        userId,
+      return res.status(403).json({
+        success: false,
+        message: "User ID does not match payment initiator",
       });
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "User ID does not match payment initiator",
-        });
     }
 
     const booking = await bookingModel.findById(storedData.bookingId);
     if (!booking) {
-      console.log("Booking not found:", storedData.bookingId);
       return res
         .status(404)
         .json({ success: false, message: "Booking not found" });
     }
     if (booking.paymentStatus === "Completed") {
-      console.log("Payment already verified:", booking._id);
       return res
         .status(400)
         .json({ success: false, message: "Booking payment already verified" });
@@ -434,12 +374,10 @@ export const verifyBookingPayment = async (req, res) => {
         },
       }
     );
-    console.log("Khalti response:", verificationResponse.data);
 
     if (verificationResponse.data.status !== "Completed") {
       booking.paymentStatus = "Failed";
       await booking.save();
-      console.log("Payment not completed:", verificationResponse.data.status);
       return res.status(400).json({
         success: false,
         message: `Payment not completed. Status: ${verificationResponse.data.status}`,
@@ -449,7 +387,6 @@ export const verifyBookingPayment = async (req, res) => {
     booking.paymentStatus = "Completed";
     booking.transactionId = verificationResponse.data.transaction_id;
     await booking.save();
-    console.log("Booking updated:", booking);
 
     if (global.paymentPlans?.[pidx]) {
       delete global.paymentPlans[pidx];
@@ -460,11 +397,6 @@ export const verifyBookingPayment = async (req, res) => {
       message: "Booking payment verified successfully!",
     });
   } catch (error) {
-    console.error("Booking verification error:", {
-      message: error.message,
-      stack: error.stack,
-      response: error.response?.data,
-    });
     res.status(500).json({
       success: false,
       message: "Booking payment verification failed",

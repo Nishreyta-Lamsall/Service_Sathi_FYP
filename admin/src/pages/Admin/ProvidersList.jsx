@@ -143,7 +143,6 @@ const ProvidersList = () => {
                   </div>
                 )}
 
-                {/* Availability */}
                 <div className="flex items-center mt-2">
                   <input
                     onChange={() => changeProviderAvailability(item._id)}
@@ -156,7 +155,6 @@ const ProvidersList = () => {
               </div>
 
               <div className="flex gap-3 mt-3">
-                {/* Edit Button */}
                 <button
                   onClick={() => navigate(`/edit-provider/${item._id}`)}
                   className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded transition"
@@ -164,7 +162,6 @@ const ProvidersList = () => {
                   Edit
                 </button>
 
-                {/* Delete Button */}
                 <button
                   onClick={() => handleDelete(item._id)}
                   className={`px-3 py-1 text-xs font-medium text-white ${

@@ -94,7 +94,6 @@ const ContactUs = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Error adding testimonial:", error);
       toast.error(t("toastMessage.testimonialFailure"));
     }
   };
@@ -102,7 +101,6 @@ const ContactUs = () => {
   return (
     <div className="bg-white min-h-screen flex flex-col items-center justify-center py-16 px-6">
       <div className="bg-[#eeeef0] shadow-xl rounded-lg p-8 w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Contact Information */}
         <div className="flex flex-col items-center md:items-start justify-center text-center md:text-left lg:-mt-16 lg:ml-12">
           <div className="flex items-center justify-center w-36 h-36 bg-gray-300 rounded-full">
             <i className="fas fa-envelope text-7xl"></i>
@@ -126,7 +124,6 @@ const ContactUs = () => {
           </ul>
         </div>
 
-        {/* Contact Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-gray-50 p-8 rounded-lg shadow-md space-y-6"
@@ -199,10 +196,7 @@ const ContactUs = () => {
           )}
         </form>
 
-        {/* Horizontal Rule Separator */}
         <hr className="col-span-full border-t-2 border-gray-300 my-8" />
-
-        {/* Testimonial Section */}
         <div
           id="testimonial"
           className="col-span-full p-5 bg-gray-100 rounded-lg shadow-md"

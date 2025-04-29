@@ -19,7 +19,6 @@ const Contact = () => {
         setMessages(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching contact messages:", error);
         setLoading(false);
       }
     };

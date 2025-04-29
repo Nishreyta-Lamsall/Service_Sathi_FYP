@@ -164,7 +164,6 @@ const registerUser = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -286,7 +285,7 @@ const resendVerification = async (req, res) => {
               <p>You’ve requested a new verification link for ServiceSathi.</p>
               <p>Please click the button below to verify your email:</p>
               <a href="${verificationLink}" class="button">Verify Now</a>
-           �n
+            </div>
             <div class="footer">
               <p>If you didn’t request this, please ignore this email.</p>
               <p>© ${new Date().getFullYear()} Service Sathi. All rights reserved.</p>
@@ -304,7 +303,6 @@ const resendVerification = async (req, res) => {
       message: "Verification email has been sent.",
     });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -323,7 +321,7 @@ const forgotPassword = async (req, res) => {
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpires = Date.now() + 3600000; // 1 hour expiration
+    const resetTokenExpires = Date.now() + 3600000;
 
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = resetTokenExpires;
@@ -436,7 +434,6 @@ const forgotPassword = async (req, res) => {
       resetToken,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -458,7 +455,6 @@ const verifyUser = async (req, res) => {
 
     return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: "Server error during verification" });
@@ -492,7 +488,6 @@ const loginUser = async (req, res) => {
       res.json({ success: false, message: "Invalid Credentials!" });
     }
   } catch (error) {
-    console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -518,7 +513,6 @@ const verifyResetToken = async (req, res) => {
       message: "Token is valid, you can now reset your password",
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -551,7 +545,6 @@ const resetPassword = async (req, res) => {
       message: "Password reset successful",
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -563,7 +556,6 @@ const getProfile = async (req, res) => {
 
     res.json({ success: true, userData });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -602,7 +594,6 @@ const updateProfile = async (req, res) => {
 
     res.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -613,20 +604,16 @@ const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
 const bookService = async (req, res) => {
   try {
     const { userId, serviceId, slotDate, slotTime } = req.body;
-    console.log("Booking attempt:", { userId, serviceId, slotDate, slotTime });
 
     const serviceData = await serviceModel.findById(serviceId);
     if (!serviceData) {
-      console.log("Service not found:", serviceId);
       return res.json({ success: false, message: "Service not found" });
     }
 
     if (!serviceData.available) {
-      console.log("Service not available:", serviceId);
       return res.json({ success: false, message: "Service not available" });
     }
 
-    // Validate price
     let amount;
     if (
       typeof serviceData.price === "string" &&
@@ -636,7 +623,6 @@ const bookService = async (req, res) => {
     } else if (typeof serviceData.price === "number") {
       amount = serviceData.price;
     } else {
-      console.log("Invalid price for service:", serviceData.price);
       return res.json({
         success: false,
         message: "Service price not configured",
@@ -645,15 +631,12 @@ const bookService = async (req, res) => {
 
     let slots_booked = serviceData.slots_booked;
     if (slots_booked[slotDate]?.includes(slotTime)) {
-      console.log("Slot already booked:", { slotDate, slotTime });
       return res.json({ success: false, message: "Service already booked." });
     }
 
     const userData = await userModel.findById(userId).select("-password");
-    console.log("User data:", userData);
 
     if (!userData.phone || userData.phone === "0000000000") {
-      console.log("Invalid phone:", userData.phone);
       return res.json({
         success: false,
         message:
@@ -666,7 +649,6 @@ const bookService = async (req, res) => {
       !userData.address.line1?.trim() ||
       !userData.address.line2?.trim()
     ) {
-      console.log("Incomplete address:", userData.address);
       return res.json({
         success: false,
         message:
@@ -696,7 +678,6 @@ const bookService = async (req, res) => {
       "services.serviceId": serviceId,
     });
     if (!serviceProvider) {
-      console.log("Service provider not found for service:", serviceId);
       return res.json({
         success: false,
         message: "Service Provider not found",
@@ -705,41 +686,23 @@ const bookService = async (req, res) => {
 
     const message = `Hello ${serviceProvider.name}, you have a new booking for your service (${serviceData.name}) on ${slotDate} at ${slotTime}. The user's phone number is ${userData.phone}. Please be available.`;
 
-    // Format phone number for Twilio
     let phoneNumber = serviceProvider.phone_number;
-    // Remove any JSON-stringified quotes
     if (phoneNumber.startsWith('"') && phoneNumber.endsWith('"')) {
       phoneNumber = phoneNumber.slice(1, -1);
     }
-    // Add +977 prefix if not present
     if (!phoneNumber.startsWith("+977")) {
       phoneNumber = `+977${phoneNumber}`;
     }
 
-    // Validate phone number
     if (!/^\+977(97|98)[0-9]{7,8}$/.test(phoneNumber)) {
-      console.error("Invalid service provider phone number:", phoneNumber);
     } else {
       try {
-        console.log("Attempting to send Twilio SMS to:", phoneNumber);
         const twilioMessage = await client.messages.create({
           body: message,
           from: TWILIO_PHONE_NUMBER,
           to: phoneNumber,
         });
-        console.log(
-          "Twilio SMS sent to:",
-          phoneNumber,
-          "SID:",
-          twilioMessage.sid
-        );
-      } catch (twilioError) {
-        console.error("Twilio error:", {
-          message: twilioError.message,
-          code: twilioError.code,
-          status: twilioError.status,
-        });
-      }
+      } catch (twilioError) {}
     }
 
     res.json({
@@ -747,7 +710,6 @@ const bookService = async (req, res) => {
       message: "Service Booked and service provider notified",
     });
   } catch (error) {
-    console.error("Booking error:", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -759,7 +721,6 @@ const listService = async (req, res) => {
 
     res.json({ success: true, bookings });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -825,7 +786,6 @@ const cancelBooking = async (req, res) => {
       message: "Booking Cancelled by User and Service Provider Notified",
     });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -879,7 +839,6 @@ export const subscribeUser = async (req, res) => {
       subscription,
     });
   } catch (error) {
-    console.error("Error subscribing user:", error);
     return res
       .status(500)
       .json({ message: error.message || "Error subscribing user" });

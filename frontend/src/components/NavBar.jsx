@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { LanguageContext } from "../context/LanguageContext"; // Import the context
+import { LanguageContext } from "../context/LanguageContext"; 
 import dropdownIcon from "../assets/dropdown_icon.png";
 import { AppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";

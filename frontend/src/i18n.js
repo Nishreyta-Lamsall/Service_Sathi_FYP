@@ -68,6 +68,7 @@ const resources = {
       serviceBookError: "An error occurred while booking service",
       inspections: "You've successfully taken the subscription for",
       inspectionDates: "Your scheduled free inspections are on these dates:",
+      viewOrderHistory: "View Order History",
 
       // About Us Section
       hero: {
@@ -434,6 +435,7 @@ const resources = {
       inspections: "तपाईंले सफलतापूर्वक सदस्यता लिइसक्नु भएको छ:",
       inspectionDates:
         "तपाईंका तालिकाबद्ध निःशुल्क निरीक्षणहरू यी मितिहरूमा छन्:",
+      viewOrderHistory: "अर्डर इतिहास हेर्नुहोस्",
 
       // About Us Section
       hero: {

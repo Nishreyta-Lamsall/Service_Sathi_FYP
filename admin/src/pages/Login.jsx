@@ -17,7 +17,6 @@ const Login = () => {
         email,
         password,
       });
-      console.log(data); 
       if (data.success) {
         localStorage.setItem('aToken',data.token)
         setAToken(data.token); 
@@ -25,7 +24,6 @@ const Login = () => {
         toast.error(data.message)
       }
     } catch (error) {
-      console.error("Error logging in", error);
     }
   };
 

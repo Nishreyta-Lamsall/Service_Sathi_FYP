@@ -3,7 +3,6 @@ import React from "react";
 const Testimonial = ({ id, name, rating, image, comment }) => {
   return (
     <div className="flex flex-col items-start p-6 w-80 rounded-lg hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white border border-gray-200">
-      {/* Avatar */}
       <div className="flex items-center mb-4">
         <img
           className="rounded-full w-16 h-16 object-cover"
@@ -12,12 +11,9 @@ const Testimonial = ({ id, name, rating, image, comment }) => {
         />
       </div>
 
-      {/* Content */}
       <div className="flex flex-col items-start">
-        {/* Name */}
         <p className="font-semibold text-xl text-gray-800">{name}</p>
 
-        {/* Star Rating */}
         <div className="flex items-center mt-1 text-yellow-500">
           {Array.from({ length: rating }).map((_, index) => (
             <svg
@@ -35,7 +31,6 @@ const Testimonial = ({ id, name, rating, image, comment }) => {
           ))}
         </div>
 
-        {/* Comment */}
         <p className="text-sm text-gray-600 mt-2">{comment}</p>
       </div>
     </div>

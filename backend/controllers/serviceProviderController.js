@@ -5,7 +5,6 @@ const changeProviderAvailability = async (req, res) => {
   try {
     const { serviceProviderId } = req.body;
 
-    // Find the service provider
     const serviceProviderData = await serviceProviderModel.findById(
       serviceProviderId
     );
@@ -15,13 +14,11 @@ const changeProviderAvailability = async (req, res) => {
         .json({ success: false, message: "Service Provider not found" });
     }
 
-    // Toggle provider's availability
     const newAvailability = !serviceProviderData.available;
     await serviceProviderModel.findByIdAndUpdate(serviceProviderId, {
       available: newAvailability,
     });
 
-    // Update all linked services to match provider's availability
     await serviceModel.updateMany(
       {
         _id: {
@@ -36,7 +33,6 @@ const changeProviderAvailability = async (req, res) => {
       message: "Availability Changed for Provider and Services",
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

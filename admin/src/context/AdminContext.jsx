@@ -25,7 +25,6 @@ const AdminContextProvider = (props) => {
       );
       if (data.success) {
         setServices(data.services);
-        console.log(data.services);
       } else {
         toast.error(data.message);
       }
@@ -34,23 +33,22 @@ const AdminContextProvider = (props) => {
     }
   };
 
-   const getAllServiceProviders = async () => {
-     try {
-       const { data } = await axios.post(
-         backendUrl + "/api/admin/all-serviceProviders",
-         {},
-         { headers: { aToken } }
-       );
-       if (data.success) {
-         setServiceProviders(data.serviceProviders);
-         console.log(data.serviceProviders);
-       } else {
-         toast.error(data.message);
-       }
-     } catch (error) {
-       toast.error(error.message);
-     }
-   };
+  const getAllServiceProviders = async () => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/admin/all-serviceProviders",
+        {},
+        { headers: { aToken } }
+      );
+      if (data.success) {
+        setServiceProviders(data.serviceProviders);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const changeAvailability = async (serviceId) => {
     try {
@@ -78,7 +76,7 @@ const AdminContextProvider = (props) => {
       );
 
       if (data.success) {
-        return data.service; // Return the service data
+        return data.service;
       } else {
         toast.error(data.message);
         return null;
@@ -97,7 +95,7 @@ const AdminContextProvider = (props) => {
       );
 
       if (data.success) {
-        return data.serviceProvider; // Return the service provider data
+        return data.serviceProvider;
       } else {
         toast.error(data.message);
         return null;
@@ -133,7 +131,6 @@ const AdminContextProvider = (props) => {
       });
       if (data.success) {
         setBookings(data.bookings);
-        console.log(data.bookings);
       } else {
         toast.error(data.message);
       }
@@ -168,7 +165,6 @@ const AdminContextProvider = (props) => {
       });
       if (data.success) {
         setDashData(data.dashData);
-        console.log(data.dashData);
       } else {
         toast.error(data.message);
       }

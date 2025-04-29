@@ -17,7 +17,6 @@ const NavBar = () => {
 
   return (
     <div className="flex justify-between items-center px-4 sm:px-1 py-3 sticky top-0 z-10 bg-white shadow-md">
-      {/* Left Side */}
       <div className="flex items-center gap-2 text-xs ml-16">
         <h1 className="text-3xl font-extrabold text-black">ServiceSathi</h1>
         

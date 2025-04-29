@@ -42,7 +42,6 @@ const AllBookings = () => {
         toast.error(response.data.message || "Failed to update status");
       }
     } catch (error) {
-      console.error("Status Update Error:", error);
       toast.error(
         error.response?.status === 401
           ? "Unauthorized. Please check your token."
@@ -67,8 +66,7 @@ const AllBookings = () => {
       } else {
         toast.error(response.data.message || "Failed to send workflow");
       }
-    } catch (error) {
-      console.error("Error sending workflow:", error);
+    } catch {
       toast.error("Error sending workflow");
     }
   };
@@ -84,7 +82,6 @@ const AllBookings = () => {
       <p className="mb-6 text-xl font-semibold text-gray-800">All Bookings</p>
 
       <div className="shadow-lg rounded-lg overflow-hidden border border-gray-200 bg-white text-sm">
-        {/* Table Header */}
         <div className="hidden sm:grid grid-cols-[50px_120px_200px_150px_150px_120px_150px_100px_80px_120px] text-center bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-medium text-gray-700 uppercase tracking-wider">
           <p className="py-4 px-2 border-r">S.N.</p>
           <p className="py-4 px-2 border-r">User</p>
@@ -98,7 +95,6 @@ const AllBookings = () => {
           <p className="py-4 px-2">Workflow</p>
         </div>
 
-        {/* Table Body */}
         <div className="max-h-[70vh] overflow-y-auto overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           {bookings.map((item, index) => (
             <div
@@ -120,8 +116,6 @@ const AllBookings = () => {
               <p className="py-4 px-2 border-r text-gray-600 truncate">
                 {slotDateFormat(item.slotDate)}, {item.slotTime}
               </p>
-
-              {/* Payment Status Column */}
               <p
                 className={`py-4 px-2 border-r font-medium truncate ${
                   item.paymentStatus === "Completed"
@@ -136,7 +130,6 @@ const AllBookings = () => {
                 {item.paymentStatus || "N/A"}
               </p>
 
-              {/* Status Column */}
               <div className="py-4 px-2 border-r flex items-center justify-center">
                 {editingStatus === item._id ? (
                   <select
@@ -175,7 +168,6 @@ const AllBookings = () => {
                 )}
               </div>
 
-              {/* Price Column */}
               <p className="py-4 px-2 border-r text-gray-700 font-medium truncate">
                 {currency}
                 {item.serviceData.price
@@ -183,7 +175,6 @@ const AllBookings = () => {
                   : "N/A"}
               </p>
 
-              {/* Cancel Column */}
               {item.cancelled ? (
                 <p className="py-4 px-2 text-red-500 text-sm font-medium">
                   Cancelled
@@ -191,7 +182,15 @@ const AllBookings = () => {
               ) : (
                 <div className="py-4 px-2 border-r flex justify-center items-center">
                   <img
-                    onClick={() => cancelBooking(item._id).then(getAllBookings)}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to cancel this booking?"
+                        )
+                      ) {
+                        cancelBooking(item._id).then(getAllBookings);
+                      }
+                    }}
                     className="w-5 cursor-pointer hover:opacity-75 transition-opacity duration-200"
                     src={assets.cancel_icon}
                     alt="Cancel"
@@ -199,7 +198,6 @@ const AllBookings = () => {
                 </div>
               )}
 
-              {/* Workflow Column */}
               <div className="py-4 px-2 flex justify-center">
                 <button
                   onClick={() => openWorkflowModal(item._id)}
@@ -213,7 +211,6 @@ const AllBookings = () => {
         </div>
       </div>
 
-      {/* Workflow Modal */}
       {workflowModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">

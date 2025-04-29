@@ -115,7 +115,6 @@ const Testimonials = () => {
                 </p>
               </div>
               <div className="flex justify-between mt-4">
-                {/* Toggle Approval Button */}
                 <button
                   onClick={() =>
                     toggleApproval(testimonial._id, testimonial.approved)
@@ -128,7 +127,6 @@ const Testimonials = () => {
                 >
                   {testimonial.approved ? "Approved" : "Approve"}
                 </button>
-                {/* Delete Button */}
                 <button
                   onClick={() => deleteTestimonial(testimonial._id)}
                   className="delete-button py-2 px-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-300"

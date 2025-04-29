@@ -45,7 +45,6 @@ const EditProvider = () => {
         );
         if (data.success) {
           setAllServices(data.services);
-          console.log("All Services:", data.services);
         } else {
           toast.error(data.message);
         }
@@ -216,8 +215,6 @@ const EditProvider = () => {
             className="p-2 border rounded w-full"
           />
         </div>
-
-        {/* Services Section */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-600">
             Services
@@ -239,8 +236,6 @@ const EditProvider = () => {
             ))}
           </div>
         </div>
-
-        {/* Image Upload */}
         <div className="flex flex-col items-center space-y-3">
           {formData.image && (
             <img
@@ -260,8 +255,6 @@ const EditProvider = () => {
             className="w-full border p-2 rounded"
           />
         </div>
-
-        {/* Submit Button */}
         <div className="text-center">
           <button
             className={`w-full py-3 rounded-md font-medium transition ${

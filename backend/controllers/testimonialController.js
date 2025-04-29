@@ -17,8 +17,8 @@ const addTestimonial = async (req, res) => {
       user: userId,
       message,
       rating,
-      name: user.name, 
-      image: user.image, 
+      name: user.name,
+      image: user.image,
     });
 
     const savedTestimonial = await newTestimonial.save();
@@ -26,10 +26,9 @@ const addTestimonial = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Testimonial added successfully",
-      testimonial: savedTestimonial, 
+      testimonial: savedTestimonial,
     });
   } catch (error) {
-    console.error("Error adding testimonial:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -50,7 +49,6 @@ const getAllTestimonials = async (req, res) => {
       testimonials,
     });
   } catch (error) {
-    console.error("Error fetching testimonials:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -75,7 +73,6 @@ const deleteTestimonial = async (req, res) => {
       testimonial: deletedTestimonial,
     });
   } catch (error) {
-    console.error("Error deleting testimonial:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -83,7 +80,7 @@ const deleteTestimonial = async (req, res) => {
 const toggleApproval = async (req, res) => {
   try {
     const { testimonialId } = req.params;
-    const { approved } = req.body; 
+    const { approved } = req.body;
 
     const testimonial = await testimonialModel.findById(testimonialId);
 
@@ -102,7 +99,6 @@ const toggleApproval = async (req, res) => {
       testimonial,
     });
   } catch (error) {
-    console.error("Error updating approval status:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -122,11 +118,9 @@ const getApprovedTestimonials = async (req, res) => {
       testimonials,
     });
   } catch (error) {
-    console.error("Error fetching approved testimonials:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 export {
   addTestimonial,

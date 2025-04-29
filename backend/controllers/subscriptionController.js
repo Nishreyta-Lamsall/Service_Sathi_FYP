@@ -31,7 +31,7 @@ export const createSubscription = async (req, res) => {
       endDate,
       nextInspection,
       status: "active",
-      users: [], 
+      users: [],
     });
 
     await newSubscription.save();
@@ -56,14 +56,13 @@ export const getUserSubscription = async (req, res) => {
 
     res.status(200).json(user.subscription);
   } catch (error) {
-    console.error("Error in getUserSubscription:", error); // Log the error
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
 export const cancelSubscription = async (req, res) => {
   try {
-    const userId = req.user._id; 
+    const userId = req.user._id;
 
     const subscription = await subscriptionModel.findOne({ users: userId });
 
@@ -126,9 +125,6 @@ export const assignSubscriptionToUser = async (req, res) => {
 
     res.status(200).json({ message: "Subscription assigned successfully", subscription });
   } catch (error) {
-    console.error("Error assigning subscription:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-

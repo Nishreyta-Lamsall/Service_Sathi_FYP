@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   isSubscribed: { type: Boolean, default: false },
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "subscription", // Reference to subscription model
+    ref: "subscription", 
     default: null,
   },
 });

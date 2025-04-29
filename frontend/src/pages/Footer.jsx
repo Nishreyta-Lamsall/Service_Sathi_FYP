@@ -10,14 +10,11 @@ const Footer = () => {
   const { t } = useTranslation();
   return (
     <div className="bg-[#1b1b1b] text-white py-8 px-9">
-      {/* Container for all the contents */}
       <div className="mx-10 flex flex-col sm:flex-row justify-between items-center space-y-8 sm:space-y-0">
-        {/* Left Section */}
         <div className="text-center sm:text-left">
           <p className="text-3xl font-bold">Service Sathi</p>
         </div>
 
-        {/* Middle Section */}
         <div className="text-center sm:text-left">
           <ul className="space-y-2">
             <li>
@@ -37,7 +34,7 @@ const Footer = () => {
             </li>
             <li>
                <HashLink
-                          to="/contact#testimonial" // Navigate to the Contact Us page and scroll to the testimonial section
+                          to="/contact#testimonial" 
                           smooth
                         >
               <a href="/contact" className="hover:underline">
@@ -48,7 +45,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Right Section */}
         <div className="text-center sm:text-left">
           <ul className="space-y-2">
             <li>{t("footer.contactNumber")}</li>
@@ -57,7 +53,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Social Media Icons Section */}
         <div className="flex justify-center sm:justify-start space-x-6 mt-4 sm:mt-0">
           <img
             src={instagram}
@@ -81,8 +76,7 @@ const Footer = () => {
           />
         </div>
       </div>
-
-      {/* Footer Bottom */}
+      
       <div className="mt-8 text-center">
         <hr className="border-t-1 border-white" />
         <p className="mt-4 text-sm font-light">{t("footer.copyright")}</p>

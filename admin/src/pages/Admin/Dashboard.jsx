@@ -21,7 +21,6 @@ const Dashboard = () => {
     }
   }, [aToken]);
 
-  // Function to handle cancel booking and force a re-fetch
   const handleCancelBooking = (bookingId) => {
     cancelBooking(bookingId).then(() => {
       getDashData();
@@ -33,18 +32,15 @@ const Dashboard = () => {
     { name: "Regular", value: dashData?.regularUsers || 0 },
   ];
 
-  const COLORS = ["#0088FE", "#00C49F"]; // Colors for the pie chart
+  const COLORS = ["#0088FE", "#00C49F"]; 
 
   return (
     dashData && (
       <div className="p-6 bg-gray-50 max-h-[90vh] overflow-y-auto scrollbar-none">
-        {/* Header */}
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Admin Dashboard
         </h1>
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Services Card */}
           <div className="bg-gradient-to-r from-blue-500 to-blue-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
@@ -61,7 +57,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Bookings Card */}
           <div className="bg-gradient-to-r from-green-500 to-green-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
@@ -78,7 +73,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Subscribed Users Card */}
           <div className="bg-gradient-to-r from-purple-500 to-purple-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
@@ -95,7 +89,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Providers Card */}
           <div className="bg-gradient-to-r from-orange-500 to-orange-400 p-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
@@ -114,9 +107,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* Charts Section */}
         <div className="mb-8">
-          {/* Users Pie Chart */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               User Distribution
@@ -145,7 +136,6 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
         </div>
-        {/* Recent Bookings Table */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Recent Bookings

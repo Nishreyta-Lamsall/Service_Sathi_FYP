@@ -37,7 +37,6 @@ const MyProfile = () => {
         toast.error(t("profileUpdateFailed"));
       }
     } catch (error) {
-      console.log(error);
       toast.error(t("profileUpdateError"));
     }
   };
@@ -45,7 +44,6 @@ const MyProfile = () => {
   return (
     userData && (
       <div className="flex flex-col md:flex-row gap-8 p-8 bg-gradient-to-br from-gray-50 to-gray-100 shadow-2xl rounded-2xl max-w-4xl mx-auto mt-16 mb-16">
-        {/* Left Section - Image */}
         <div className="w-full md:w-1/3 flex justify-center items-center">
           {isEdit ? (
             <label htmlFor="image">
@@ -77,9 +75,7 @@ const MyProfile = () => {
           )}
         </div>
 
-        {/* Right Section - Form */}
         <div className="w-full md:w-2/3 space-y-6">
-          {/* Name Field */}
           {isEdit ? (
             <input
               className="bg-white text-3xl font-semibold w-full border p-3 rounded-lg shadow-sm focus:ring-1 focus:ring-gray-600 outline-none transition-all duration-300"
@@ -97,12 +93,10 @@ const MyProfile = () => {
 
           <hr className="my-4 border-gray-300" />
 
-          {/* Contact Information */}
           <p className="font-medium text-lg text-black mb-2">
             {t("myProfile.contactInformation")}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Email */}
             <div className="col-span-1">
               <p className="text-gray-900">{t("myProfile.emailId")}</p>
               <p className="text-blue-700 transition-all duration-300">
@@ -110,7 +104,6 @@ const MyProfile = () => {
               </p>
             </div>
 
-            {/* Phone Number */}
             <div className="col-span-1">
               <p className="text-gray-900">{t("myProfile.phone")}</p>
               {isEdit ? (
@@ -131,7 +124,6 @@ const MyProfile = () => {
           </div>
           <hr className="my-4 border-gray-300" />
 
-          {/* Address Fields */}
           <div className="col-span-2">
             <p className="text-gray-900">{t("myProfile.address")}</p>
             {isEdit ? (
@@ -169,7 +161,6 @@ const MyProfile = () => {
           </div>
           <hr className="my-4 border-gray-300" />
 
-          {/* Other Information */}
           <p className="font-medium text-lg text-black mt-6 mb-2">
             {t("myProfile.otherInformation")}
           </p>
@@ -214,7 +205,6 @@ const MyProfile = () => {
           </div>
           <hr className="my-4 border-gray-300" />
 
-          {/* Edit Button */}
           <div className="mt-6 flex justify-start">
             {isEdit ? (
               <button

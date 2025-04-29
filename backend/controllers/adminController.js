@@ -14,9 +14,6 @@ const addService = async (req, res) => {
       req.body;
     const imageFile = req.file;
 
-    console.log("Add service request body:", req.body);
-
-    // Validate required fields
     if (
       !nameEn ||
       !nameNp ||
@@ -37,7 +34,6 @@ const addService = async (req, res) => {
         .json({ success: false, message: "Image file is required" });
     }
 
-    // Validate and format price
     const formattedPrice = parseFloat(price).toFixed(2);
     if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
       return res.status(400).json({
@@ -46,7 +42,6 @@ const addService = async (req, res) => {
       });
     }
 
-    // Check if service with the same name (English or Nepali) already exists
     const existingService = await serviceModel.findOne({
       $or: [{ "name.en": nameEn }, { "name.np": nameNp }],
     });
@@ -56,24 +51,20 @@ const addService = async (req, res) => {
         .json({ success: false, message: "Service name must be unique" });
     }
 
-    // Construct the full image URL
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
       imageFile.filename
     }`;
 
-    // Create a new service record
     const serviceData = {
       name: { en: nameEn, np: nameNp },
       category: { en: categoryEn, np: categoryNp },
       about: { en: aboutEn, np: aboutNp },
-      price: formattedPrice, // Store as string
+      price: formattedPrice,
       image: imageUrl,
     };
 
     const newService = new serviceModel(serviceData);
     await newService.save();
-
-    console.log("Service successfully added:", newService);
 
     res.json({
       success: true,
@@ -81,7 +72,6 @@ const addService = async (req, res) => {
       data: newService,
     });
   } catch (error) {
-    console.error("Error adding service:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -100,9 +90,6 @@ const updateService = async (req, res) => {
       available,
     } = req.body;
     const imageFile = req.file;
-
-    console.log("Received serviceId:", serviceId);
-    console.log("Update request body:", req.body);
 
     if (!mongoose.Types.ObjectId.isValid(serviceId)) {
       return res
@@ -125,8 +112,7 @@ const updateService = async (req, res) => {
       }`;
     }
 
-
-    let formattedPrice = service.price; 
+    let formattedPrice = service.price;
     if (price !== undefined) {
       formattedPrice = parseFloat(price).toFixed(2);
       if (!/^[0-9]+(\.[0-9]{2})?$/.test(formattedPrice)) {
@@ -147,7 +133,6 @@ const updateService = async (req, res) => {
     service.available = available !== undefined ? available : service.available;
     service.image = imageUrl;
 
-    // Check for uniqueness if name fields are updated
     if (nameEn || nameNp) {
       const existingService = await serviceModel.findOne({
         $and: [
@@ -167,12 +152,7 @@ const updateService = async (req, res) => {
       }
     }
 
-    console.log("Updated service before saving:", service);
-
-    // Save the updated service
     await service.save();
-
-    console.log("Service successfully updated:", service);
 
     res.json({
       success: true,
@@ -180,7 +160,6 @@ const updateService = async (req, res) => {
       updatedService: service,
     });
   } catch (error) {
-    console.error("Error updating service:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -191,7 +170,6 @@ const deleteService = async (req, res) => {
   try {
     const { serviceId } = req.params;
 
-    // Check if service exists
     const service = await serviceModel.findById(serviceId);
     if (!service) {
       return res
@@ -199,7 +177,6 @@ const deleteService = async (req, res) => {
         .json({ success: false, message: "Service not found" });
     }
 
-    // Delete service from database
     await serviceModel.deleteOne({ _id: serviceId });
 
     res.json({ success: true, message: "Service deleted successfully" });
@@ -208,8 +185,6 @@ const deleteService = async (req, res) => {
   }
 };
 
-
-// API for adding a service provider
 const addServiceProvider = async (req, res) => {
   try {
     const {
@@ -222,16 +197,14 @@ const addServiceProvider = async (req, res) => {
       services,
       category,
     } = req.body;
-    const imageFile = req.file; // This is handled by multer
+    const imageFile = req.file;
 
     const parsedServices = services ? JSON.parse(services) : [];
 
-    // Address needs to be parsed as it is sent as a JSON string
     const parsedAddress = address
       ? JSON.parse(address)
       : { line1: "", line2: "" };
 
-    // Checking if all required fields are provided
     if (!name) {
       return res.json({ success: false, message: "Name missing" });
     }
@@ -263,44 +236,53 @@ const addServiceProvider = async (req, res) => {
       return res.json({ success: false, message: "Services missing" });
     }
 
-    // Checking if the email already exists in the database
     const existingEmail = await serviceProviderModel.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ success: false, message: "Service provider with this email already exists" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Service provider with this email already exists",
+        });
     }
 
-    // Checking if the citizenship number already exists
-    const existingCitizenship = await serviceProviderModel.findOne({ citizenship_number });
+    const existingCitizenship = await serviceProviderModel.findOne({
+      citizenship_number,
+    });
     if (existingCitizenship) {
-      return res.status(400).json({ success: false, message: "Service provider with this citizenship number already exists" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message:
+            "Service provider with this citizenship number already exists",
+        });
     }
 
-    // Generate image URL if an image is provided (using multer's local path)
     let imageUrl = "";
     if (imageFile) {
-      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${imageFile.filename}`;
+      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        imageFile.filename
+      }`;
     }
 
-    // Create the service provider data
     const serviceProviderData = {
       name,
       email,
       phone_number,
       citizenship_number,
       experience,
-      address: parsedAddress, // The address object will be parsed here
-      services: parsedServices, // Ensure services are an array of strings
+      address: parsedAddress,
+      services: parsedServices,
       category,
-      image: imageUrl, // Use the generated URL for the image
+      image: imageUrl,
     };
 
-    // Save the new service provider to the database
     const newServiceProvider = new serviceProviderModel(serviceProviderData);
     await newServiceProvider.save();
 
     res.json({ success: true, message: "Service provider added successfully" });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -318,9 +300,8 @@ const updateServiceProvider = async (req, res) => {
       services,
       category,
     } = req.body;
-    const imageFile = req.file; // Get the image file from the request
+    const imageFile = req.file;
 
-    // Check if the service provider exists
     const serviceProvider = await serviceProviderModel.findById(id);
     if (!serviceProvider) {
       return res
@@ -328,7 +309,6 @@ const updateServiceProvider = async (req, res) => {
         .json({ success: false, message: "Service provider not found" });
     }
 
-    // Initialize parsedServices and parsedAddress with existing values if not provided
     const parsedServices = services
       ? JSON.parse(services)
       : serviceProvider.services;
@@ -336,7 +316,6 @@ const updateServiceProvider = async (req, res) => {
       ? JSON.parse(address)
       : serviceProvider.address;
 
-    // Validate email and citizenship number if provided
     if (email && email !== serviceProvider.email) {
       const existingEmail = await serviceProviderModel.findOne({ email });
       if (existingEmail) {
@@ -362,16 +341,13 @@ const updateServiceProvider = async (req, res) => {
       }
     }
 
-    // Handle image upload if a new image is provided (Multer for local upload)
-    let imageUrl = serviceProvider.image; // Preserve the current image URL if no new image is uploaded
+    let imageUrl = serviceProvider.image;
     if (imageFile) {
-      // Generate the local file path for the uploaded image
       imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
         imageFile.filename
       }`;
     }
 
-    // Update the service provider data
     serviceProvider.name = name || serviceProvider.name;
     serviceProvider.email = email || serviceProvider.email;
     serviceProvider.phone_number = phone_number || serviceProvider.phone_number;
@@ -381,9 +357,8 @@ const updateServiceProvider = async (req, res) => {
     serviceProvider.address = parsedAddress;
     serviceProvider.services = parsedServices;
     serviceProvider.category = category || serviceProvider.category;
-    serviceProvider.image = imageUrl; // Save the new image URL
+    serviceProvider.image = imageUrl;
 
-    // Save the updated service provider in the database
     await serviceProvider.save();
 
     res.json({
@@ -399,7 +374,6 @@ const deleteServiceProvider = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if the service provider exists
     const serviceProvider = await serviceProviderModel.findById(id);
     if (!serviceProvider) {
       return res
@@ -407,7 +381,6 @@ const deleteServiceProvider = async (req, res) => {
         .json({ success: false, message: "Service provider not found" });
     }
 
-    // Delete the service provider document
     await serviceProviderModel.deleteOne({ _id: id });
 
     res.json({
@@ -443,8 +416,6 @@ const getServiceProviderById = async (req, res) => {
   }
 };
 
-
-//API for admin login
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -458,40 +429,33 @@ const loginAdmin = async (req, res) => {
       res.json({ success: false, message: "Invalid credentials" });
     }
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-//API to get all services list for admin panel
 const allServices = async (req, res) => {
   try {
     const services = await serviceModel.find({});
     res.json({ success: true, services });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-//API to get all serviceproviders list for admin panel
 const allServiceProviders = async (req, res) => {
   try {
     const serviceProviders = await serviceProviderModel.find({});
     res.json({ success: true, serviceProviders });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-//API to get bookings list
 const bookingsAdmin = async (req, res) => {
   try {
     const bookings = await bookingModel.find({});
     res.json({ success: true, bookings });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -582,7 +546,6 @@ const bookingCancel = async (req, res) => {
       message: "Booking Cancelled by Admin, Service Provider and User Notified",
     });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -615,7 +578,6 @@ const updateStatus = async (req, res) => {
     booking.orderStatus = orderStatus;
     await booking.save();
 
-    // Fetch the user data to send SMS
     const userData = await userModel.findById(booking.userId);
     if (!userData) {
       return res
@@ -623,7 +585,6 @@ const updateStatus = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Fetch the service data to get the service name
     const serviceData = await serviceModel.findById(booking.serviceId);
     if (!serviceData) {
       return res
@@ -631,35 +592,19 @@ const updateStatus = async (req, res) => {
         .json({ success: false, message: "Service not found" });
     }
 
-    // Prepare SMS message with service name
     const messageForUser = `Hello ${userData.name}, your booking for ${serviceData.name} is ${orderStatus}.`;
 
-    // Format user's phone number
     const phoneNumberForUser = userData.phone.startsWith("+977")
       ? userData.phone
       : `+977${userData.phone}`;
 
-    // Send SMS using Twilio
     try {
-      console.log("Sending SMS to user:", phoneNumberForUser); // Debug
       const userMessage = await client.messages.create({
         body: messageForUser,
         from: TWILIO_PHONE_NUMBER,
         to: phoneNumberForUser,
       });
-      console.log(
-        "SMS sent to user:",
-        phoneNumberForUser,
-        "SID:",
-        userMessage.sid
-      );
-    } catch (twilioError) {
-      console.error("Failed to send SMS to user:", {
-        message: twilioError.message,
-        code: twilioError.code,
-        status: twilioError.status,
-      });
-    }
+    } catch (twilioError) {}
 
     return res.status(200).json({
       success: true,
@@ -667,7 +612,6 @@ const updateStatus = async (req, res) => {
       booking,
     });
   } catch (error) {
-    console.error("Error updating order status:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -677,9 +621,7 @@ const updateStatus = async (req, res) => {
 const sendWorkflow = async (req, res) => {
   try {
     const { bookingId, workflowMessage } = req.body;
-    console.log("sendWorkflow called for booking:", bookingId); // Debug
 
-    // Validate input
     if (!bookingId || !workflowMessage) {
       return res.status(400).json({
         success: false,
@@ -687,7 +629,6 @@ const sendWorkflow = async (req, res) => {
       });
     }
 
-    // Find the booking
     const booking = await bookingModel.findById(bookingId);
     if (!booking) {
       return res
@@ -695,7 +636,6 @@ const sendWorkflow = async (req, res) => {
         .json({ success: false, message: "Booking not found" });
     }
 
-    // Update booking with workflow message and timestamp
     booking.workflowMessage = {
       content: workflowMessage,
       sentAt: new Date(),
@@ -703,7 +643,6 @@ const sendWorkflow = async (req, res) => {
     };
     await booking.save();
 
-    // Fetch service data for service name
     const servicesData = await serviceModel.findById(booking.serviceId);
     if (!servicesData) {
       return res
@@ -711,7 +650,6 @@ const sendWorkflow = async (req, res) => {
         .json({ success: false, message: "Service not found" });
     }
 
-    // Fetch user data for SMS
     const userData = await userModel.findById(booking.userId);
     if (!userData) {
       return res
@@ -719,17 +657,13 @@ const sendWorkflow = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Prepare SMS message for user
     const messageForUser = `A milestone has been sent to your booking page for service ${servicesData.name} on this date ${booking.slotDate}.`;
 
-    // Format user's phone number
     const phoneNumberForUser = userData.phone.startsWith("+977")
       ? userData.phone
       : `+977${userData.phone}`;
 
-    // Send SMS to user
     try {
-      console.log("Sending SMS to user:", phoneNumberForUser); // Debug
       const userMessage = await client.messages.create({
         body: messageForUser,
         from: TWILIO_PHONE_NUMBER,
@@ -756,7 +690,6 @@ const sendWorkflow = async (req, res) => {
       booking,
     });
   } catch (error) {
-    console.error("Error sending workflow or notification:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -787,7 +720,6 @@ const markWorkflowAsRead = async (req, res) => {
       booking,
     });
   } catch (error) {
-    console.error("Error marking workflow as read:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -798,7 +730,6 @@ const getServiceById = async (req, res) => {
   try {
     const { serviceId } = req.params;
 
-    // Find service by ID
     const service = await serviceModel.findById(serviceId);
 
     if (!service) {
@@ -809,7 +740,6 @@ const getServiceById = async (req, res) => {
 
     res.json({ success: true, service });
   } catch (error) {
-    console.error("Error fetching service:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -821,28 +751,25 @@ const adminDashboard = async (req, res) => {
     const bookings = await bookingModel.find({});
     const serviceProviders = await serviceProviderModel.find({});
 
-    // Separate users into subscribed and regular
     const subscribedUsers = users.filter((user) => user.isSubscribed);
     const regularUsers = users.filter((user) => !user.isSubscribed);
 
     const dashData = {
       services: services.length,
       bookings: bookings.length,
-      users: users.length, // Total users
-      subscribedUsers: subscribedUsers.length, // Number of subscribed users
-      regularUsers: regularUsers.length, // Number of regular users
+      users: users.length,
+      subscribedUsers: subscribedUsers.length,
+      regularUsers: regularUsers.length,
       serviceProviders: serviceProviders.length,
       latestBookings: bookings.reverse().slice(0, 5),
     };
 
     res.json({ success: true, dashData });
   } catch (error) {
-    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-// Get all subscriptions
 const getSubscriptions = async (req, res) => {
   try {
     const subscriptions = await subscriptionModel.find({});
@@ -853,14 +780,13 @@ const getSubscriptions = async (req, res) => {
 
     res.status(200).json(subscriptions);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
 
 const getcontact = async (req, res) => {
   try {
-    const messages = await Contact.find().sort({ createdAt: -1 }); // Fetch messages in descending order
+    const messages = await Contact.find().sort({ createdAt: -1 });
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ error: "Error fetching contact messages" });
@@ -868,7 +794,7 @@ const getcontact = async (req, res) => {
 };
 
 const postContact = async (req, res) => {
-  const {firstName, email, phone, message } = req.body;
+  const { firstName, email, phone, message } = req.body;
 
   if (!firstName || !email || !phone || !message) {
     return res
@@ -879,7 +805,7 @@ const postContact = async (req, res) => {
   try {
     const newMessage = new Contact({
       firstName,
-      lastName: req.body.lastName || "", 
+      lastName: req.body.lastName || "",
       email,
       phone,
       message,
@@ -888,7 +814,6 @@ const postContact = async (req, res) => {
 
     res.status(201).json({ message: "Message sent successfully!" });
   } catch (error) {
-    console.error("Error saving contact message:", error);
     res.status(500).json({ message: "Error occurred. Please try again." });
   }
 };
@@ -918,12 +843,10 @@ const getUserById = async (req, res) => {
       phone: user.phone || "N/A",
     });
   } catch (error) {
-    console.error("Error fetching user:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// POST /api/admin/get-users
 const getUsers = async (req, res) => {
   try {
     const { userIds } = req.body;
@@ -934,17 +857,14 @@ const getUsers = async (req, res) => {
         .json({ success: false, message: "Invalid or empty userIds array" });
     }
 
-    // Validate all userIds
     const invalidIds = userIds.filter(
       (id) => !mongoose.Types.ObjectId.isValid(id)
     );
     if (invalidIds.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Invalid user IDs: ${invalidIds.join(", ")}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Invalid user IDs: ${invalidIds.join(", ")}`,
+      });
     }
 
     const users = await userModel
@@ -962,12 +882,10 @@ const getUsers = async (req, res) => {
 
     res.json({ success: true, users: userMap });
   } catch (error) {
-    console.error("Error fetching users:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// GET /api/admin/all-users
 const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.find().select("name email phone");
@@ -981,12 +899,10 @@ const getAllUsers = async (req, res) => {
 
     res.json({ success: true, users: userList });
   } catch (error) {
-    console.error("Error fetching all users:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// DELETE /api/admin/delete-user/:userId
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -1013,11 +929,9 @@ const deleteUser = async (req, res) => {
 
     res.json({ success: true, message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error deleting user:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 export {
   addService,

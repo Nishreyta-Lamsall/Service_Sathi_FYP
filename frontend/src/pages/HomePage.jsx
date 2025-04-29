@@ -68,7 +68,6 @@ const HomePage = () => {
           setTestimonials(response.data.testimonials);
         }
       } catch (error) {
-        console.error("Error fetching testimonials:", error);
       }
     };
     fetchApprovedTestimonials();
@@ -83,7 +82,6 @@ const HomePage = () => {
         setSubscriptions(data);
       }
     } catch (error) {
-      console.error("Error fetching subscriptions:", error);
       toast.error(t("toastMessage.failedToLoadSubscriptions"));
     }
   };
@@ -96,19 +94,16 @@ const HomePage = () => {
     }
 
     if (!userData || !userData._id) {
-      console.error("User data not available yet:", userData);
       return;
     }
 
     setIsVerifying(true);
     try {
-      console.log("Verifying payment:", { pidx, userId: userData._id });
       const { data } = await axios.post(
         `${backendUrl}/api/subscription/verify-khalti`,
         { userId: userData._id },
         { params: { pidx }, headers: { token } }
       );
-      console.log("Verification response:", data);
       if (data.success) {
         toast.success(t("paymentVerifySuccess"));
         await subscribeUser();
@@ -165,10 +160,8 @@ const HomePage = () => {
       if (response.ok && data.payment_url) {
         window.location.href = data.payment_url;
       } else {
-        console.log(data.message);
       }
     } catch (error) {
-      console.error("Payment error:", error);
       toast.error(t("paymentInitiateFailed"));
     }
   };
@@ -183,7 +176,6 @@ const HomePage = () => {
 
   return (
     <div className="main overflow-x-hidden">
-      {/* Hero Section */}
       <div className="flex items-center justify-center min-h-screen -mt-20">
         <div className="w-full h-full flex relative overflow-hidden">
           <div
@@ -212,7 +204,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Services Section */}
       <div className="mt-10 mb-20" id="category">
         <p className="text-3xl font-semibold text-black flex justify-center">
           {t("home.services.title")}
@@ -307,7 +298,6 @@ const HomePage = () => {
         )}
       </div>
 
-      {/* Latest Picks Section */}
       <div className="mt-16 mb-20">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-semibold text-gray-900">
@@ -315,7 +305,6 @@ const HomePage = () => {
           </h2>
         </div>
 
-        {/* Container with mx-16 on large screens only */}
         <div className="lg:ml-16 lg:mr-12 px-4 lg:px-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-11">
             {Services.slice(0, 8).map((item, index) => (
@@ -379,8 +368,6 @@ const HomePage = () => {
           </button>
         </div>
       </div>
-
-      {/* Subscription Plans Section */}
       <div className="mb-16">
         <p className="text-3xl font-semibold text-black flex justify-center mb-8">
           {t("home.subscriptionPlans.title")}
@@ -388,7 +375,6 @@ const HomePage = () => {
 
         <div className="bg-[#1f1f1f] py-12 rounded-lg ml-16 mr-14">
           <div className="max-w-6xl mx-auto">
-            {/* Original 2 Subscription Plans */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
               {subscriptions.length > 0 ? (
                 subscriptions.map((subscription) => (

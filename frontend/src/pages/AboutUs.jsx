@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useTranslation } from "react-i18next";
 import aboutusimg from "../assets/aboutus.jpg";
 import aboutus from "../assets/aboutuss.jpg";
 import expertteam from "../assets/expertteam.png";
@@ -8,7 +8,7 @@ import customercentric from "../assets/customercentric.png";
 import reliable from "../assets/reliable.png";
 
 const AboutUs = () => {
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t } = useTranslation(); 
   const [openFaq, setOpenFaq] = useState(null);
   const [count, setCount] = useState(1);
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const AboutUs = () => {
     });
   }, []);
 
-  const faqs = t("faq.questions", { returnObjects: true }); // Access FAQ translations
+  const faqs = t("faq.questions", { returnObjects: true }); 
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -43,7 +43,6 @@ const AboutUs = () => {
   return (
     <div className="w-full">
       <div className="max-w-screen-2xl mx-auto">
-        {/* Hero Section */}
         <div className="relative w-full h-[90vh]">
           <img src={aboutus} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black bg-opacity-65"></div>
@@ -52,9 +51,7 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* Image + Text Section */}
         <div className="relative flex flex-col lg:flex-row justify-center items-center mt-16 mx-4 lg:mx-0 lg:ml-52">
-          {/* Image Container */}
           <div className="relative w-full lg:w-auto">
             <img
               src={aboutusimg}
@@ -63,8 +60,7 @@ const AboutUs = () => {
             />
           </div>
 
-          {/* Text Overlay Container */}
-          <div className="relative lg:absolute lg:left-10 lg:-mt-10 bg-white w-full lg:w-[300px] xl:w-[480px] h-auto lg:h-[55vh] p-6 lg:p-10 shadow-2xl mt-6 lg:mt-0">
+          <div className="relative lg:absolute lg:left-10 lg:-mt-10 bg-white w-full lg:w-[300px] xl:w-[480px] h-auto lg:h-[55vh] p-6 lg:p-10 shadow-2xl mt-6">
             <p className="text-blue-950 uppercase text-base font-semibold">
               {t("imageTextSection.welcome")}
             </p>
@@ -77,7 +73,6 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* What Makes Us Different Section */}
         <div className="flex flex-col lg:flex-row items-start mt-14 gap-8 lg:gap-16 mx-auto max-w-7xl bg-gray-50 p-6 lg:p-8 rounded-xl shadow-md">
           <div className="w-full lg:w-1/2 mt-8 lg:mt-28 ml-0 lg:ml-10">
             <p className="text-3xl lg:text-4xl font-semibold mb-4">

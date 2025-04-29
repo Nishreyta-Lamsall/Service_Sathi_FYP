@@ -36,7 +36,7 @@ const EditService = () => {
       if (data) {
         setNameEn(data.name.en);
         setNameNp(data.name.np);
-        setPrice(data.price); // Price is a string like "2300.00"
+        setPrice(data.price); 
         setAboutEn(data.about.en);
         setAboutNp(data.about.np);
         setAvailable(data.available);

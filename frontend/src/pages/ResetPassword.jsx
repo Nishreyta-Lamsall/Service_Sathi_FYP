@@ -21,7 +21,6 @@ const ResetPassword = () => {
     const verifyToken = async () => {
       setIsLoadingToken(true);
       try {
-        console.log("Verifying token:", resetToken);
         const response = await axios.get(
           `${backendUrl}/api/user/reset-password/${resetToken}`
         );
@@ -33,7 +32,6 @@ const ResetPassword = () => {
           navigate("/forgot-password");
         }
       } catch (error) {
-        console.error("Error during token verification:", error);
         toast.error("Invalid or expired token");
         navigate("/forgot-password");
       } finally {

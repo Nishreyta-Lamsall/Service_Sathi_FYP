@@ -43,7 +43,6 @@ const OrderHistory = () => {
         setBookings(data.bookings.reverse());
       }
     } catch (error) {
-      console.log(error);
       toast.error(t("failedToLoadBookings"));
     }
   };
@@ -89,7 +88,6 @@ const OrderHistory = () => {
                   key={index}
                   className="flex flex-col sm:flex-row items-center bg-white shadow-lg rounded-lg p-4 border border-gray-200"
                 >
-                  {/* Image Section */}
                   <div className="flex-shrink-0">
                     <img
                       className="md:w-28 md:h-28 w-40 h-40 object-cover rounded-lg"
@@ -98,7 +96,6 @@ const OrderHistory = () => {
                     />
                   </div>
 
-                  {/* Booking Details */}
                   <div className="flex-1 sm:ml-6 text-sm text-gray-700">
                     <p className="text-base font-semibold text-gray-900">
                       {getDisplayValue(item.serviceData.name)}
@@ -133,7 +130,6 @@ const OrderHistory = () => {
                     </p>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex flex-col gap-2 sm:items-end sm:ml-auto mt-4 sm:mt-0">
                     {item.cancelled ? (
                       <button className="text-sm font-medium text-gray-500 border border-gray-500 px-4 py-1.5 rounded-lg hover:bg-gray-500 hover:text-white transition-all duration-300">

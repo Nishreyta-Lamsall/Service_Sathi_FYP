@@ -88,7 +88,6 @@ const MyBookings = () => {
       }
     } catch (error) {
       toast.error(t("toastMessage.reviewError"));
-      console.error(error);
     }
   };
 
@@ -104,7 +103,6 @@ const MyBookings = () => {
         }));
       }
     } catch (error) {
-      console.error("Error fetching provider:", error);
     }
   };
 
@@ -114,21 +112,11 @@ const MyBookings = () => {
   };
 
   const getDiscountedPrice = (originalPrice, isSubscribed) => {
-    console.log("Calculating discounted price:", {
-      originalPrice,
-      isSubscribed,
-    });
     let discount = 0;
     if (isSubscribed) {
-      discount = 0.1; // 10% discount for subscribed users
+      discount = 0.1; 
     }
     const discountedPrice = originalPrice - originalPrice * discount;
-    console.log(
-      "Discounted price:",
-      discountedPrice,
-      "Discount applied:",
-      discount
-    );
     return discountedPrice;
   };
 
@@ -141,7 +129,6 @@ const MyBookings = () => {
         setBookings(data.bookings.reverse());
       }
     } catch (error) {
-      console.log(error);
       toast.error(t("failedToLoadBookings"));
     }
   };
@@ -167,11 +154,6 @@ const MyBookings = () => {
 
   const initiateBookingPayment = async (booking) => {
     try {
-      console.log("Initiating payment for booking:", booking._id);
-      console.log("Backend URL:", backendUrl);
-      console.log("User data:", booking.userData);
-      console.log("Token:", token);
-      console.log("Booking amount:", booking.amount);
       const user = booking.userData;
       if (!user?._id || !booking._id || !token) {
         throw new Error("Missing required fields: userId, bookingId, or token");
@@ -179,12 +161,6 @@ const MyBookings = () => {
       const amount = user?.isSubscribed
         ? getDiscountedPrice(booking.amount, user.isSubscribed)
         : booking.amount;
-      console.log(
-        "Calculated amount:",
-        amount,
-        "Subscribed:",
-        user.isSubscribed
-      );
       if (!amount || amount <= 0) {
         throw new Error("Invalid amount: " + amount);
       }
@@ -196,7 +172,6 @@ const MyBookings = () => {
         orderId: `BOOKING-${booking._id}-${Date.now()}`,
         orderName: `Booking Payment for ${booking.serviceData.name[currentLang]}`,
       };
-      console.log("Request payload:", payload);
 
       const response = await axios.post(
         `${backendUrl}/api/subscription/initiate-booking-payment`,
@@ -211,17 +186,6 @@ const MyBookings = () => {
         toast.error(t("toastMessage.paymentInitiationFailed"));
       }
     } catch (error) {
-      console.error("Error initiating payment:", {
-        message: error.message,
-        response: error.response
-          ? {
-              status: error.response.status,
-              data: error.response.data,
-              headers: error.response.headers,
-            }
-          : null,
-        error: error.toJSON ? error.toJSON() : error,
-      });
       toast.error(
         error.response?.data?.message ||
           error.message ||
@@ -232,7 +196,6 @@ const MyBookings = () => {
 
   const verifyBookingPayment = async (pidx, userId) => {
     try {
-      console.log("Verifying booking payment:", { pidx, userId });
       const response = await axios.post(
         `${backendUrl}/api/subscription/verify-booking-payment?pidx=${pidx}`,
         { userId },
@@ -247,13 +210,11 @@ const MyBookings = () => {
         toast.error(t("toastMessage.paymentVerificationFailed"));
       }
     } catch (error) {
-      console.error("Error verifying payment:", error.response?.data || error);
       toast.error(t("toastMessage.paymentVerificationError"));
     }
   };
 
   useEffect(() => {
-    console.log("Backend URL in MyBookings:", backendUrl);
     if (token) {
       getUserBookings();
       getServicesData();
@@ -590,7 +551,7 @@ const MyBookings = () => {
           to="/order-history"
           className="text-black border-black bg-white hover:bg-black hover:text-white border-2 px-6 md:px-2 py-3 md:py-2 md:pl-9 w-[160px] md:w-[220px] hover:scale-105 transition-all duration-300 flex items-center justify-between z-10 whitespace-nowrap text-sm md:text-base rounded-lg"
         >
-          View Order History
+          {t("viewOrderHistory")}
         </Link>
       </div>
     </div>
