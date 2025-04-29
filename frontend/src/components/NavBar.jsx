@@ -30,6 +30,10 @@ const logout = () => {
     if (result.isConfirmed) {
       setToken(false);
       localStorage.removeItem("token");
+      localStorage.removeItem("isRegistered");
+      localStorage.removeItem("user");
+      localStorage.removeItem("loginMessage");
+      localStorage.removeItem("paymentPidx");
       navigate("/");
     }
   });

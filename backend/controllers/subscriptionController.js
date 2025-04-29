@@ -1,14 +1,12 @@
 import subscriptionModel from "../models/subscriptionModel.js";
 import userModel from "../models/userModel.js";
 
-// Create a subscription without users initially
 export const createSubscription = async (req, res) => {
   try {
     const { plan } = req.body;
 
-    // Define plan details for both 6-month and 12-month
     const planDetails = {
-      "6-month": { duration: 6, discount: 5 }, // Added 6-month plan
+      "6-month": { duration: 6, discount: 5 },
       "12-month": { duration: 12, discount: 10 },
     };
 
@@ -20,14 +18,12 @@ export const createSubscription = async (req, res) => {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + planDetails[plan].duration);
 
-    // For 12-month plans, set inspections every 4 months
     let nextInspection = null;
     if (plan === "12-month") {
       nextInspection = new Date();
       nextInspection.setMonth(nextInspection.getMonth() + 4);
     }
 
-    // Create subscription without users
     const newSubscription = new subscriptionModel({
       plan,
       discount: planDetails[plan].discount,
@@ -35,7 +31,7 @@ export const createSubscription = async (req, res) => {
       endDate,
       nextInspection,
       status: "active",
-      users: [], // Empty initially, to be populated later
+      users: [], 
     });
 
     await newSubscription.save();
@@ -52,7 +48,6 @@ export const getUserSubscription = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Find the user and populate their subscription details
     const user = await userModel.findById(userId).populate("subscription");
 
     if (!user || !user.subscription) {
@@ -66,7 +61,6 @@ export const getUserSubscription = async (req, res) => {
   }
 };
 
-// Cancel subscription by user
 export const cancelSubscription = async (req, res) => {
   try {
     const userId = req.user._id; 
@@ -103,7 +97,6 @@ export const assignSubscriptionToUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if user already has this subscription
     const isUserSubscribed = subscription.users.some(user => user.userId.toString() === userId);
     if (isUserSubscribed) {
       return res.status(400).json({ message: "User is already subscribed to this plan" });
@@ -119,7 +112,6 @@ export const assignSubscriptionToUser = async (req, res) => {
       nextInspection.setMonth(nextInspection.getMonth() + 4);
     }
 
-    // Add user to subscription's users array
     subscription.users.push({
       userId,
       startDate,
@@ -129,8 +121,6 @@ export const assignSubscriptionToUser = async (req, res) => {
     });
 
     await subscription.save();
-
-    // Update user with assigned subscription
     user.subscription = subscriptionId;
     await user.save();
 

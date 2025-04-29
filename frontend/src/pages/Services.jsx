@@ -22,7 +22,7 @@ const Services = () => {
       ? Services.filter((service) => {
           const serviceCategorySlug = (service.category.en || "")
             .toLowerCase()
-            .replace(/\s+/g, "-"); // Match URL slug format
+            .replace(/\s+/g, "-"); 
           console.log(
             "Comparing category:",
             category,
@@ -48,7 +48,6 @@ const Services = () => {
     applyFilter();
   }, [Services, category, searchQuery, currentLang]);
 
-  // Categories must match DB values exactly
   const serviceCategories = [
     { en: "House Cleaning Services", np: "घर सफाई सेवाहरू" },
     { en: "Electrical Services", np: "विद्युतीय सेवाहरू" },

@@ -190,6 +190,7 @@ const resources = {
         },
         testimonials: {
           title: "Testimonials",
+          noTestimonials: "No testimonials available at the moment.",
         },
       },
       //Services Section
@@ -255,7 +256,7 @@ const resources = {
         userRegistered:
           "User registered. Check your email for verification link.",
         verificationEmailSent: "Verification email has been sent.",
-        failedToResendEmail: "Failed to resend email. Try again!",
+        failedToResendEmail: "Failed to resend email.",
         errorOccurred: "Error occurred. Please try again!",
         emailVerifiedSuccess: "User verified, please login",
         loginSuccess: "You have successfully been logged in.",
@@ -265,6 +266,7 @@ const resources = {
         passwordsDoNotMatch: "Passwords do not match",
         emailRequired: "Please enter an email address",
         enterStrongPass: "Enter Strong Password.",
+        serverError: "There was an error in the server!",
       },
       myProfile: {
         contactInformation: "CONTACT INFORMATION",
@@ -555,6 +557,7 @@ const resources = {
         },
         testimonials: {
           title: "ग्राहकहरूको प्रतिक्रिया",
+          noTestimonials: "हालका लागि कुनै प्रशंसापत्रहरू उपलब्ध छैनन्।",
         },
       },
       // Services section
@@ -621,7 +624,7 @@ const resources = {
         userRegistered:
           "प्रयोगकर्ता दर्ता भयो। कृपया तपाईंको इमेल प्रमाणिकरण लिंकको लागि जाँच गर्नुहोस्।",
         verificationEmailSent: "प्रमाणिकरण इमेल पठाइयो।",
-        failedToResendEmail: "इमेल पुन: पठाउन असफल। फेरि प्रयास गर्नुहोस्!",
+        failedToResendEmail: "इमेल पुन: पठाउन असफल।",
         errorOccurred: "त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्!",
         emailVerifiedSuccess: "प्रयोगकर्ता प्रमाणित भयो, कृपया लगइन गर्नुहोस्",
         loginSuccess: "तपाईं सफलतापूर्वक लगइन हुनुभयो।",
@@ -631,6 +634,7 @@ const resources = {
         passwordsDoNotMatch: "पासवर्डहरू मेल खाँदैनन्",
         emailRequired: "कृपया इमेल ठेगाना प्रविष्ट गर्नुहोस्",
         enterStrongPass: "बलियो पासवर्ड प्रविष्ट गर्नुहोस्।",
+        serviceError: "सर्भरमा त्रुटि आयो!",
       },
       myProfile: {
         contactInformation: "सम्पर्क जानकारी",

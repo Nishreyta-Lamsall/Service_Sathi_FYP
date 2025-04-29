@@ -4,8 +4,6 @@ import subscriptionModel from "../models/subscriptionModel.js";
 import bookingModel from "../models/bookingModel.js";
 
 const khaltiSecretKey = process.env.KHALTI_SECRET_KEY;
-
-// Environment variable validation
 const {
   KHALTI_SECRET_KEY,
   KHALTI_API_BASE_URL = "https://dev.khalti.com",
@@ -19,7 +17,6 @@ if (!KHALTI_SECRET_KEY) {
 const khaltiInitiateUrl = `${KHALTI_API_BASE_URL}/api/v2/epayment/initiate/`;
 const khaltiLookupUrl = `${KHALTI_API_BASE_URL}/api/v2/epayment/lookup/`;
 
-// Initiate Subscription Payment
 export const initiateSubscriptionPayment = async (req, res) => {
   try {
     const { userId, amount, orderId, orderName } = req.body;
@@ -104,7 +101,6 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
-    // Retrieve plan from temporary storage
     const storedData = global.paymentPlans?.[pidx];
     const plan = storedData?.plan;
     if (!plan || !["6-month", "12-month"].includes(plan)) {
@@ -121,7 +117,6 @@ export const verifySubscriptionPayment = async (req, res) => {
       });
     }
 
-    // Check if payment is already verified
     const existingSubscription = await subscriptionModel.findOne({
       "users.pidx": pidx,
     });
@@ -131,7 +126,6 @@ export const verifySubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "Payment already verified" });
     }
 
-    // Verify payment with Khalti
     const verificationResponse = await axios.post(
       khaltiLookupUrl,
       { pidx },
@@ -159,7 +153,6 @@ export const verifySubscriptionPayment = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Check for existing active subscription
     if (user.isSubscribed && user.subscription) {
       const existingSub = await subscriptionModel.findById(user.subscription);
       if (
@@ -176,12 +169,10 @@ export const verifySubscriptionPayment = async (req, res) => {
       }
     }
 
-    // Calculate subscription dates
     const startDate = new Date();
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + (plan === "6-month" ? 6 : 12));
 
-    // Find or create subscription
     let subscription = await subscriptionModel.findOne({ plan });
     if (!subscription) {
       subscription = new subscriptionModel({
@@ -215,11 +206,10 @@ export const verifySubscriptionPayment = async (req, res) => {
     // Update user model
     user.isSubscribed = true;
     user.subscription = subscription._id;
-    user.subscriptionPlan = plan; // Optional: store plan for reference
+    user.subscriptionPlan = plan; 
     await user.save();
     console.log("User updated:", user);
 
-    // Update userData in active bookings
     const updatedUserData = {
       ...user.toObject(),
       isSubscribed: true,
@@ -232,7 +222,6 @@ export const verifySubscriptionPayment = async (req, res) => {
     );
     console.log("Active bookings updated for user:", userId);
 
-    // Clean up temporary storage
     if (global.paymentPlans?.[pidx]) {
       delete global.paymentPlans[pidx];
     }

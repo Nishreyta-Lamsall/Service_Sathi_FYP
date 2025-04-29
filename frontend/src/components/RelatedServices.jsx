@@ -8,7 +8,6 @@ const RelatedServices = ({ category, serviceId }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
-  // Dynamically determine current language
   const currentLang = i18n.language === "Nepali" ? "np" : "en";
   console.log(
     "Current Language in RelatedServices:",
@@ -26,10 +25,10 @@ const RelatedServices = ({ category, serviceId }) => {
           service.category[currentLang] === category &&
           service._id !== serviceId
       );
-      console.log("Filtered Related Services:", ServicesData); // Debug filtered data
+      console.log("Filtered Related Services:", ServicesData); 
       setRelServices(ServicesData);
     }
-  }, [Services, category, serviceId, currentLang]); // Add currentLang as dependency
+  }, [Services, category, serviceId, currentLang]); 
 
   return (
     <div className="flex flex-col gap-4 my-16 text-gray-900 mx-4 sm:mx-8 md:mx-12 lg:mx-14 xl:mx-16">
@@ -39,7 +38,7 @@ const RelatedServices = ({ category, serviceId }) => {
           <div
             onClick={() => {
               navigate(`/bookings/${item._id}`);
-              window.scrollTo(0, 0); // Use window.scrollTo for clarity
+              window.scrollTo(0, 0); 
             }}
             className="border border-blue-200 rounded-lg overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
             key={index}

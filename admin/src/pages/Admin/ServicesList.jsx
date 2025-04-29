@@ -16,7 +16,7 @@ const ServicesList = () => {
       getAllServices();
       fetchServiceProviders();
     }
-    console.log("Services data:", services); // Debug data
+    console.log("Services data:", services); 
   }, [aToken]);
 
   const fetchServiceProviders = async () => {
@@ -86,13 +86,13 @@ const ServicesList = () => {
             />
             <div className="p-3 flex flex-col flex-grow">
               <p className="font-semibold text-gray-800 line-clamp-2 h-[3rem]">
-                {item.name?.en || "Unnamed Service"} {/* Safe access */}
+                {item.name?.en || "Unnamed Service"} 
               </p>
               <p className="text-sm text-gray-600">
-                {item.category?.en || "Uncategorized"} {/* Safe access */}
+                {item.category?.en || "Uncategorized"} 
               </p>
               <p className="text-sm text-gray-600">
-                Price: {item.price?.en || "N/A"} {/* Safe access */}
+                Price: {item.price?.en || "N/A"}
               </p>
               <p className="text-sm font-medium text-indigo-600 mt-2">
                 Provider: {serviceProviders[item._id] || "Loading..."}
@@ -100,7 +100,7 @@ const ServicesList = () => {
               <div className="flex items-center gap-2 mt-3">
                 <input
                   type="checkbox"
-                  checked={item.available ?? true} // Fallback if undefined
+                  checked={item.available ?? true} 
                   onChange={() => changeAvailability(item._id)}
                   className="w-4 h-4 accent-blue-600"
                 />

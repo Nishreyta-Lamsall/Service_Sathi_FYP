@@ -8,7 +8,7 @@ import axios from "axios";
 const AllBookings = () => {
   const { aToken, bookings, getAllBookings, cancelBooking, backendUrl } =
     useContext(AdminContext);
-  const { calculateAge, slotDateFormat, currency } = useContext(AppContext);
+  const { slotDateFormat, currency } = useContext(AppContext);
 
   const [editingStatus, setEditingStatus] = useState(null);
   const [statusUpdates, setStatusUpdates] = useState({});
@@ -85,18 +85,17 @@ const AllBookings = () => {
 
       <div className="shadow-lg rounded-lg overflow-hidden border border-gray-200 bg-white text-sm">
         {/* Table Header */}
-        <div className="hidden sm:grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_0.5fr_1fr_0.5fr_0.3fr_0.7fr] text-center bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-medium text-gray-700 uppercase tracking-wider">
-          <p className="py-4 px-3 border-r">S.N.</p>
-          <p className="py-4 px-3 border-r">User</p>
-          <p className="py-4 px-3 border-r max-sm:hidden">Age</p>
-          <p className="py-4 px-3 border-r">Email</p>
-          <p className="py-4 px-3 border-r">Service Name</p>
-          <p className="py-4 px-3 border-r">Date & Time</p>
-          <p className="py-4 px-3 border-r">Payment Status</p>
-          <p className="py-4 px-3 border-r">Status</p>
-          <p className="py-4 px-3 border-r">Price</p>
-          <p className="py-4 px-3 border-r">Cancel</p>
-          <p className="py-4 px-3">Workflow</p>
+        <div className="hidden sm:grid grid-cols-[50px_120px_200px_150px_150px_120px_150px_100px_80px_120px] text-center bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 font-medium text-gray-700 uppercase tracking-wider">
+          <p className="py-4 px-2 border-r">S.N.</p>
+          <p className="py-4 px-2 border-r">User</p>
+          <p className="py-4 px-2 border-r">Email</p>
+          <p className="py-4 px-2 border-r">Service Name</p>
+          <p className="py-4 px-2 border-r">Date & Time</p>
+          <p className="py-4 px-2 border-r">Payment Status</p>
+          <p className="py-4 px-2 border-r">Status</p>
+          <p className="py-4 px-2 border-r">Price</p>
+          <p className="py-4 px-2 border-r">Cancel</p>
+          <p className="py-4 px-2">Workflow</p>
         </div>
 
         {/* Table Body */}
@@ -104,30 +103,27 @@ const AllBookings = () => {
           {bookings.map((item, index) => (
             <div
               key={index}
-              className="grid grid-cols-[0.3fr_0.6fr_0.3fr_1.3fr_0.5fr_0.8fr_0.5fr_1fr_0.5fr_0.4fr_0.7fr] text-center border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
+              className="grid grid-cols-[50px_120px_200px_150px_150px_120px_150px_100px_80px_120px] text-center border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
             >
-              <p className="py-4 px-3 border-r text-gray-600">{index + 1}</p>
-              <p className="py-4 px-3 border-r text-gray-800 font-medium">
+              <p className="py-4 px-2 border-r text-gray-600">{index + 1}</p>
+              <p className="py-4 px-2 border-r text-gray-800 font-medium truncate">
                 {item.userData.name}
               </p>
-              <p className="py-4 px-3 border-r text-gray-600 max-sm:hidden">
-                {calculateAge(item.userData.dob)}
-              </p>
-              <p className="py-4 px-3 border-r text-gray-600 break-words">
+              <p className="py-4 px-2 border-r text-gray-600 truncate">
                 {item.userData.email}
               </p>
-              <p className="py-4 px-3 border-r text-gray-800 font-medium">
+              <p className="py-4 px-2 border-r text-gray-800 font-medium truncate">
                 {item.serviceData.name?.en ||
                   item.serviceData.name?.np ||
                   "N/A"}
               </p>
-              <p className="py-4 px-3 border-r text-gray-600">
+              <p className="py-4 px-2 border-r text-gray-600 truncate">
                 {slotDateFormat(item.slotDate)}, {item.slotTime}
               </p>
 
               {/* Payment Status Column */}
               <p
-                className={`py-4 px-3 border-r font-medium ${
+                className={`py-4 px-2 border-r font-medium truncate ${
                   item.paymentStatus === "Completed"
                     ? "text-green-600"
                     : item.paymentStatus === "Pending"
@@ -141,10 +137,10 @@ const AllBookings = () => {
               </p>
 
               {/* Status Column */}
-              <div className="py-4 px-3 border-r flex items-center justify-center">
+              <div className="py-4 px-2 border-r flex items-center justify-center">
                 {editingStatus === item._id ? (
                   <select
-                    className="border border-gray-300 p-1 rounded-md w-full text-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    className="border border-gray-300 p-1 rounded-md w-full text-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none text-sm"
                     value={statusUpdates[item._id] || item.orderStatus}
                     onChange={(e) =>
                       handleUpdateStatus(item._id, e.target.value)
@@ -155,9 +151,9 @@ const AllBookings = () => {
                     <option value="Completed">Completed</option>
                   </select>
                 ) : (
-                  <div className="flex justify-between items-center gap-3 w-full">
+                  <div className="flex flex-col items-center gap-2 w-full">
                     <span
-                      className={`font-semibold ${
+                      className={`font-semibold truncate ${
                         (statusUpdates[item._id] || item.orderStatus) ===
                         "Booked"
                           ? "text-blue-600"
@@ -171,25 +167,25 @@ const AllBookings = () => {
                     </span>
                     <button
                       onClick={() => setEditingStatus(item._id)}
-                      className="text-white text-sm bg-gray-800 hover:bg-gray-900 p-2 rounded-lg transition-colors duration-200"
+                      className="text-white text-xs bg-gray-800 hover:bg-gray-900 py-1 px-2 rounded-lg transition-colors duration-200"
                     >
-                      Update Status
+                      Update
                     </button>
                   </div>
                 )}
               </div>
 
-              <p className="py-4 px-3 border-r text-gray-700 font-medium">
+              <p className="py-4 px-2 border-r text-gray-700 font-medium truncate">
                 {currency}
                 {item.serviceData.price.en}
               </p>
 
               {item.cancelled ? (
-                <p className="py-4 px-3 text-red-500 text-sm font-medium">
+                <p className="py-4 px-2 text-red-500 text-sm font-medium">
                   Cancelled
                 </p>
               ) : (
-                <div className="py-4 px-3 border-r flex justify-center items-center">
+                <div className="py-4 px-2 border-r flex justify-center items-center">
                   <img
                     onClick={() => cancelBooking(item._id).then(getAllBookings)}
                     className="w-5 cursor-pointer hover:opacity-75 transition-opacity duration-200"
@@ -200,12 +196,12 @@ const AllBookings = () => {
               )}
 
               {/* Workflow Column */}
-              <div className="py-4 px-3 flex justify-center">
+              <div className="py-4 px-2 flex justify-center">
                 <button
                   onClick={() => openWorkflowModal(item._id)}
-                  className="text-white text-sm bg-gray-800 hover:bg-gray-900 p-2 rounded-lg transition-colors duration-200"
+                  className="text-white text-xs bg-gray-800 hover:bg-gray-900 py-1 px-2 rounded-lg transition-colors duration-200"
                 >
-                  Send Milestone
+                  Milestone
                 </button>
               </div>
             </div>

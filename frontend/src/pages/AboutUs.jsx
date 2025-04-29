@@ -79,7 +79,6 @@ const AboutUs = () => {
 
         {/* What Makes Us Different Section */}
         <div className="flex flex-col lg:flex-row items-start mt-14 gap-8 lg:gap-16 mx-auto max-w-7xl bg-gray-50 p-6 lg:p-8 rounded-xl shadow-md">
-          {/* Left Section - Title and Description */}
           <div className="w-full lg:w-1/2 mt-8 lg:mt-28 ml-0 lg:ml-10">
             <p className="text-3xl lg:text-4xl font-semibold mb-4">
               {t("whatMakesUsDifferent.title")}
@@ -88,8 +87,6 @@ const AboutUs = () => {
               {t("whatMakesUsDifferent.description")}
             </p>
           </div>
-
-          {/* Right Section - Features */}
           <div className="w-full lg:w-[400px] flex flex-col gap-6">
             {[
               {
@@ -148,29 +145,24 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* Stats Section */}
         <div className="w-full mt-16 p-4 sm:p-8 rounded-lg mx-auto bg-gradient-to-r from-gray-50 to-gray-100 shadow-lg max-w-screen-2xl">
-          {/* Title */}
           <p className="text-2xl sm:text-3xl font-semibold mb-8 text-center animate-fade-in">
             {t("stats.title")}
           </p>
 
-          {/* Stats Container */}
           <div className="flex flex-col sm:flex-row gap-8 sm:gap-40 overflow-x-auto sm:overflow-visible mt-8 sm:mt-16 mx-4 sm:ml-28">
             {stats.map((stat, index) => (
               <div
                 key={index}
                 className="w-full sm:w-auto text-center flex flex-col items-center mb-6 transform transition-all hover:scale-95"
               >
-                {/* Stat Value */}
+
                 <p className="text-2xl font-semibold text-blue-900 animate-count-up">
                   {count}+
                 </p>
 
-                {/* Divider */}
                 <hr className="w-20 my-4 border-t-2 border-blue-300 rounded-full" />
 
-                {/* Stat Label */}
                 <p className="text-lg text-black font-semibold uppercase tracking-wide">
                   {stat.label}
                 </p>
@@ -179,14 +171,11 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* FAQ Section */}
         <div className="mt-12 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          {/* Title */}
           <p className="text-2xl sm:text-3xl font-semibold mb-6 text-center">
             {t("faq.title")}
           </p>
 
-          {/* FAQ Items */}
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <div
@@ -195,7 +184,6 @@ const AboutUs = () => {
                   openFaq === index ? "bg-gray-100" : "bg-gray-50"
                 }`}
               >
-                {/* Question */}
                 <div
                   onClick={() => toggleFaq(index)}
                   className="flex justify-between items-center cursor-pointer"
@@ -212,7 +200,6 @@ const AboutUs = () => {
                   </span>
                 </div>
 
-                {/* Answer */}
                 <div
                   className={`grid transition-all duration-500 ease-in-out overflow-hidden ${
                     openFaq === index
@@ -229,7 +216,6 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* Join Our Family Section */}
         <div className="w-full mt-16 p-8 rounded-lg mx-auto bg-gradient-to-r from-gray-50 to-gray-100 shadow-lg max-w-screen-2xl text-center">
           <p className="text-3xl font-semibold">{t("joinUs.title")}</p>
           <p className="mt-6 text-base text-gray-600 max-w-2xl mx-auto">

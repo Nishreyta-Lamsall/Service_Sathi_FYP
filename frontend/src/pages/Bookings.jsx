@@ -25,9 +25,9 @@ const Bookings = () => {
   const [serviceProvider, setServiceProvider] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [serviceInfo, setServiceInfo] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(""); // User-selected date
-  const [availableTimes, setAvailableTimes] = useState([]); // Available time slots for selected date
-  const [slotTime, setSlotTime] = useState(""); // Selected time slot
+  const [selectedDate, setSelectedDate] = useState("");
+  const [availableTimes, setAvailableTimes] = useState([]); 
+  const [slotTime, setSlotTime] = useState(""); 
 
   const navigate = useNavigate();
 
@@ -61,7 +61,6 @@ const Bookings = () => {
     }
   };
 
-  // Generate available time slots for the selected date with 30-minute intervals
   const getAvailableSlots = () => {
     if (!serviceInfo || !selectedDate) {
       setAvailableTimes([]);
@@ -69,27 +68,24 @@ const Bookings = () => {
     }
 
     const date = new Date(selectedDate);
-    const today = new Date(); // Current date and time
+    const today = new Date(); 
     const isToday =
       date.getDate() === today.getDate() &&
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear();
 
-    const startHour = 9; // 9 AM
-    const endHour = 16; // 4 PM
-    const intervalMinutes = 30; // 30-minute intervals
+    const startHour = 9; 
+    const endHour = 16; 
+    const intervalMinutes = 30; 
     let timeSlots = [];
 
-    // Loop through the time range with 30-minute increments
     for (let hour = startHour; hour <= endHour; hour++) {
       for (let minutes = 0; minutes < 60; minutes += intervalMinutes) {
-        // Stop at 4 PM (16:00)
         if (hour === endHour && minutes > 0) break;
 
         const slotDate = new Date(date);
         slotDate.setHours(hour, minutes, 0, 0);
 
-        // If today, skip slots before the current time
         if (isToday && slotDate <= today) continue;
 
         const formattedTime = slotDate.toLocaleTimeString([], {
@@ -129,11 +125,11 @@ const bookService = async () => {
     return;
   }
   if (!serviceInfo.available) {
-    toast.error(t("serviceNotAvailable")); // New translation key
+    toast.error(t("serviceNotAvailable")); 
     return;
   }
   if (!userData?.phone || !userData?.address) {
-    toast.error(t("enterContactDetails")); // New translation key
+    toast.error(t("enterContactDetails")); 
     return;
   }
 
@@ -256,7 +252,7 @@ const bookService = async () => {
               id="date-picker"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]} // Restrict to today or future
+              min={new Date().toISOString().split("T")[0]} 
               className="border border-gray-300 rounded p-2"
             />
           </div>

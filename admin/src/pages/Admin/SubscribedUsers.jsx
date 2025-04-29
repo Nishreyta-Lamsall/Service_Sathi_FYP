@@ -7,8 +7,7 @@ const SubscribedUsers = () => {
   const { backendUrl, aToken } = useContext(AdminContext);
   const [subscribedUsers, setSubscribedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Fetch subscribed users
+  
   useEffect(() => {
     const fetchSubscribedUsers = async () => {
       if (!aToken) {
@@ -27,7 +26,6 @@ const SubscribedUsers = () => {
         );
         console.log("Subscriptions response:", response.data);
 
-        // Check if response.data is an array and has subscriptions
         const subscriptions = Array.isArray(response.data) ? response.data : [];
         if (subscriptions.length > 0) {
           const usersWithDetails = [];

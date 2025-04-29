@@ -39,7 +39,6 @@ const OrderHistory = () => {
       const { data } = await axios.get(backendUrl + "/api/user/bookings", {
         headers: { token },
       });
-      console.log("All Bookings:", data.bookings); // Log for debugging
       if (data.success) {
         setBookings(data.bookings.reverse());
       }
@@ -49,21 +48,18 @@ const OrderHistory = () => {
     }
   };
 
-  // Helper function to get display value for name and category
   const getDisplayValue = (field) => {
     if (typeof field === "string") {
-      // Map English strings to translations if in Nepali mode
       if (currentLang === "np") {
         const translations = {
           "Leak Repairs": "लिक मर्मत",
           "Plumbing Services": "प्लम्बिंग सेवाहरू",
-          // Add more as needed
         };
-        return translations[field] || field; // Use translation or fallback to English
+        return translations[field] || field; 
       }
-      return field; // In English mode, return the string as-is
+      return field; 
     }
-    return field?.[currentLang] || "Unknown"; // If it's an object, use currentLang
+    return field?.[currentLang] || "Unknown"; 
   };
 
   useEffect(() => {

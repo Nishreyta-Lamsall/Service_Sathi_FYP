@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import serviceModel from "./serviceModel.js";
 
 const serviceProviderSchema = new mongoose.Schema(
   {
@@ -16,12 +15,12 @@ const serviceProviderSchema = new mongoose.Schema(
       {
         serviceId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Service", // Reference to the Service model
+          ref: "Service", 
           required: true,
         },
         serviceName: {
           type: String,
-          required: true, // This will store the name of the service
+          required: true, 
         },
       },
     ],

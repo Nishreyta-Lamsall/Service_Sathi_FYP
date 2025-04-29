@@ -26,8 +26,8 @@ const bookingSchema = new mongoose.Schema(
       enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
-    pidx: { type: String }, // Khalti payment index
-    transactionId: { type: String }, // Khalti transaction ID
+    pidx: { type: String },
+    transactionId: { type: String }, 
     workflowMessage: {
       content: String,
       sentAt: Date,

@@ -17,28 +17,27 @@ const EditProvider = () => {
     citizenship_number: "",
     experience: "",
     category: "",
-    services: [], // Array of { serviceId, serviceName }
+    services: [],
     address: { line1: "", line2: "" },
     image: null,
   });
-  const [allServices, setAllServices] = useState([]); // All services from DB
+  const [allServices, setAllServices] = useState([]); 
   const [loading, setLoading] = useState(false);
 
-  // Fetch provider details and all services on mount
+
   useEffect(() => {
     const fetchProviderAndServices = async () => {
       try {
-        // Fetch provider details
+
         const provider = await getServiceProviderById(id);
         if (provider) {
           setFormData({
             ...provider,
             address: provider.address || { line1: "", line2: "" },
-            services: provider.services || [], // Existing services
+            services: provider.services || [],
           });
         }
 
-        // Fetch all services
         const { data } = await axios.post(
           `${backendUrl}/api/admin/all-services`,
           {},
@@ -86,7 +85,7 @@ const EditProvider = () => {
           ...prev.services,
           {
             serviceId: selectedService._id,
-            serviceName: selectedService.name.en, // Use English name
+            serviceName: selectedService.name.en, 
           },
         ],
       }));
@@ -235,7 +234,7 @@ const EditProvider = () => {
                   )}
                   className="w-4 h-4"
                 />
-                <label>{service.name.en}</label> {/* Use English name */}
+                <label>{service.name.en}</label>
               </div>
             ))}
           </div>

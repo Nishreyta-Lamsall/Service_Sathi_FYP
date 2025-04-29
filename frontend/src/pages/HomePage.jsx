@@ -7,7 +7,7 @@ import bannerimg from "../assets/bannerimg.jpg";
 import gardeningicon from "../assets/gardeningicon.png";
 import plumbingicon from "../assets/plumbingicon.png";
 import Testimonial from "../components/Testimonial";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { useContext } from "react";
 import axios from "axios";
@@ -34,12 +34,12 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [isVerifying, setIsVerifying] = useState(false);
 
-   const handleClick = () => {
-     toast.info(t("toastMessage.proposePlan"));
-     setTimeout(() => {
-       navigate("/contact");
-     }, 1500); 
-   };
+  const handleClick = () => {
+    toast.info(t("toastMessage.proposePlan"));
+    setTimeout(() => {
+      navigate("/contact");
+    }, 1500);
+  };
 
   useEffect(() => {
     if (Services && Services.length > 0) {
@@ -88,98 +88,98 @@ const HomePage = () => {
     }
   };
 
-const verifyPayment = async (pidx) => {
-  if (!token) {
-    toast.error(t("loginPayment"));
-    navigate("/login");
-    return;
-  }
-
-  if (!userData || !userData._id) {
-    console.error("User data not available yet:", userData);
-    return;
-  }
-
-  setIsVerifying(true);
-  try {
-    console.log("Verifying payment:", { pidx, userId: userData._id });
-    const { data } = await axios.post(
-      `${backendUrl}/api/subscription/verify-khalti`,
-      { userId: userData._id },
-      { params: { pidx }, headers: { token } }
-    );
-    console.log("Verification response:", data);
-    if (data.success) {
-      toast.success(t("paymentVerifySuccess"));
-      await subscribeUser(); 
-    } else {
+  const verifyPayment = async (pidx) => {
+    if (!token) {
+      toast.error(t("loginPayment"));
+      navigate("/login");
+      return;
     }
-  } catch (error) {
-  } finally {
-    setIsVerifying(false);
-  }
-};
 
-useEffect(() => {
-  getSubscriptions();
-  const queryParams = new URLSearchParams(location.search);
-  const pidx = queryParams.get("pidx");
-  console.log("Redirect params:", { pidx });
-  if (pidx && token && userData?._id && !isVerifying) {
-    verifyPayment(pidx);
-  }
-}, [location.search, token, userData]); // Add userData to dependencies
+    if (!userData || !userData._id) {
+      console.error("User data not available yet:", userData);
+      return;
+    }
 
-const handleChoosePlan = async (subscription) => {
-  if (!token) {
-    toast.error(t("loginToSubscribe"));
-    navigate("/login");
-    return;
-  }
-
-  if (userData?.isSubscribed) {
-    toast.error(t("toastMessage.alreadySubscribed"));
-    return;
-  }
-
-  try {
-    const amount = subscription.plan === "6-month" ? 200000 : 350000;
-    const response = await fetch(
-      `${backendUrl}/api/subscription/initiate-payment`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token,
-        },
-        body: JSON.stringify({
-          userId: userData._id,
-          amount,
-          orderId: `SUB-${Date.now()}`,
-          orderName: `${subscription.plan} Subscription`,
-        }),
+    setIsVerifying(true);
+    try {
+      console.log("Verifying payment:", { pidx, userId: userData._id });
+      const { data } = await axios.post(
+        `${backendUrl}/api/subscription/verify-khalti`,
+        { userId: userData._id },
+        { params: { pidx }, headers: { token } }
+      );
+      console.log("Verification response:", data);
+      if (data.success) {
+        toast.success(t("paymentVerifySuccess"));
+        await subscribeUser();
+      } else {
       }
-    );
-
-    const data = await response.json();
-    if (response.ok && data.payment_url) {
-      window.location.href = data.payment_url;
-    } else {
-      console.log(data.message);
+    } catch (error) {
+    } finally {
+      setIsVerifying(false);
     }
-  } catch (error) {
-    console.error("Payment error:", error);
-    toast.error(t("paymentInitiateFailed"));
-  }
-};
+  };
 
-const isUserSubscribedToPlan = (plan) => {
-  if (!userData?.isSubscribed || !userData?.subscription) return false;
-  const userSubscription = subscriptions.find(
-    (sub) => sub._id === userData.subscription
-  );
-  return userSubscription?.plan === plan;
-};
+  useEffect(() => {
+    getSubscriptions();
+    const queryParams = new URLSearchParams(location.search);
+    const pidx = queryParams.get("pidx");
+    console.log("Redirect params:", { pidx });
+    if (pidx && token && userData?._id && !isVerifying) {
+      verifyPayment(pidx);
+    }
+  }, [location.search, token, userData]); // Add userData to dependencies
+
+  const handleChoosePlan = async (subscription) => {
+    if (!token) {
+      toast.error(t("loginToSubscribe"));
+      navigate("/login");
+      return;
+    }
+
+    if (userData?.isSubscribed) {
+      toast.error(t("toastMessage.alreadySubscribed"));
+      return;
+    }
+
+    try {
+      const amount = subscription.plan === "6-month" ? 200000 : 350000;
+      const response = await fetch(
+        `${backendUrl}/api/subscription/initiate-payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token,
+          },
+          body: JSON.stringify({
+            userId: userData._id,
+            amount,
+            orderId: `SUB-${Date.now()}`,
+            orderName: `${subscription.plan} Subscription`,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.payment_url) {
+        window.location.href = data.payment_url;
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error(t("paymentInitiateFailed"));
+    }
+  };
+
+  const isUserSubscribedToPlan = (plan) => {
+    if (!userData?.isSubscribed || !userData?.subscription) return false;
+    const userSubscription = subscriptions.find(
+      (sub) => sub._id === userData.subscription
+    );
+    return userSubscription?.plan === plan;
+  };
 
   return (
     <div className="main overflow-x-hidden">
@@ -527,18 +527,24 @@ const isUserSubscribedToPlan = (plan) => {
         <p className="text-3xl font-semibold text-black flex justify-center mb-8">
           {t("home.testimonials.title")}
         </p>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-16 mr-12 mb-7">
-          {testimonials.map((item, index) => (
-            <Testimonial
-              key={index}
-              name={item.name}
-              rating={item.rating}
-              comment={item.message}
-              id={item._id}
-              image={item.image}
-            />
-          ))}
-        </div>
+        {testimonials.length === 0 ? (
+          <p className="text-center text-gray-500 text-lg">
+            {t("home.testimonials.noTestimonials")}
+          </p>
+        ) : (
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6 overflow-auto ml-16 mr-12 mb-7">
+            {testimonials.map((item, index) => (
+              <Testimonial
+                key={index}
+                name={item.name}
+                rating={item.rating}
+                comment={item.message}
+                id={item._id}
+                image={item.image}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

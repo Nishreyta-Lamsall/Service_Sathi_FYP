@@ -10,16 +10,8 @@ import Contact from "../models/contactModel.js";
 
 const addService = async (req, res) => {
   try {
-    const {
-      nameEn,
-      nameNp,
-      categoryEn,
-      categoryNp,
-      aboutEn,
-      aboutNp,
-      priceEn,
-      priceNp,
-    } = req.body;
+    const { nameEn, nameNp, categoryEn, categoryNp, aboutEn, aboutNp, price } =
+      req.body;
     const imageFile = req.file;
 
     // Checking for all required fields
@@ -30,8 +22,7 @@ const addService = async (req, res) => {
       !categoryNp ||
       !aboutEn ||
       !aboutNp ||
-      !priceEn ||
-      !priceNp
+      !price
     ) {
       return res.json({ success: false, message: "Missing details" });
     }
@@ -60,7 +51,7 @@ const addService = async (req, res) => {
       name: { en: nameEn, np: nameNp },
       category: { en: categoryEn, np: categoryNp },
       about: { en: aboutEn, np: aboutNp },
-      price: { en: Number(priceEn), np: Number(priceNp) }, // Convert to numbers
+      price: Number(price), // Single price as a number
       image: imageUrl,
     };
 
@@ -84,8 +75,7 @@ const updateService = async (req, res) => {
       categoryNp,
       aboutEn,
       aboutNp,
-      priceEn,
-      priceNp,
+      price,
       available,
     } = req.body;
     const imageFile = req.file;
@@ -124,10 +114,7 @@ const updateService = async (req, res) => {
     service.category.np = categoryNp || service.category.np;
     service.about.en = aboutEn || service.about.en;
     service.about.np = aboutNp || service.about.np;
-    service.price.en =
-      priceEn !== undefined ? Number(priceEn) : service.price.en;
-    service.price.np =
-      priceNp !== undefined ? Number(priceNp) : service.price.np;
+    service.price = price !== undefined ? Number(price) : service.price;
     service.available = available !== undefined ? available : service.available;
     service.image = imageUrl;
 
@@ -484,7 +471,8 @@ const client = new twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
 const bookingCancel = async (req, res) => {
   try {
     const { bookingId } = req.body;
-    const bookingData = await bookingModel.findById(bookingId);
+    const BookingId = "booking-id";
+    const bookingData = await bookingModel.findById(BookingId);
 
     if (!bookingData) {
       return res.json({ success: false, message: "Booking not found!" });

@@ -7,8 +7,8 @@ const serviceSchema = new mongoose.Schema(
       np: { type: String, required: true },
     },
     category: {
-      en: { type: String, required: true }, // English category
-      np: { type: String, required: true }, // Nepali category
+      en: { type: String, required: true }, 
+      np: { type: String, required: true }, 
     },
     about: {
       en: { type: String, required: true },
@@ -16,10 +16,7 @@ const serviceSchema = new mongoose.Schema(
     },
     image: { type: String, required: true },
     available: { type: Boolean, default: true },
-    price: {
-      en: { type: Number, required: true }, // English price
-      np: { type: String, required: true }, // Nepali price
-    },
+    price: {type: Number, required: true },
     slots_booked: { type: Object, default: {} },
     serviceProvider: {
       type: mongoose.Schema.Types.ObjectId,

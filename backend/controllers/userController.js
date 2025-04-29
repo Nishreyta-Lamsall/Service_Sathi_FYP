@@ -433,7 +433,7 @@ const forgotPassword = async (req, res) => {
     return res.json({
       success: true,
       message: "Password reset email sent",
-      resetToken, // Optional, for debugging
+      resetToken,
     });
   } catch (error) {
     console.error(error);
@@ -441,7 +441,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Remaining functions (unchanged since they don’t involve email UI)
 const verifyUser = async (req, res) => {
   try {
     const { token } = req.params;
@@ -627,7 +626,7 @@ const bookService = async (req, res) => {
       if (slots_booked[slotDate].includes(slotTime)) {
         return res.json({
           success: false,
-          message: "Service Provider not available",
+          message: "Service already booked.",
         });
       } else {
         slots_booked[slotDate].push(slotTime);

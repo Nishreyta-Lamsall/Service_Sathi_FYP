@@ -15,10 +15,9 @@ const ProvidersList = () => {
 
   const navigate = useNavigate();
 
-  // State to track visibility of services & details
   const [expandedServices, setExpandedServices] = useState({});
   const [expandedDetails, setExpandedDetails] = useState({});
-  const [deleting, setDeleting] = useState(null); // Track which provider is being deleted
+  const [deleting, setDeleting] = useState(null); 
 
   useEffect(() => {
     if (aToken) {
@@ -26,17 +25,17 @@ const ProvidersList = () => {
     }
   }, [aToken]);
 
-  // Toggle function for services
+
   const toggleServices = (index) => {
     setExpandedServices((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  // Toggle function for details
+
   const toggleDetails = (index) => {
     setExpandedDetails((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  // Handle Service Deletion
+
   const handleDelete = async (Id) => {
     if (
       !window.confirm("Are you sure you want to delete this service provider?")
@@ -44,7 +43,7 @@ const ProvidersList = () => {
       return;
     }
 
-    setDeleting(Id); // Set deleting state
+    setDeleting(Id); 
 
     try {
       const { data } = await axios.delete(
@@ -54,14 +53,14 @@ const ProvidersList = () => {
 
       if (data.success) {
         toast.success("Service provider deleted successfully!");
-        getAllServiceProviders(); // Refresh services list
+        getAllServiceProviders(); 
       } else {
         toast.error(data.message);
       }
     } catch (error) {
       toast.error("Failed to delete service provider. Please try again.");
     } finally {
-      setDeleting(null); // Reset deleting state
+      setDeleting(null); 
     }
   };
 
@@ -98,7 +97,6 @@ const ProvidersList = () => {
                   {item.phone_number}
                 </p>
 
-                {/* Toggle Services Button */}
                 <div className="mt-2">
                   <button
                     onClick={() => toggleServices(index)}
@@ -110,7 +108,6 @@ const ProvidersList = () => {
                   </button>
                 </div>
 
-                {/* Services List (Hidden by Default) */}
                 {expandedServices[index] && (
                   <ul className="mt-2 space-y-1 text-gray-700 text-sm bg-gray-100 p-2 rounded-md">
                     {item.services.length > 0 ? (
@@ -125,7 +122,6 @@ const ProvidersList = () => {
                   </ul>
                 )}
 
-                {/* Toggle Details Button */}
                 <div className="mt-2">
                   <button
                     onClick={() => toggleDetails(index)}
@@ -135,7 +131,6 @@ const ProvidersList = () => {
                   </button>
                 </div>
 
-                {/* Additional Details (Hidden by Default) */}
                 {expandedDetails[index] && (
                   <div className="mt-2 space-y-1 text-gray-700 text-sm bg-gray-100 p-2 rounded-md">
                     <p>Email: {item.email}</p>
@@ -160,7 +155,6 @@ const ProvidersList = () => {
                 </div>
               </div>
 
-              {/* Buttons (Edit & Delete) */}
               <div className="flex gap-3 mt-3">
                 {/* Edit Button */}
                 <button

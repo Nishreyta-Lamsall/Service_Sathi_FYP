@@ -32,8 +32,7 @@ const AddService = () => {
   const [serviceImg, setServiceImg] = useState(false);
   const [nameEn, setNameEn] = useState(""); // English name
   const [nameNp, setNameNp] = useState(""); // Nepali name
-  const [priceEn, setPriceEn] = useState(""); // English price
-  const [priceNp, setPriceNp] = useState(""); // Nepali price
+  const [price, setPrice] = useState(""); // Single price
   const [aboutEn, setAboutEn] = useState(""); // English about
   const [aboutNp, setAboutNp] = useState(""); // Nepali about
   const [category, setCategory] = useState("House Cleaning Services"); // Single category value
@@ -57,8 +56,7 @@ const AddService = () => {
       formData.append("nameEn", nameEn); // English name
       formData.append("nameNp", nameNp); // Nepali name
       formData.append("image", serviceImg);
-      formData.append("priceEn", Number(priceEn)); // English price
-      formData.append("priceNp", priceNp); // Nepali price
+      formData.append("price", Number(price)); // Single price
       formData.append("aboutEn", aboutEn); // English about
       formData.append("aboutNp", aboutNp); // Nepali about
       formData.append("categoryEn", selectedCategory.en); // English category
@@ -75,8 +73,7 @@ const AddService = () => {
         setServiceImg(false);
         setNameEn("");
         setNameNp("");
-        setPriceEn("");
-        setPriceNp("");
+        setPrice("");
         setAboutEn("");
         setAboutNp("");
         setCategory("House Cleaning Services"); // Reset to default
@@ -183,25 +180,13 @@ const AddService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Price (English)
+              Price
             </label>
             <input
-              onChange={(e) => setPriceEn(e.target.value)}
-              value={priceEn}
+              onChange={(e) => setPrice(e.target.value)}
+              value={price}
               type="number"
-              placeholder="Enter price in English"
-              required
-              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Price (Nepali)
-            </label>
-            <input
-              onChange={(e) => setPriceNp(e.target.value)}
-              value={priceNp}
-              placeholder="नेपालीमा मूल्य प्रविष्ट गर्नुहोस्"
+              placeholder="Enter price"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />

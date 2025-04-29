@@ -24,8 +24,7 @@ const EditService = () => {
   const [serviceImg, setServiceImg] = useState(null);
   const [nameEn, setNameEn] = useState("");
   const [nameNp, setNameNp] = useState("");
-  const [priceEn, setPriceEn] = useState("");
-  const [priceNp, setPriceNp] = useState("");
+  const [price, setPrice] = useState("");
   const [aboutEn, setAboutEn] = useState("");
   const [aboutNp, setAboutNp] = useState("");
   const [category, setCategory] = useState("House Cleaning Services"); // English key for dropdown
@@ -38,8 +37,7 @@ const EditService = () => {
       if (data) {
         setNameEn(data.name.en);
         setNameNp(data.name.np);
-        setPriceEn(data.price.en);
-        setPriceNp(data.price.np);
+        setPrice(data.price); // Single price
         setAboutEn(data.about.en);
         setAboutNp(data.about.np);
         setAvailable(data.available);
@@ -71,8 +69,7 @@ const EditService = () => {
       formData.append("categoryNp", selectedCategory.np);
       formData.append("aboutEn", aboutEn);
       formData.append("aboutNp", aboutNp);
-      formData.append("priceEn", Number(priceEn));
-      formData.append("priceNp", Number(priceNp));
+      formData.append("price", Number(price)); // Single price
       formData.append("available", available);
       if (serviceImg instanceof File) {
         formData.append("image", serviceImg);
@@ -183,25 +180,13 @@ const EditService = () => {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Price (English)
+              Price
             </label>
             <input
               type="number"
-              value={priceEn}
-              onChange={(e) => setPriceEn(e.target.value)}
-              placeholder="Enter price in English"
-              required
-              className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Price (Nepali)
-            </label>
-            <input
-              value={priceNp}
-              onChange={(e) => setPriceNp(e.target.value)}
-              placeholder="नेपालीमा मूल्य प्रविष्ट गर्नुहोस्"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter price"
               required
               className="mt-1 w-full p-2 bg-gray-100 rounded-md focus:ring-2 focus:ring-blue-300 outline-none"
             />
